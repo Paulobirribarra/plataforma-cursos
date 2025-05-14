@@ -1,0 +1,34 @@
+# Archivos y carpetas de Python/Django
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+
+# Archivos sensibles
+.env
+
+# Archivos generados por Django
+*.log
+*.pot
+db.sqlite3 
+migrations/
+*.sql 
+
+# Archivos estáticos y multimedia generados
+staticfiles/
+media/
+
+# Archivos de desarrollo y configuración local
+.DS_Store
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Otros archivos temporales
+*.bak
+*.backup
+*.cache

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white p-6 rounded shadow">
+    <h1 class="text-2xl font-bold mb-4">Registrarse</h1>
+    <form method="post" action="{% url 'account_signup' %}">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label for="id_email" class="block text-sm font-medium">Correo</label>
+            <input type="email" name="email" id="id_email" class="w-full p-2 border rounded" required>
+        </div>
+        <div class="mb-4">
+            <label for="id_password1" class="block text-sm font-medium">Contraseña</label>
+            <input type="password" name="password1" id="id_password1" class="w-full p-2 border rounded" required>
+        </div>
+        <div class="mb-4">
+            <label for="id_password2" class="block text-sm font-medium">Confirmar Contraseña</label>
+            <input type="password" name="password2" id="id_password2" class="w-full p-2 border rounded" required>
+        </div>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Registrarse</button>
+    </form>
+    <p class="mt-4">
+        <a href="{% url 'account_login' %}" class="text-blue-600">Ya tengo una cuenta</a>
+    </p>
+</div>
+{% endblock %}

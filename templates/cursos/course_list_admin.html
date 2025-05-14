@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Lista de Cursos{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Lista de Cursos</h1>
+    <table class="min-w-full bg-white border">
+        <thead>
+            <tr>
+                <th class="py-2 px-4 border">Título</th>
+                <th class="py-2 px-4 border">Creado por</th>
+                <th class="py-2 px-4 border">Duración</th>
+                <th class="py-2 px-4 border">Precio</th>
+                <th class="py-2 px-4 border">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in courses %}
+            <tr>
+                <td class="py-2 px-4 border">{{ course.title }}</td>
+                <td class="py-2 px-4 border">{{ course.created_by.email }}</td>
+                <td class="py-2 px-4 border">{{ course.duration }}</td>
+                <td class="py-2 px-4 border">{{ course.price }} CLP</td>
+                <td class="py-2 px-4 border">
+                    <a href="{% url 'course_update' course.pk %}" class="text-blue-500 hover:underline">Editar</a>
+                    <a href="{% url 'course_delete' course.pk %}" class="text-red-500 hover:underline ml-2">Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="py-2 px-4 border text-center">No hay cursos disponibles.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Eliminar Curso{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Eliminar Curso</h1>
+    <p>¿Estás seguro de que deseas eliminar el curso <strong>{{ course.title }}</strong>?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Eliminar</button>
+        <a href="{% url 'course_list_admin' %}"
+            class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 ml-2">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
