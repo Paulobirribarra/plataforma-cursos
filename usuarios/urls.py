@@ -1,8 +1,8 @@
-#plataforma-cursos\usuarios\urls.py
+#plataforma-cursos/usuarios/urls.py
 from django.urls import path
-from . import views
+from .views import dashboard, CustomSignupView
 
 urlpatterns = [
-    path('dashboard/', views.dashboard, name='dashboard'),
-    path('dashboard/crear-curso/', views.course_create_admin, name='course_create_admin'),
+    path('dashboard/', dashboard, name='dashboard'),
+    path('register/', CustomSignupView.as_view(), name='register'),
 ]

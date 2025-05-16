@@ -1,34 +1,40 @@
 {% extends 'base.html' %}
-{% block title %}Lista de Cursos{% endblock %}
+{% block title %}Administrar Cursos{% endblock %}
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6">Lista de Cursos</h1>
-    <table class="min-w-full bg-white border">
+    <h1 class="text-3xl font-bold mb-6">Administrar Cursos</h1>
+    <a href="{% url 'cursos:course_create_admin' %}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4 inline-block">Crear Nuevo Curso</a>
+    <table class="w-full border-collapse">
         <thead>
-            <tr>
-                <th class="py-2 px-4 border">Título</th>
-                <th class="py-2 px-4 border">Creado por</th>
-                <th class="py-2 px-4 border">Duración</th>
-                <th class="py-2 px-4 border">Precio</th>
-                <th class="py-2 px-4 border">Acciones</th>
+            <tr class="bg-gray-100">
+                <th class="border p-2">Título</th>
+                <th class="border p-2">Categoría</th>
+                <th class="border p-2">Gratuito</th>
+                <th class="border p-2">Precio</th>
+                <th class="border p-2">Disponible</th>
+                <th class="border p-2">Visible</th>
+                <th class="border p-2">Acciones</th>
             </tr>
         </thead>
         <tbody>
             {% for course in courses %}
             <tr>
-                <td class="py-2 px-4 border">{{ course.title }}</td>
-                <td class="py-2 px-4 border">{{ course.created_by.email }}</td>
-                <td class="py-2 px-4 border">{{ course.duration }}</td>
-                <td class="py-2 px-4 border">{{ course.price }} CLP</td>
-                <td class="py-2 px-4 border">
-                    <a href="{% url 'course_update' course.pk %}" class="text-blue-500 hover:underline">Editar</a>
-                    <a href="{% url 'course_delete' course.pk %}" class="text-red-500 hover:underline ml-2">Eliminar</a>
+                <td class="border p-2">{{ course.title }}</td>
+                <td class="border p-2">{{ course.category.name }}</td>
+                <td class="border p-2">{% if course.is_free %}Sí{% else %}No{% endif %}</td>
+                <td class="border p-2">{{ course.base_price }} CLP</td>
+                <td class="border p-2">{% if course.is_available %}Sí{% else %}No{% endif %}</td>
+                <td class="border p-2">{% if course.is_visible %}Sí{% else %}No{% endif %}</td>
+                <td class="border p-2">
+                    <a href="{% url 'cursos:course_edit_admin' course.pk %}" class="text-blue-600 hover:underline">Editar</a>
+                    <a href="{% url 'cursos:course_delete_admin' course.pk %}" class="text-red-600 hover:underline ml-2">Eliminar</a>
+                    <a href="{% url 'cursos:course_resource_create' course.pk %}" class="text-green-600 hover:underline ml-2">Añadir Recurso</a>
                 </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="5" class="py-2 px-4 border text-center">No hay cursos disponibles.</td>
+                <td colspan="7" class="border p-2 text-center text-gray-500">No hay cursos disponibles.</td>
             </tr>
             {% endfor %}
         </tbody>

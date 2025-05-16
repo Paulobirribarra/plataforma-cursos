@@ -1,6 +1,6 @@
 # Plataforma de Cursos - Asesorias Futuro LTD
 
-Bienvenido(a) al proyecto **Plataforma de Cursos**, una aplicación web para gestionar y mostrar cursos en línea, construida con Django y PostgreSQL.
+Proyecto **Plataforma de Cursos**, una aplicación web para gestionar y mostrar cursos en línea, construida con Django y PostgreSQL.
 
 ## Requisitos Previos
 - Python 3.11 o superior
@@ -18,6 +18,7 @@ Bienvenido(a) al proyecto **Plataforma de Cursos**, una aplicación web para ges
    ```
 2. **Crea y activa un entorno virtual**:
     ```
+    python -m venv venv
     venv\Scripts\activate
     ```
 3. ***Instala las dependencias***:

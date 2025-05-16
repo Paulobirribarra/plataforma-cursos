@@ -1,21 +1,50 @@
 {% extends 'base.html' %}
-{% block title %}{{ course.title }}{% endblock %}
+{% block title %}Detalles del Curso{% endblock %}
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-6">{{ course.title }}</h1>
-    <p class="mb-4">{{ course.description }}</p>
-    {% if course.external_link and youtube_id %}
-    <h2 class="text-xl font-semibold mb-2">Vista Previa del Video</h2>
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ youtube_id }}" frameborder="0"
-        allowfullscreen></iframe>
-    {% elif course.external_link %}
-    <p>Enlace externo: <a href="{{ course.external_link }}" target="_blank">{{ course.external_link }}</a></p>
-    {% endif %}
-    <p>Precio: {{ course.price }} CLP</p>
-    <p>Precio Final con Descuento: {{ final_price|floatformat:2 }} CLP</p>
-    {% if course.document %}
-    <p>Documento: <a href="{{ course.document.url }}" target="_blank">{{ course.document.name }}</a></p>
-    {% endif %}
+    <div class="bg-white shadow-md rounded-lg p-6">
+        <p><strong>Descripción:</strong> {{ course.description }}</p>
+        <p><strong>Categoría:</strong> {{ course.category }}</p>
+        <p><strong>Precio Base (CLP):</strong> {{ course.base_price }}</p>
+        <p><strong>Duración:</strong> {% if course.duration_minutes %}{{ course.duration_minutes }} minutos{% else %}No especificada{% endif %}</p>
+        <p><strong>Etiquetas:</strong> {% for tag in course.tags.all %}{{ tag }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+        <p><strong>Gratuito:</strong> {% if course.is_free %}Sí{% else %}No{% endif %}</p>
+        <p><strong>Disponible:</strong> {% if course.is_available %}Sí{% else %}No{% endif %}</p>
+        <p><strong>Visible:</strong> {% if course.is_visible %}Sí{% else %}No{% endif %}</p>
+        <p><strong>Descuento Especial:</strong> {{ course.special_discount_percentage }}%</p>
+
+        <!-- Recursos -->
+        {% if course.resources.all %}
+        <div class="mt-4">
+            <h2 class="text-2xl font-bold mb-2">Recursos</h2>
+            <ul class="space-y-2">
+                {% for resource in course.resources.all %}
+                <li class="border p-2 rounded bg-gray-50">{{ resource.title }} ({{ resource.get_type_display }}) - {% if resource.url %}<a href="{{ resource.url }}" target="_blank" class="text-blue-600 hover:underline">Abrir</a>{% endif %}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- Códigos de Descuento -->
+        {% if course.discount_codes.all %}
+        <div class="mt-4">
+            <h2 class="text-2xl font-bold mb-2">Códigos de Descuento</h2>
+            <ul class="space-y-2">
+                {% for discount in course.discount_codes.all %}
+                <li class="border p-2 rounded bg-gray-50">{{ discount.code }} - {{ discount.discount_percentage }}%</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- Botón de Editar (Solo para Staff) -->
+        {% if request.user.is_staff %}
+        <div class="mt-6">
+            <a href="{% url 'cursos:course_edit_admin' pk=course.pk %}" class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 transition-colors">Editar Curso</a>
+        </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

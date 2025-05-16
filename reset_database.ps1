@@ -51,19 +51,31 @@ foreach ($app in $apps) {
      }
 }
 
-# Paso 7: Generar nuevas migraciones
+# Paso 7: Verificar importaciones antes de generar migraciones
+Write-Host "Verificando importaciones..." -ForegroundColor Yellow
+try {
+     $script = "from cursos.models import *; from usuarios.models import *; from pagos.models import *; print('Importaciones correctas')"
+     Write-Output $script | python manage.py shell
+}
+catch {
+     Write-Host "Error: Problemas con las importaciones. Corrige los modelos antes de continuar." -ForegroundColor Red
+     exit 1
+}
+
+# Paso 8: Generar nuevas migraciones
 Write-Host "Generando nuevas migraciones..." -ForegroundColor Yellow
 python manage.py makemigrations
 
-# Paso 8: Aplicar migraciones
+# Paso 9: Aplicar migraciones
 Write-Host "Aplicando migraciones..." -ForegroundColor Yellow
 python manage.py migrate
 
-# Paso 9: Crear un superusuario automáticamente
+# Paso 10: Crear un superusuario automáticamente
 Write-Host "Creando superusuario 'admin'..." -ForegroundColor Yellow
 try {
      $script = "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('admin', 'admin@example.com', 'admin12345')"
      Write-Output $script | python manage.py shell
+     Write-Host "Superusuario creado: username=admin, email=admin@example.com, password=admin12345" -ForegroundColor Green
 }
 catch {
      Write-Host "Error al crear superusuario. Crea uno manualmente con 'python manage.py createsuperuser'." -ForegroundColor Red
@@ -73,5 +85,4 @@ catch {
 Remove-Item -Path Env:\PGPASSWORD -ErrorAction SilentlyContinue
 
 Write-Host "¡Reinicio completado! Base de datos y migraciones reiniciadas." -ForegroundColor Green
-Write-Host "Superusuario creado: username=admin, email=admin@example.com, password=admin12345" -ForegroundColor Green
 Write-Host "Puedes iniciar el servidor con: python manage.py runserver" -ForegroundColor Green

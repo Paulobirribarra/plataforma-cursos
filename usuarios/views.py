@@ -1,87 +1,42 @@
-#plataforma-cursos\usuarios\views.py
+#plataforma-cursos/usuarios/views.py
+import logging
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib import messages
 from cursos.models import Course
 from django.core.exceptions import ValidationError
 from decimal import Decimal, InvalidOperation
 import datetime
+from .forms import CustomUserCreationForm
+from allauth.account.models import EmailAddress
+from allauth.account.views import SignupView
+
+logger = logging.getLogger(__name__)
+
+class CustomSignupView(SignupView):
+    form_class = CustomUserCreationForm
+    template_name = 'account/signup.html'
+
+    def form_valid(self, form):
+        logger.info(f"Usuario registrado: {form.cleaned_data['email']}")
+        return super().form_valid(form)
+
+register = CustomSignupView.as_view()
 
 @login_required
 def dashboard(request):
+    # Verificar si el correo del usuario está confirmado
+    email_verified = EmailAddress.objects.filter(user=request.user, verified=True).exists()
+    
+    if not email_verified:
+        logger.warning(f"Usuario no verificado intentó acceder al dashboard: {request.user.email}")
+        messages.warning(request, "Por favor, verifica tu correo electrónico para acceder al dashboard.")
+        return redirect('account_email_verification_sent')
+    
+    logger.info(f"Acceso al dashboard por usuario: {request.user.email}")
     courses = Course.objects.all() if request.user.is_staff else []
-    return render(request, 'usuarios/dashboard.html', {'courses': courses})
-
-@staff_member_required
-def course_create_admin(request):
-    if request.method == 'POST':
-        title = request.POST.get('title')
-        description = request.POST.get('description')
-        is_available = request.POST.get('is_available') == 'on'
-        is_visible = request.POST.get('is_visible') == 'on'
-        duration_str = request.POST.get('duration')
-        price = request.POST.get('price')
-        discount_basic = request.POST.get('discount_basic', '0')
-        discount_intermediate = request.POST.get('discount_intermediate', '0')
-        discount_premium = request.POST.get('discount_premium', '0')
-        discount_code = request.POST.get('discount_code')
-        discount_code_percentage = request.POST.get('discount_code_percentage', '0')
-        external_link = request.POST.get('external_link')
-
-        # Normalizar y validar valores decimales
-        try:
-            price = Decimal(str(price).replace(',', '.')) if price else Decimal('0.00')
-            discount_basic = Decimal(str(discount_basic).replace(',', '.').strip()) if discount_basic else Decimal('0.00')
-            discount_intermediate = Decimal(str(discount_intermediate).replace(',', '.').strip()) if discount_intermediate else Decimal('0.00')
-            discount_premium = Decimal(str(discount_premium).replace(',', '.').strip()) if discount_premium else Decimal('0.00')
-            discount_code_percentage = Decimal(str(discount_code_percentage).replace(',', '.').strip()) if discount_code_percentage else Decimal('0.00')
-
-            # Asegurar que los descuentos sean porcentajes válidos (0-100)
-            if not (0 <= discount_basic <= 100):
-                raise ValidationError("El descuento básico debe estar entre 0 y 100.")
-            if not (0 <= discount_intermediate <= 100):
-                raise ValidationError("El descuento intermedio debe estar entre 0 y 100.")
-            if not (0 <= discount_premium <= 100):
-                raise ValidationError("El descuento premium debe estar entre 0 y 100.")
-            if not (0 <= discount_code_percentage <= 100):
-                raise ValidationError("El porcentaje del código de descuento debe estar entre 0 y 100.")
-
-        except (InvalidOperation, ValueError):
-            return render(request, 'cursos/course_form.html', {
-                'error_message': 'Por favor, ingrese valores numéricos válidos para precio y descuentos.'
-            })
-
-        # Convertir duración a DurationField
-        duration = None
-        if duration_str:
-            try:
-                hours, minutes, seconds = map(int, duration_str.split(':'))
-                duration = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
-            except ValueError:
-                return render(request, 'cursos/course_form.html', {
-                    'error_message': 'El formato de duración debe ser HH:MM:SS (ej. 02:30:00).'
-                })
-
-        # Crear el curso
-        course = Course.objects.create(
-            title=title,
-            description=description,
-            is_available=is_available,
-            is_visible=is_visible,
-            created_by=request.user,
-            duration=duration,
-            price=price,
-            discount_basic=discount_basic,
-            discount_intermediate=discount_intermediate,
-            discount_premium=discount_premium,
-            discount_code=discount_code,
-            discount_code_percentage=discount_code_percentage,
-            external_link=external_link
-        )
-
-        if 'document' in request.FILES:
-            course.document = request.FILES['document']
-            course.save()
-
-        return redirect('dashboard')
-    return render(request, 'cursos/course_form.html')
+    return render(request, 'usuarios/dashboard.html', {
+        'courses': courses,
+        'email_verified': email_verified,
+    })

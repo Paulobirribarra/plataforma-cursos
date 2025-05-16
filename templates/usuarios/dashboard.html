@@ -3,6 +3,15 @@
 
 {% block content %}
 <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <!-- Mensajes -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} bg-{{ message.tags }}-100 border border-{{ message.tags }}-400 text-{{ message.tags }}-700 px-4 py-3 rounded relative" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
     <!-- Encabezado -->
     <div class="bg-white shadow overflow-hidden sm:rounded-lg">
         <div class="px-4 py-5 sm:px-6">
@@ -21,8 +30,8 @@
                     <dd class="mt-1 text-lg text-gray-900">{{ user.email }}</dd>
                 </div>
                 <div class="bg-gray-50 px-4 py-5 sm:p-6 rounded-lg">
-                    <dt class="text-sm font-medium text-gray-500">Nivel de Suscripción</dt>
-                    <dd class="mt-1 text-lg text-gray-900">{{ user.get_subscription_level_display }}</dd>
+                    <dt class="text-sm font-medium text-gray-500">Nombre Completo</dt>
+                    <dd class="mt-1 text-lg text-gray-900">{{ user.full_name|default:"No especificado" }}</dd>
                 </div>
             </dl>
         </div>
@@ -49,7 +58,7 @@
                             <td class="px-6 py-4 whitespace-nowrap">{{ course.title }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ course.created_by.email }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ course.duration }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ course.price }} CLP</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ course.base_price }} CLP</td>
                         </tr>
                         {% empty %}
                         <tr>
@@ -68,17 +77,20 @@
         <div class="px-4 py-5 sm:p-6">
             <h2 class="text-xl font-semibold text-gray-900">Acciones Rápidas</h2>
             <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
-                <a href="/accounts/logout/" class="bg-blue-600 text-white px-4 py-3 rounded-lg text-center hover:bg-blue-700">
+                {% comment %} <a href="{% url 'account_logout' %}" class="bg-blue-600 text-white px-4 py-3 rounded-lg text-center hover:bg-blue-700">
                     Cerrar Sesión
-                </a>
-                <a href="#" class="bg-gray-600 text-white px-4 py-3 rounded-lg text-center hover:bg-gray-700">
+                </a> {% endcomment %}
+                <a href="{% url 'account_email' %}" class="bg-blue-600 text-white px-4 py-3 rounded-lg text-center hover:bg-gray-700">
                     Actualizar Perfil
                 </a>
-                <a href="#" class="bg-green-600 text-white px-4 py-3 rounded-lg text-center hover:bg-green-700">
+                <a href="{% url 'account_reset_password' %}" class="bg-red-600 text-white px-4 py-3 rounded-lg text-center hover:bg-red-700">
+                    Restablecer Contraseña
+                </a>
+                <a href="{% url 'cursos:course_list' %}" class="bg-green-600 text-white px-4 py-3 rounded-lg text-center hover:bg-green-700">
                     Ver Mis Cursos
                 </a>
                 {% if user.is_staff %}
-                <a href="{% url 'course_create_admin' %}" class="bg-purple-600 text-white px-4 py-3 rounded-lg text-center hover:bg-purple-700">
+                <a href="{% url 'cursos:course_create_admin' %}" class="bg-purple-600 text-white px-4 py-3 rounded-lg text-center hover:bg-purple-700">
                     Agregar Nuevo Curso
                 </a>
                 {% endif %}

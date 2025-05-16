@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Añadir Recurso a {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Añadir Recurso a {{ course.title }}</h1>
+    {% if form.errors %}
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        {% for field in form %}
+            {% for error in field.errors %}
+                <p>{{ field.label }}: {{ error }}</p>
+            {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <form method="post" enctype="multipart/form-data" class="space-y-4">
+        {% csrf_token %}
+        <div>
+            <label for="{{ form.title.id_for_label }}" class="block text-gray-700">Título:</label>
+            {{ form.title }}
+        </div>
+        <div>
+            <label for="{{ form.type.id_for_label }}" class="block text-gray-700">Tipo:</label>
+            {{ form.type }}
+        </div>
+        <div>
+            <label for="{{ form.file.id_for_label }}" class="block text-gray-700">Archivo:</label>
+            {{ form.file }}
+        </div>
+        <div>
+            <label for="{{ form.url.id_for_label }}" class="block text-gray-700">URL:</label>
+            {{ form.url }}
+        </div>
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Guardar</button>
+        <a href="{% url 'course_list_admin' %}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 ml-2">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

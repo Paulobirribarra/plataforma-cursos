@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block title %}{% trans "Gestionar Correos Electrónicos" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white shadow-md rounded-xl p-6 md:p-10">
+    <h1 class="text-2xl md:text-3xl font-semibold text-gray-800 mb-6 text-center">
+        {% trans "Gestionar Correos Electrónicos" %}
+    </h1>
+
+    {% if form.errors %}
+        <div class="bg-red-100 border border-red-400 text-red-700 p-2 mb-4 rounded text-center">
+            {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'account_email' %}" class="space-y-4">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ form.email.label }}</label>
+            {{ form.email|add_class:"w-full p-2 border rounded focus:ring-indigo-500 focus:border-indigo-500" }}
+            {% if form.email.errors %}
+                {% for error in form.email.errors %}
+                    <p class="text-red-600 text-sm">{{ error }}</p>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded w-full hover:bg-blue-700 transition-colors">
+            {% trans "Añadir Correo" %}
+        </button>
+    </form>
+
+    {% if user.emailaddress_set.all %}
+        <h2 class="text-xl font-semibold mt-6 mb-4 text-center">{% trans "Direcciones Asociadas" %}</h2>
+        <ul class="list-disc pl-5">
+            {% for email_address in user.emailaddress_set.all %}
+                <li class="mb-2">
+                    {{ email_address.email }}
+                    {% if email_address.verified %}
+                        <span class="text-green-600">{% trans "Verificado" %}</span>
+                    {% else %}
+                        <span class="text-red-600">{% trans "No verificado" %}</span>
+                    {% endif %}
+                    {% if email_address.primary %}
+                        <span class="text-blue-600">{% trans "(Principal)" %}</span>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+{% endblock %}

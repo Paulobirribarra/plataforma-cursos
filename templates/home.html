@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
+
 {% block content %}
 <!-- Hero Section -->
-<section class="bg-cover bg-center h-96 flex items-center justify-center" style="background-image: url('{% static "imagenes/portada1.jpg" %}');">
+<section class="bg-cover bg-center h-96 flex items-center justify-center" style="background-image: url('{% static 'imagenes/portada1.jpg' %}');">
     <div class="text-center text-white bg-black bg-opacity-50 p-6 rounded-lg">
         <h1 class="text-4xl md:text-5xl font-bold mb-4">Bienvenido a Asesorias Futuro LTD</h1>
         <p class="text-lg md:text-xl">Transformamos tus ideas en negocios exitosos a través de cursos y asesorías</p>
@@ -22,22 +24,42 @@
     </div>
 </div>
 
-<!-- Cursos Disponibles -->
+<!-- Cursos Gratuitos -->
 <div class="container mx-auto py-12 px-4">
-    <h2 class="text-3xl font-bold text-center mb-8">Cursos Disponibles</h2>
+    <h2 class="text-3xl font-bold text-center mb-8">Cursos Gratuitos</h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {% for course in courses %}
+        {% for course in free_courses %}
         <div class="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-shadow">
             <img src="{% static 'imagenes/servicio1.jpg' %}" alt="{{ course.title }}" class="w-full h-48 object-cover">
             <div class="p-4">
                 <h3 class="text-xl font-semibold mb-2">{{ course.title }}</h3>
                 <p class="text-gray-600 mb-2">Duración: {{ course.duration }}</p>
-                <p class="text-gray-800 font-bold">Precio: {{ course.price }} CLP</p>
-                <a href="{% url 'course_detail' pk=course.pk %}" class="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Ver Detalle</a>
+                <p class="text-gray-800 font-bold">Gratuito</p>
+                <a href="{% url 'cursos:course_detail' course.pk %}" class="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Ver Detalle</a>
             </div>
         </div>
         {% empty %}
-        <p class="text-center text-gray-500">No hay cursos visibles en este momento.</p>
+        <p class="text-center text-gray-500">No hay cursos gratuitos disponibles en este momento.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Cursos Generales -->
+<div class="container mx-auto py-12 px-4">
+    <h2 class="text-3xl font-bold text-center mb-8">Cursos Generales</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {% for course in general_courses %}
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-shadow">
+            <img src="{% static 'imagenes/servicio1.jpg' %}" alt="{{ course.title }}" class="w-full h-48 object-cover">
+            <div class="p-4">
+                <h3 class="text-xl font-semibold mb-2">{{ course.title }}</h3>
+                <p class="text-gray-600 mb-2">Duración: {{ course.duration }}</p>
+                <p class="text-gray-800 font-bold">Precio: {{ course.base_price }} CLP</p>
+                <a href="{% url 'cursos:course_detail' course.pk %}" class="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Ver Detalle</a>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center text-gray-500">No hay cursos generales disponibles en este momento.</p>
         {% endfor %}
     </div>
 </div>

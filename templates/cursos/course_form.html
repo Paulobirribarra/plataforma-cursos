@@ -4,73 +4,232 @@
 {% block content %}
 <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-6">{% if course %}Editar Curso{% else %}Crear Curso{% endif %}</h1>
-    {% if error_message %}
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-        <p>{{ error_message }}</p>
+
+    <!-- Mensajes -->
+    {% if messages %}
+    <div class="mb-4">
+        {% for message in messages %}
+        <div class="p-4 rounded {% if message.tags == 'error' %}bg-red-100 border border-red-400 text-red-700{% else %}bg-green-100 border border-green-400 text-green-700{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
     </div>
     {% endif %}
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="mb-4">
-            <label for="title" class="block text-gray-700">Título:</label>
-            <input type="text" name="title" id="title" value="{{ course.title|default_if_none:'' }}" class="w-full p-2 border rounded" required>
+
+    <!-- Acordeón -->
+    <div class="space-y-4">
+        <!-- Sección: Datos del Curso -->
+        <div class="border rounded-md shadow-sm">
+            <button type="button" class="w-full bg-gray-100 px-4 py-3 text-left text-lg font-semibold text-gray-900 flex justify-between items-center hover:bg-gray-200 transition-colors" onclick="toggleSection('course-section')">
+                <span>Datos del Curso</span>
+                <svg class="w-5 h-5 transform transition-transform" id="course-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </button>
+            <div id="course-section" class="p-4 space-y-4">
+                <!-- Errores del Formulario del Curso -->
+                {% if request.method == "POST" and "save_course" in request.POST and form.errors %}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <p>{{ field.label }}: {{ error }}</p>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <div>
+                            <label for="{{ form.title.id_for_label }}" class="block text-gray-700 font-medium mb-1">Título:</label>
+                            {{ form.title }}
+                        </div>
+                        <div>
+                            <label for="{{ form.category.id_for_label }}" class="block text-gray-700 font-medium mb-1">Categoría:</label>
+                            {{ form.category }}
+                        </div>
+                    </div>
+                    <div>
+                        <label for="{{ form.description.id_for_label }}" class="block text-gray-700 font-medium mb-1">Descripción:</label>
+                        {{ form.description }}
+                    </div>
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <div>
+                            <label for="{{ form.base_price.id_for_label }}" class="block text-gray-700 font-medium mb-1">Precio Base (CLP):</label>
+                            {{ form.base_price }}
+                        </div>
+                        <div>
+                            <label for="{{ form.duration_minutes.id_for_label }}" class="block text-gray-700 font-medium mb-1">Duración (minutos):</label>
+                            {{ form.duration_minutes }}
+                            <p class="text-sm text-gray-500 mt-1">{{ form.duration_minutes.help_text }}</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <div>
+                            <label for="{{ form.tags.id_for_label }}" class="block text-gray-700 font-medium mb-1">Etiquetas:</label>
+                            {{ form.tags }}
+                        </div>
+                        <div>
+                            <label for="{{ form.special_discount_percentage.id_for_label }}" class="block text-gray-700 font-medium mb-1">Descuento Especial (%):</label>
+                            {{ form.special_discount_percentage }}
+                            <p class="text-sm text-gray-500 mt-1">{{ form.special_discount_percentage.help_text }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-6">
+                        <label class="inline-flex items-center">
+                            {{ form.is_free }}
+                            <span class="ml-2 text-gray-700">Gratuito</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            {{ form.is_available }}
+                            <span class="ml-2 text-gray-700">Disponible</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            {{ form.is_visible }}
+                            <span class="ml-2 text-gray-700">Visible</span>
+                        </label>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button type="submit" name="save_course" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">Guardar Curso</button>
+                        <a href="{% url 'cursos:course_list_admin' %}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors">Cancelar</a>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="mb-4">
-            <label for="description" class="block text-gray-700">Descripción:</label>
-            <textarea name="description" id="description" class="w-full p-2 border rounded" rows="5" required>{{ course.description|default_if_none:'' }}</textarea>
+
+        <!-- Sección: Añadir Recurso (Solo si el curso existe) -->
+        {% if course %}
+        <div class="border rounded-md shadow-sm">
+            <button type="button" class="w-full bg-gray-100 px-4 py-3 text-left text-lg font-semibold text-gray-900 flex justify-between items-center hover:bg-gray-200 transition-colors" onclick="toggleSection('resource-section')">
+                <span>Añadir Recurso</span>
+                <svg class="w-5 h-5 transform transition-transform" id="resource-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </button>
+            <div id="resource-section" class="p-4 space-y-4 hidden">
+                <!-- Errores del Formulario de Recursos -->
+                {% if request.method == "POST" and "add_resource" in request.POST and resource_form.errors %}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    {% for field in resource_form %}
+                        {% for error in field.errors %}
+                            <p>{{ field.label }}: {{ error }}</p>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in resource_form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <form method="post" enctype="multipart/form-data" class="space-y-6">
+                    {% csrf_token %}
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <div>
+                            <label for="{{ resource_form.title.id_for_label }}" class="block text-gray-700 font-medium mb-1">Título:</label>
+                            {{ resource_form.title }}
+                        </div>
+                        <div>
+                            <label for="{{ resource_form.type.id_for_label }}" class="block text-gray-700 font-medium mb-1">Tipo:</label>
+                            {{ resource_form.type }}
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <div>
+                            <label for="{{ resource_form.file.id_for_label }}" class="block text-gray-700 font-medium mb-1">Archivo:</label>
+                            {{ resource_form.file }}
+                        </div>
+                        <div>
+                            <label for="{{ resource_form.url.id_for_label }}" class="block text-gray-700 font-medium mb-1">URL:</label>
+                            {{ resource_form.url }}
+                        </div>
+                    </div>
+                    <button type="submit" name="add_resource" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors">Añadir Recurso</button>
+                </form>
+            </div>
         </div>
-        <div class="mb-4">
-            <label for="duration" class="block text-gray-700">Duración (HH:MM:SS):</label>
-            <input type="text" name="duration" id="duration" value="{% if course.duration %}{{ course.duration|time:'H:i:s' }}{% endif %}" placeholder="02:30:00" class="w-full p-2 border rounded" required>
+
+        <!-- Sección: Añadir Código de Descuento -->
+        <div class="border rounded-md shadow-sm">
+            <button type="button" class="w-full bg-gray-100 px-4 py-3 text-left text-lg font-semibold text-gray-900 flex justify-between items-center hover:bg-gray-200 transition-colors" onclick="toggleSection('discount-section')">
+                <span>Añadir Código de Descuento</span>
+                <svg class="w-5 h-5 transform transition-transform" id="discount-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </button>
+            <div id="discount-section" class="p-4 space-y-4 hidden">
+                <!-- Errores del Formulario de Descuentos -->
+                {% if request.method == "POST" and "add_discount" in request.POST and discount_form.errors %}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    {% for field in discount_form %}
+                        {% for error in field.errors %}
+                            <p>{{ field.label }}: {{ error }}</p>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in discount_form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <div>
+                            <label for="{{ discount_form.code.id_for_label }}" class="block text-gray-700 font-medium mb-1">Código:</label>
+                            {{ discount_form.code }}
+                            <p class="text-sm text-gray-500 mt-1">Ejemplo: DESC10, BLACK (no distingue mayúsculas/minúsculas)</p>
+                        </div>
+                        <div>
+                            <label for="{{ discount_form.discount_percentage.id_for_label }}" class="block text-gray-700 font-medium mb-1">Porcentaje de Descuento (%):</label>
+                            {{ discount_form.discount_percentage }}
+                        </div>
+                    </div>
+                    <button type="submit" name="add_discount" class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 transition-colors">Añadir Código</button>
+                </form>
+            </div>
         </div>
-        <div class="mb-4">
-            <label for="price" class="block text-gray-700">Precio (CLP):</label>
-            <input type="number" step="0.01" name="price" id="price" value="{{ course.price|default_if_none:'0.00' }}" class="w-full p-2 border rounded" required>
+
+        <!-- Lista de Códigos de Descuento Existentes -->
+        {% if course.discount_codes.all %}
+        <div class="mt-6">
+            <h2 class="text-2xl font-bold mb-4">Códigos de Descuento Existentes</h2>
+            <ul class="space-y-2">
+                {% for discount in course.discount_codes.all %}
+                <li class="border p-2 rounded bg-gray-50">{{ discount.code }} - {{ discount.discount_percentage }}%</li>
+                {% endfor %}
+            </ul>
         </div>
-        <div class="mb-4">
-            <label for="discount_basic" class="block text-gray-700">Descuento Suscripción Básica (%):</label>
-            <input type="number" step="0.1" name="discount_basic" id="discount_basic" value="{{ course.discount_basic|default_if_none:'0' }}" class="w-full p-2 border rounded">
+        {% endif %}
+
+        <!-- Lista de Recursos Existentes -->
+        {% if course.resources.all %}
+        <div class="mt-6">
+            <h2 class="text-2xl font-bold mb-4">Recursos Existentes</h2>
+            <ul class="space-y-2">
+                {% for resource in course.resources.all %}
+                <li class="border p-2 rounded bg-gray-50">{{ resource.title }} ({{ resource.get_type_display }}) - {% if resource.url %}<a href="{{ resource.url }}" target="_blank" class="text-blue-600 hover:underline">Abrir</a>{% endif %}</li>
+                {% endfor %}
+            </ul>
         </div>
-        <div class="mb-4">
-            <label for="discount_intermediate" class="block text-gray-700">Descuento Suscripción Intermedia (%):</label>
-            <input type="number" step="0.1" name="discount_intermediate" id="discount_intermediate" value="{{ course.discount_intermediate|default_if_none:'0' }}" class="w-full p-2 border rounded">
+        {% endif %}
+        {% else %}
+        <div class="mt-4 p-4 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
+            <p>Debe guardar el curso antes de añadir recursos o códigos de descuento.</p>
         </div>
-        <div class="mb-4">
-            <label for="discount_premium" class="block text-gray-700">Descuento Suscripción Premium (%):</label>
-            <input type="number" step="0.1" name="discount_premium" id="discount_premium" value="{{ course.discount_premium|default_if_none:'0' }}" class="w-full p-2 border rounded">
-        </div>
-        <div class="mb-4">
-            <label for="discount_code" class="block text-gray-700">Código de Descuento:</label>
-            <input type="text" name="discount_code" id="discount_code" value="{{ course.discount_code|default_if_none:'' }}" class="w-full p-2 border rounded">
-        </div>
-        <div class="mb-4">
-            <label for="discount_code_percentage" class="block text-gray-700">Porcentaje Descuento Código (%):</label>
-            <input type="number" step="0.1" name="discount_code_percentage" id="discount_code_percentage" value="{{ course.discount_code_percentage|default_if_none:'0' }}" class="w-full p-2 border rounded">
-        </div>
-        <div class="mb-4">
-            <label for="document" class="block text-gray-700">Documento del Curso:</label>
-            <input type="file" name="document" id="document" class="w-full p-2 border rounded">
-            {% if course.document %}
-            <p>Archivo actual: <a href="{{ course.document.url }}" target="_blank">{{ course.document.name }}</a></p>
-            {% endif %}
-        </div>
-        <div class="mb-4">
-            <label for="external_link" class="block text-gray-700">Enlace Externo:</label>
-            <input type="url" name="external_link" id="external_link" value="{{ course.external_link|default_if_none:'' }}" class="w-full p-2 border rounded">
-        </div>
-        <div class="mb-4">
-            <label class="inline-flex items-center">
-                <input type="checkbox" name="is_available" {% if course.is_available %}checked{% endif %} class="mr-2">
-                Disponible
-            </label>
-        </div>
-        <div class="mb-4">
-            <label class="inline-flex items-center">
-                <input type="checkbox" name="is_visible" {% if course.is_visible %}checked{% endif %} class="mr-2">
-                Visible
-            </label>
-        </div>
-        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Guardar</button>
-    </form>
+        {% endif %}
+    </div>
 </div>
+
+<script>
+function toggleSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    const arrow = document.getElementById(sectionId.replace('section', 'arrow'));
+    section.classList.toggle('hidden');
+    arrow.classList.toggle('rotate-180');
+}
+</script>
 {% endblock %}
