@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'usuarios',  # Nuestra app
     'cursos',
+    'map',
 ]
 
 MIDDLEWARE = [

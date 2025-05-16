@@ -13,5 +13,6 @@ urlpatterns = [
     path('usuarios/', include('usuarios.urls')),
     path('admin/', admin.site.urls),
     path('nosotros/', views.nosotros, name='nosotros'),
-    path('contacto/', views.contacto, name='contacto')
+    path('contacto/', views.contacto, name='contacto'),
+    
 ] + static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0]) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

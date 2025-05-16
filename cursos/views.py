@@ -5,6 +5,7 @@ from .models import Course
 from django.core.exceptions import ValidationError
 from decimal import Decimal, InvalidOperation
 import datetime
+from django.shortcuts import render
 
 @login_required
 def course_detail(request, pk):
