@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+<link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    {% load i18n %}
+
+    {% block title %}{% trans "Confirmar Correo Electrónico" %}{% endblock %}
+
+    {% block content %}
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-6">{% trans "Confirmar Correo Electrónico" %}</h1>
+        {% if confirmation %}
+            <p class="mb-4">
+                {% blocktrans with email=confirmation.email_address.email %}
+                Por favor, confirma que <strong>{{ email }}</strong> es una dirección de correo válida haciendo clic en el botón abajo.
+                {% endblocktrans %}
+            </p>
+            <form method="post" action="{% url 'account_confirm_email' confirmation.key %}">
+                {% csrf_token %}
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    {% trans "Confirmar" %}
+                </button>
+            </form>
+        {% else %}
+            <p class="text-red-500">
+                {% blocktrans %}
+                El enlace de confirmación no es válido o ha expirado. Por favor, solicita un nuevo enlace.
+                {% endblocktrans %}
+            </p>
+        {% endif %}
+    </div>
+    {% endblock %}

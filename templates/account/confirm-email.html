@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Verifica tu dirección de correo" %}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto py-8 px-4">
+    <h1 class="text-2xl font-bold mb-4">{% trans "Verifica tu dirección de correo electrónico" %}</h1>
+    <p class="mb-4">
+        {% trans "Te hemos enviado un correo electrónico para verificar tu dirección. Haz clic en el enlace para completar tu registro." %}
+    </p>
+    <p class="text-sm text-gray-600">
+        {% trans "Si no lo ves en tu bandeja de entrada, revisa la carpeta de spam o promociones." %}
+    </p>
+{% endblock %}

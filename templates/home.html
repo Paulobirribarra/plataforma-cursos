@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Futuro Ltda{% endblock %}</title>
+
+    <!-- Bootstrap + Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<!-- Hero Section -->
+
+<section class="bg-cover bg-center h-96 flex items-center justify-center" style="background-image: url('{% static "imagenes/portada1.jpg" %}');">
+    <div class="text-center text-white bg-black bg-opacity-50 p-6 rounded-lg">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">Bienvenido a Asesorias Futuro LTD</h1>
+        <p class="text-lg md:text-xl">Transformamos tus ideas en negocios exitosos a través de cursos y asesorías</p>
+    </div>
+</section>
+
+<!-- Quiénes Somos -->
+<div class="container mt-5">
+    <div class="row align-items-center">
+        <div class="col-md-6 animate-left">
+            <img src="{% static 'imagenes/quienes-somos.jpeg' %}" class="img-fluid" alt="Quienes Somos">
+        </div>
+        <div class="col-md-6 animate-right">
+            <h2>¿Quiénes somos?</h2>
+            <p>
+                En Futuro Ltda., somos un equipo de profesionales apasionados por ayudar a emprendedores a alcanzar sus
+                objetivos.
+                Nos especializamos en ofrecer soluciones personalizadas para la creación de empresas, marketing digital
+                y asesoría empresarial.
+                Con nuestra experiencia, buscamos acompañarte en cada paso del camino hacia el éxito.
+            </p>
+        </div>
+    </div>
+</div>
+<section class="counter-section">
+    <h2 class="counter-title">Nuestros Logros</h2>
+    <div class="counters">
+        <div class="counter-box">
+            <span class="counter" data-target="3500">0</span>
+            <p>Clientes Satisfechos</p>
+        </div>
+        <div class="counter-box">
+            <span class="counter" data-target="20">0</span>
+            <p>Años de Experiencia</p>
+        </div>
+        <div class="counter-box">
+            <span class="counter" data-target="500">0</span>
+            <p>Proyectos Completados</p>
+        </div>
+    </div>
+</section>
+
+<!-- Cursos Disponibles -->
+<div class="container mx-auto py-12 px-4">
+    <h2 class="text-3xl font-bold text-center mb-8">Cursos Disponibles</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {% for course in courses %}
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-shadow">
+            <img src="{% static 'imagenes/servicio1.jpg' %}" alt="{{ course.title }}" class="w-full h-48 object-cover">
+            <div class="p-4">
+                <h3 class="text-xl font-semibold mb-2">{{ course.title }}</h3>
+                <p class="text-gray-600 mb-2">Duración: {{ course.duration }}</p>
+                <p class="text-gray-800 font-bold">Precio: {{ course.price }} CLP</p>
+                <a href="{% url 'course_detail' pk=course.pk %}"
+                    class="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Ver
+                    Detalle</a>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center text-gray-500">No hay cursos visibles en este momento.</p>
+        {% endfor %}
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+<script src="static/js/animaciones.js"></script>
+{% endblock %}

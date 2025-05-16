@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}{{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">{{ course.title }}</h1>
+    <p class="mb-4">{{ course.description }}</p>
+    {% if course.external_link and youtube_id %}
+    <h2 class="text-xl font-semibold mb-2">Vista Previa del Video</h2>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ youtube_id }}" frameborder="0"
+        allowfullscreen></iframe>
+    {% elif course.external_link %}
+    <p>Enlace externo: <a href="{{ course.external_link }}" target="_blank">{{ course.external_link }}</a></p>
+    {% endif %}
+    <p>Precio: {{ course.price }} CLP</p>
+    <p>Precio Final con Descuento: {{ final_price|floatformat:2 }} CLP</p>
+    {% if course.document %}
+    <p>Documento: <a href="{{ course.document.url }}" target="_blank">{{ course.document.name }}</a></p>
+    {% endif %}
+</div>
+{% endblock %}

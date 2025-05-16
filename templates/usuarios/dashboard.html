@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <!-- Encabezado -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-5 sm:px-6">
+            <h1 class="text-3xl font-bold text-gray-900">Bienvenido, {{ user.email }}!</h1>
+            <p class="mt-1 max-w-2xl text-sm text-gray-500">Este es tu panel de control.</p>
+        </div>
+    </div>
+
+    <!-- Resumen del Perfil -->
+    <div class="mt-6 bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <h2 class="text-xl font-semibold text-gray-900">Resumen de tu Cuenta</h2>
+            <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
+                <div class="bg-gray-50 px-4 py-5 sm:p-6 rounded-lg">
+                    <dt class="text-sm font-medium text-gray-500">Correo Electrónico</dt>
+                    <dd class="mt-1 text-lg text-gray-900">{{ user.email }}</dd>
+                </div>
+                <div class="bg-gray-50 px-4 py-5 sm:p-6 rounded-lg">
+                    <dt class="text-sm font-medium text-gray-500">Nivel de Suscripción</dt>
+                    <dd class="mt-1 text-lg text-gray-900">{{ user.get_subscription_level_display }}</dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+
+    <!-- Lista de Cursos (para Staff) -->
+    {% if user.is_staff %}
+    <div class="mt-6 bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <h2 class="text-xl font-semibold text-gray-900">Cursos Creados</h2>
+            <div class="mt-5">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Título</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Creado por</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duración</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for course in courses %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ course.title }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ course.created_by.email }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ course.duration }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ course.price }} CLP</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="px-6 py-4 text-center text-gray-500">No hay cursos creados.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Acciones Rápidas -->
+    <div class="mt-6 bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <h2 class="text-xl font-semibold text-gray-900">Acciones Rápidas</h2>
+            <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
+                <a href="/accounts/logout/" class="bg-blue-600 text-white px-4 py-3 rounded-lg text-center hover:bg-blue-700">
+                    Cerrar Sesión
+                </a>
+                <a href="#" class="bg-gray-600 text-white px-4 py-3 rounded-lg text-center hover:bg-gray-700">
+                    Actualizar Perfil
+                </a>
+                <a href="#" class="bg-green-600 text-white px-4 py-3 rounded-lg text-center hover:bg-green-700">
+                    Ver Mis Cursos
+                </a>
+                {% if user.is_staff %}
+                <a href="{% url 'course_create_admin' %}" class="bg-purple-600 text-white px-4 py-3 rounded-lg text-center hover:bg-purple-700">
+                    Agregar Nuevo Curso
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

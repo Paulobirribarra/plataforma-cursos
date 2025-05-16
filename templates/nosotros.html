@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Futuro Ltda{% endblock %}</title>
+
+    <!-- Bootstrap + Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+
+        <section class="container my-5">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <h2>¿Quiénes somos?</h2>
+        <p>
+          En <strong>Futuro Ltda</strong>, somos una empresa dedicada a impulsar ideas innovadoras y acompañar a emprendedores en el camino hacia el éxito. Desde nuestra fundación, hemos apoyado a cientos de personas a crear sus negocios, fortalecer su marca digital y desarrollar sus habilidades.
+        </p>
+        <p>
+          Nuestro equipo está compuesto por profesionales en derecho empresarial, marketing digital y formación continua. Nos especializamos en brindar soluciones prácticas y personalizadas para que cada proyecto avance con firmeza.
+        </p>
+      </div>
+      <div class="col-md-6 text-center">
+        <img src="{% static 'imagenes/AFLogo.png' %}" alt="Equipo Futuro Ltda" class="img-fluid rounded">
+      </div>
+    </div>
+  </section>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+<script src="static/js/animaciones.js"></script>
+{% endblock %}

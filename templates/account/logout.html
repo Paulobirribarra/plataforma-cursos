@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-4">{% trans "Cerrar sesión" %}</h1>
+    <p class="mb-4">{% trans "¿Estás seguro de que quieres cerrar sesión?" %}</p>
+    <form method="post" action="{% url 'account_logout' %}">
+        {% csrf_token %}
+        {% if redirect_field_value %}
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+        {% endif %}
+        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+            {% trans "Cerrar sesión" %}
+        </button>
+        <a href="{% url 'home' %}" class="ml-4 text-blue-500 hover:underline">{% trans "Volver al inicio" %}</a>
+    </form>
+</div>
+{% endblock %}

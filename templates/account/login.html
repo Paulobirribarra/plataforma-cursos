@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white p-6 rounded shadow">
+    <h1 class="text-2xl font-bold mb-4">Iniciar Sesión</h1>
+    <form method="post" action="{% url 'account_login' %}">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label for="id_login" class="block text-sm font-medium">Correo</label>
+            <input type="email" name="login" id="id_login" class="w-full p-2 border rounded" required>
+        </div>
+        <div class="mb-4">
+            <label for="id_password" class="block text-sm font-medium">Contraseña</label>
+            <input type="password" name="password" id="id_password" class="w-full p-2 border rounded" required>
+        </div>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Iniciar Sesión</button>
+    </form>
+    <p class="mt-4">
+        <a href="{% url 'account_signup' %}" class="text-blue-600">Crear una cuenta</a> |
+        <a href="{% url 'account_reset_password' %}" class="text-blue-600">¿Olvidaste tu contraseña?</a>
+    </p>
+</div>
+{% endblock %}
