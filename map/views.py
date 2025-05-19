@@ -8,7 +8,7 @@ def home(request):
     locations = Location.objects.all()
 
     # Defino el mapa
-    initialMap = folium.Map(location=[-34.6460675,-58.5268284], zoom_start=11)
+    initialMap = folium.Map(location=[-37.4675193,-72.3518411], zoom_start=17)
 
     # Creamos el Clustering de los marcadores
     latitudes = [location.lat for location in locations]
@@ -27,4 +27,5 @@ def home(request):
     #     folium.Marker(coordinates, popup='Sucursal ' + location.name).add_to(initialMap)
 
     context = {'map':initialMap._repr_html_(), 'locations':locations}
-    return render(request, 'map/home.html', context)
+    return render(request, 'contacto.html', context)
+

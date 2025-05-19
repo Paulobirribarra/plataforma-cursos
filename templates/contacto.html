@@ -65,11 +65,26 @@
             {% endfor %}
         </ol>
     </div>
+    <div class="row">
+    <div class="col-md-4">
+        <h3>Nuestras Sucursales</h3>
+        <p class="lead">Estas son nuestras sucursales donde los atenderemos con profesionalismo y dedicación</p>
+
+        <ol class="list-group">
+
+            {% for location in locations %}
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                <div class="fw-bold">{{ location.name }}</div>
+                {{ location.address }}
+                </div>
+            </li>
+            {% endfor %}
+        </ol>
+    </div>
     <div class="col-md-8">
         {{ map|safe }}
     </div>
 </div>
-    </div>
-  </div>
-</div>
+
 {% endblock %}

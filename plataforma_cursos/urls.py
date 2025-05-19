@@ -11,6 +11,7 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),  # URLs de django-allauth
     path('cursos/', include('cursos.urls')),  # Prefijo para las URLs de cursos
     path('usuarios/', include('usuarios.urls')),
+    path('map/', include('map.urls')),
     path('admin/', admin.site.urls),
     path('nosotros/', views.nosotros, name='nosotros'),
     path('contacto/', views.contacto, name='contacto'),
