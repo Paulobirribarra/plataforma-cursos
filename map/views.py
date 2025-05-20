@@ -9,6 +9,7 @@ def home(request):
 
     # Defino el mapa
     initialMap = folium.Map(location=[-37.4675193,-72.3518411], zoom_start=17)
+    
 
     # Creamos el Clustering de los marcadores
     latitudes = [location.lat for location in locations]

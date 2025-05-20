@@ -1,24 +1,79 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load static %}
+{% block extra_head %}
 
+    {% endblock %}
 {% block content %}
-<div class="max-w-md mx-auto bg-white p-6 rounded shadow">
-    <h1 class="text-2xl font-bold mb-4">Iniciar Sesión</h1>
-    <form method="post" action="{% url 'account_login' %}">
-        {% csrf_token %}
-        <div class="mb-4">
-            <label for="id_login" class="block text-sm font-medium">Correo</label>
-            <input type="email" name="login" id="id_login" class="w-full p-2 border rounded" required>
-        </div>
-        <div class="mb-4">
-            <label for="id_password" class="block text-sm font-medium">Contraseña</label>
-            <input type="password" name="password" id="id_password" class="w-full p-2 border rounded" required>
-        </div>
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Iniciar Sesión</button>
-    </form>
-    <p class="mt-4">
-        <a href="{% url 'account_signup' %}" class="text-blue-600">Crear una cuenta</a> |
-        <a href="{% url 'account_reset_password' %}" class="text-blue-600">¿Olvidaste tu contraseña?</a>
-    </p>
-</div>
+
+      <div class="container">
+          <div class="form-box login">
+              <form action="#">
+                  <h1>Ingreso</h1>
+                  <div class="input-box">
+                      <input type="text" placeholder="Usuario" required>
+                      <i class='bx bxs-user'></i>
+                  </div>
+                  <div class="input-box">
+                      <input type="password" placeholder="Contraseña" required>
+                      <i class='bx bxs-lock-alt' ></i>
+                  </div>
+                  <div class="forgot-link">
+                      <a href="#">Olvidaste la contraseña?</a>
+                  </div>
+                  <button type="submit" class="btn">Ingresar</button>
+                  <p>O ingresa con redes sociales</p>
+                  <div class="social-icons">
+                      <a href="#"><i class='bx bxl-google' ></i></a>
+                      <a href="#"><i class='bx bxl-facebook' ></i></a>
+                      <a href="#"><i class='bx bxl-github' ></i></a>
+                      <a href="#"><i class='bx bxl-linkedin' ></i></a>
+                  </div>
+              </form>
+          </div>
+
+          <div class="form-box register">
+              <form action="#">
+                  <h1>Registration</h1>
+                  <div class="input-box">
+                      <input type="text" placeholder="Usuario" required>
+                      <i class='bx bxs-user'></i>
+                  </div>
+                  <div class="input-box">
+                      <input type="email" placeholder="Email" required>
+                      <i class='bx bxs-envelope' ></i>
+                  </div>
+                  <div class="input-box">
+                      <input type="password" placeholder="Contraseña" required>
+                      <i class='bx bxs-lock-alt' ></i>
+                  </div>
+                  <button type="submit" class="btn">Registrarse</button>
+                  <p>O registrate con redes sociales</p>
+                  <div class="social-icons">
+                      <a href="#"><i class='bx bxl-google' ></i></a>
+                      <a href="#"><i class='bx bxl-facebook' ></i></a>
+                      <a href="#"><i class='bx bxl-github' ></i></a>
+                      <a href="#"><i class='bx bxl-linkedin' ></i></a>
+                  </div>
+              </form>
+          </div>
+
+          <div class="toggle-box">
+              <div class="toggle-panel toggle-left">
+                  <h1>Hola, Bienvenido!</h1>
+                  <p>No tienes una cuenta?</p>
+                  <button class="btn register-btn">Registrate</button>
+              </div>
+
+              <div class="toggle-panel toggle-right">
+                  <h1>Bienvenido de vuelta!</h1>
+                  <p>Ya tienes una cuenta?</p>
+                  <button class="btn login-btn">Ingresar</button>
+              </div>
+          </div>
+      </div>
+
+{% block extra_scripts %}
+    <script src="{% static 'js/SignUp_LogIn_Form.js' %}"></script>
+    {% endblock %}
 {% endblock %}

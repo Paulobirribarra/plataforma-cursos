@@ -11,10 +11,7 @@
       <p><strong>CONTÁCTANOS</strong></p>
       <p>Consulta tus dudas en nuestro formulario y con nuestra asesoría pronto estarás creando tu empresa en Chile.</p>
       <div class="row row-cols-2 g-3">
-        <div class="col d-flex align-items-center">
-          <img src="{% static 'imagenes/ubicacion.png' %}" alt="Ubicación" class="me-2" width="50" height="50">
-          <span>Rengo 351 Of.901 Edificio Asturias, Los Ángeles, Chile 4440000</span>
-        </div>
+        
         <div class="col d-flex align-items-center">
           <img src="{% static 'imagenes/horario.png' %}" alt="Horario" class="me-2" width="50" height="50">
           <span>Lun - Vier: 9a.m. - 2p.m. / 3p.m. - 6p.m.</span>
@@ -75,6 +72,7 @@
             {% for location in locations %}
             <li class="list-group-item d-flex justify-content-between align-items-start">
                 <div class="ms-2 me-auto">
+                  <img src="{% static 'imagenes/ubicacion.png' %}" alt="Ubicación" class="me-2" width="50" height="50">
                 <div class="fw-bold">{{ location.name }}</div>
                 {{ location.address }}
                 </div>
@@ -82,7 +80,7 @@
             {% endfor %}
         </ol>
     </div>
-    <div class="col-md-8">
+    <div class="w-full md:w-3/4 lg:w-1/2 mx-auto border rounded shadow" style="height: 400px;">
         {{ map|safe }}
     </div>
 </div>
