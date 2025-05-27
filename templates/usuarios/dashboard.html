@@ -1,101 +1,244 @@
-{% extends 'base.html' %}
-{% load i18n %}
-
-{% block content %}
+{% extends 'base.html' %} {% load i18n %} {% block content %}
 <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-    <!-- Mensajes -->
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} bg-{{ message.tags }}-100 border border-{{ message.tags }}-400 text-{{ message.tags }}-700 px-4 py-3 rounded relative" role="alert">
-                {{ message }}
+  <!-- Mensajes -->
+  {% if messages %} {% for message in messages %}
+  <div
+    class="alert alert-{{ message.tags }} bg-{{ message.tags }}-100 border border-{{ message.tags }}-400 text-{{ message.tags }}-700 px-4 py-3 rounded relative"
+    role="alert"
+  >
+    {{ message }}
+  </div>
+  {% endfor %} {% endif %}
+
+  <!-- Encabezado -->
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6">
+      <h1 class="text-3xl font-bold text-gray-900">
+        Bienvenido, {{ user.email }}!
+      </h1>
+      <p class="mt-1 max-w-2xl text-sm text-gray-500">
+        Este es tu panel de control.
+      </p>
+    </div>
+  </div>
+
+  <!-- Resumen del Perfil -->
+  <div class="mt-6 bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <h2 class="text-xl font-semibold text-gray-900">Resumen de tu Cuenta</h2>
+      <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <div class="bg-gray-50 px-4 py-5 sm:p-6 rounded-lg">
+          <dt class="text-sm font-medium text-gray-500">Correo Electrónico</dt>
+          <dd class="mt-1 text-lg text-gray-900">{{ user.email }}</dd>
+        </div>
+        <div class="bg-gray-50 px-4 py-5 sm:p-6 rounded-lg">
+          <dt class="text-sm font-medium text-gray-500">Nombre Completo</dt>
+          <dd class="mt-1 text-lg text-gray-900">
+            {{ user.full_name|default:"No especificado" }}
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <!-- Sección de Membresías -->
+  <div class="mt-6 bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <h2 class="text-xl font-semibold text-gray-900">Mi Membresía</h2>
+      {% if active_membership %}
+      <div class="mt-5">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-medium text-blue-900">
+                {{ active_membership.plan.name }}
+              </h3>
+              <p class="text-sm text-blue-700">
+                Estado: {{ active_membership.get_status_display }}
+              </p>
+              <p class="text-sm text-blue-700">
+                Válida hasta: {{ active_membership.end_date|date:"d/m/Y" }}
+              </p>
             </div>
-        {% endfor %}
-    {% endif %}
-
-    <!-- Encabezado -->
-    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-        <div class="px-4 py-5 sm:px-6">
-            <h1 class="text-3xl font-bold text-gray-900">Bienvenido, {{ user.email }}!</h1>
-            <p class="mt-1 max-w-2xl text-sm text-gray-500">Este es tu panel de control.</p>
-        </div>
-    </div>
-
-    <!-- Resumen del Perfil -->
-    <div class="mt-6 bg-white shadow overflow-hidden sm:rounded-lg">
-        <div class="px-4 py-5 sm:p-6">
-            <h2 class="text-xl font-semibold text-gray-900">Resumen de tu Cuenta</h2>
-            <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
-                <div class="bg-gray-50 px-4 py-5 sm:p-6 rounded-lg">
-                    <dt class="text-sm font-medium text-gray-500">Correo Electrónico</dt>
-                    <dd class="mt-1 text-lg text-gray-900">{{ user.email }}</dd>
-                </div>
-                <div class="bg-gray-50 px-4 py-5 sm:p-6 rounded-lg">
-                    <dt class="text-sm font-medium text-gray-500">Nombre Completo</dt>
-                    <dd class="mt-1 text-lg text-gray-900">{{ user.full_name|default:"No especificado" }}</dd>
-                </div>
-            </dl>
-        </div>
-    </div>
-
-    <!-- Lista de Cursos (para Staff) -->
-    {% if user.is_staff %}
-    <div class="mt-6 bg-white shadow overflow-hidden sm:rounded-lg">
-        <div class="px-4 py-5 sm:p-6">
-            <h2 class="text-xl font-semibold text-gray-900">Cursos Creados</h2>
-            <div class="mt-5">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Título</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Creado por</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duración</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        {% for course in courses %}
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ course.title }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ course.created_by.email }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ course.duration }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ course.base_price }} CLP</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="4" class="px-6 py-4 text-center text-gray-500">No hay cursos creados.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div class="text-right">
+              <p class="text-sm text-blue-700">Cursos restantes:</p>
+              <p class="text-lg font-bold text-blue-900">
+                {{ active_membership.courses_remaining }}/{{
+                active_membership.plan.courses_per_month }}
+              </p>
             </div>
+          </div>
+          <div class="mt-4 flex space-x-3">
+            <a
+              href="{% url 'membresias:my_membership' %}"
+              class="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700"
+            >
+              Ver Detalles
+            </a>
+            <a
+              href="{% url 'membresias:plan_list' %}"
+              class="bg-gray-600 text-white px-4 py-2 rounded text-sm hover:bg-gray-700"
+            >
+              Cambiar Plan
+            </a>
+          </div>
         </div>
+      </div>
+      {% else %}
+      <div class="mt-5">
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <h3 class="text-lg font-medium text-yellow-900">
+            No tienes una membresía activa
+          </h3>
+          <p class="text-sm text-yellow-700 mt-1">
+            Únete a nuestra comunidad y accede a beneficios exclusivos
+          </p>
+          <div class="mt-4">
+            <a
+              href="{% url 'membresias:plan_list' %}"
+              class="bg-yellow-600 text-white px-4 py-2 rounded text-sm hover:bg-yellow-700"
+            >
+              Ver Planes de Membresía
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endif %}
     </div>
-    {% endif %}
+  </div>
+  <!-- Carrito de Compras -->
+  <div class="mt-6 bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <h2 class="text-xl font-semibold text-gray-900">Mi Carrito</h2>
+      <div class="mt-5">
+        <a
+          href="{% url 'carrito:cart_detail' %}"
+          class="bg-green-600 text-white px-4 py-3 rounded-lg text-center hover:bg-green-700 inline-block"
+        >
+          <i class="fas fa-shopping-cart mr-2"></i>
+          Ver Carrito de Compras
+        </a>
+      </div>
+    </div>
+  </div>
 
-    <!-- Acciones Rápidas -->
-    <div class="mt-6 bg-white shadow overflow-hidden sm:rounded-lg">
-        <div class="px-4 py-5 sm:p-6">
-            <h2 class="text-xl font-semibold text-gray-900">Acciones Rápidas</h2>
-            <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
-                {% comment %} <a href="{% url 'account_logout' %}" class="bg-blue-600 text-white px-4 py-3 rounded-lg text-center hover:bg-blue-700">
-                    Cerrar Sesión
-                </a> {% endcomment %}
-                <a href="{% url 'account_email' %}" class="bg-blue-600 text-white px-4 py-3 rounded-lg text-center hover:bg-gray-700">
-                    Actualizar Perfil
-                </a>
-                <a href="{% url 'account_reset_password' %}" class="bg-red-600 text-white px-4 py-3 rounded-lg text-center hover:bg-red-700">
-                    Restablecer Contraseña
-                </a>
-                <a href="{% url 'cursos:course_list' %}" class="bg-green-600 text-white px-4 py-3 rounded-lg text-center hover:bg-green-700">
-                    Ver Mis Cursos
-                </a>
-                {% if user.is_staff %}
-                <a href="{% url 'cursos:course_create_admin' %}" class="bg-purple-600 text-white px-4 py-3 rounded-lg text-center hover:bg-purple-700">
-                    Agregar Nuevo Curso
-                </a>
-                {% endif %}
-            </div>
-        </div>
+  <!-- Mis Cursos -->
+  <div class="mt-6 bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <h2 class="text-xl font-semibold text-gray-900">Mis Cursos</h2>
+      <p class="mt-1 text-sm text-gray-600">
+        Accede a todos los cursos que has adquirido
+      </p>
+      <div class="mt-5">
+        <a
+          href="{% url 'usuarios:my_courses' %}"
+          class="bg-blue-600 text-white px-4 py-3 rounded-lg text-center hover:bg-blue-700 inline-block"
+        >
+          <i class="fas fa-book mr-2"></i>
+          Ver Mis Cursos
+        </a>
+      </div>
     </div>
+  </div>
+
+  <!-- Lista de Cursos (para Staff) -->
+  {% if user.is_staff %}
+  <div class="mt-6 bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <h2 class="text-xl font-semibold text-gray-900">Cursos Creados</h2>
+      <div class="mt-5">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Título
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Creado por
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Duración
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Precio
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            {% for course in courses %}
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap">{{ course.title }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                {{ course.created_by.email }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">{{ course.duration }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                {{ course.base_price }} CLP
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="4" class="px-6 py-4 text-center text-gray-500">
+                No hay cursos creados.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Acciones Rápidas -->
+  <div class="mt-6 bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <h2 class="text-xl font-semibold text-gray-900">Acciones Rápidas</h2>
+      <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
+        {% comment %}
+        <a
+          href="{% url 'account_logout' %}"
+          class="bg-blue-600 text-white px-4 py-3 rounded-lg text-center hover:bg-blue-700"
+        >
+          Cerrar Sesión
+        </a>
+        {% endcomment %}
+        <a
+          href="{% url 'account_email' %}"
+          class="bg-blue-600 text-white px-4 py-3 rounded-lg text-center hover:bg-gray-700"
+        >
+          Actualizar Perfil
+        </a>
+        <a
+          href="{% url 'account_reset_password' %}"
+          class="bg-red-600 text-white px-4 py-3 rounded-lg text-center hover:bg-red-700"
+        >
+          Restablecer Contraseña
+        </a>
+        <a
+          href="{% url 'cursos:course_list' %}"
+          class="bg-green-600 text-white px-4 py-3 rounded-lg text-center hover:bg-green-700"
+        >
+          Ver Mis Cursos
+        </a>
+        {% if user.is_staff %}
+        <a
+          href="{% url 'cursos:course_create_admin' %}"
+          class="bg-purple-600 text-white px-4 py-3 rounded-lg text-center hover:bg-purple-700"
+        >
+          Agregar Nuevo Curso
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

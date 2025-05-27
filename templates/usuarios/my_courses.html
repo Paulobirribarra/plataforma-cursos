@@ -1,0 +1,282 @@
+{% extends 'base.html' %} {% load i18n %} {% block title %}Mis Cursos{% endblock
+%} {% block content %}
+<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+  <!-- Encabezado -->
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
+    <div class="px-4 py-5 sm:px-6">
+      <h1 class="text-3xl font-bold text-gray-900">Mis Cursos</h1>
+      <p class="mt-1 max-w-2xl text-sm text-gray-500">
+        Aquí puedes ver todos los cursos a los que tienes acceso
+      </p>
+    </div>
+  </div>
+
+  <!-- Estadísticas rápidas -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg
+              class="h-6 w-6 text-blue-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+              ></path>
+            </svg>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">
+                Total de Cursos
+              </dt>
+              <dd class="text-lg font-medium text-gray-900">
+                {{ user_courses.count }}
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg
+              class="h-6 w-6 text-green-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4"
+              ></path>
+            </svg>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">
+                Completados
+              </dt>
+              <dd class="text-lg font-medium text-gray-900">
+                {{ completed_count }}
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg
+              class="h-6 w-6 text-yellow-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              ></path>
+            </svg>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">
+                En Progreso
+              </dt>
+              <dd class="text-lg font-medium text-gray-900">
+                {{ in_progress_count }}
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="bg-white shadow sm:rounded-lg mb-6">
+    <div class="px-4 py-5 sm:p-6">
+      <div class="flex flex-wrap gap-4">
+        <a
+          href="?filter=all"
+          class="px-4 py-2 text-sm font-medium rounded-md {% if current_filter == 'all' %}bg-blue-600 text-white{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %}"
+        >
+          Todos
+        </a>
+        <a
+          href="?filter=in_progress"
+          class="px-4 py-2 text-sm font-medium rounded-md {% if current_filter == 'in_progress' %}bg-blue-600 text-white{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %}"
+        >
+          En Progreso
+        </a>
+        <a
+          href="?filter=completed"
+          class="px-4 py-2 text-sm font-medium rounded-md {% if current_filter == 'completed' %}bg-blue-600 text-white{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %}"
+        >
+          Completados
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de cursos -->
+  {% if user_courses %}
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for user_course in user_courses %}
+    <div
+      class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow"
+    >
+      <div class="p-6">
+        <!-- Estado del curso -->
+        <div class="flex items-center justify-between mb-4">
+          <span
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {% if user_course.completed %} bg-green-100 text-green-800 {% elif user_course.progress > 0 %} bg-yellow-100 text-yellow-800 {% else %} bg-gray-100 text-gray-800 {% endif %}"
+          >
+            {% if user_course.completed %}
+            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            Completado {% elif user_course.progress > 0 %} En progreso {% else
+            %} No iniciado {% endif %}
+          </span>
+        </div>
+
+        <!-- Información del curso -->
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">
+          {{ user_course.course.title }}
+        </h3>
+        <p class="text-sm text-gray-600 mb-4 line-clamp-3">
+          {{ user_course.course.description|truncatewords:15 }}
+        </p>
+
+        <!-- Progreso -->
+        <div class="mb-4">
+          <div class="flex justify-between text-sm text-gray-600 mb-1">
+            <span>Progreso</span>
+            <span>{{ user_course.progress|floatformat:0 }}%</span>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-2">
+            <div
+              class="bg-blue-600 h-2 rounded-full transition-all duration-300"
+              style="width: {{ user_course.progress }}%"
+            ></div>
+          </div>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="text-xs text-gray-500 mb-4">
+          <p>Acceso desde: {{ user_course.access_start|date:"d/m/Y" }}</p>
+          {% if user_course.access_end %}
+          <p>Válido hasta: {{ user_course.access_end|date:"d/m/Y" }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="flex space-x-2">
+          <a
+            href="{% url 'cursos:course_detail' user_course.course.id %}"
+            class="flex-1 bg-blue-600 text-white px-4 py-2 rounded text-sm text-center hover:bg-blue-700 transition-colors"
+          >
+            {% if user_course.progress == 0 %} Comenzar {% elif
+            user_course.completed %} Revisar {% else %} Continuar {% endif %}
+          </a>
+          {% if not user_course.completed %}
+          <button
+            class="px-3 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+            title="Marcar como favorito"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              ></path>
+            </svg>
+          </button>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <!-- Estado vacío -->
+  <div class="text-center py-12">
+    <svg
+      class="mx-auto h-12 w-12 text-gray-400"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+      ></path>
+    </svg>
+    <h3 class="mt-2 text-sm font-medium text-gray-900">No tienes cursos</h3>
+    <p class="mt-1 text-sm text-gray-500">
+      Empieza explorando nuestro catálogo de cursos disponibles.
+    </p>
+    <div class="mt-6">
+      <a
+        href="{% url 'cursos:course_list' %}"
+        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      >
+        <svg
+          class="-ml-1 mr-2 h-5 w-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+          ></path>
+        </svg>
+        Explorar Cursos
+      </a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<style>
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
+{% endblock %}

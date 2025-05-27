@@ -13,7 +13,7 @@ urlpatterns = [
     path(
         "cursos/", include("cursos.urls", namespace="cursos")
     ),  # Prefijo para las URLs de cursos
-    path("usuarios/", include("usuarios.urls")),
+    path("usuarios/", include("usuarios.urls", namespace="usuarios")),
     path("admin/", admin.site.urls),
     path("pagos/", include("pagos.urls")),
     path("membresias/", include("membresias.urls")),

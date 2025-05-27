@@ -56,16 +56,15 @@ def confirm_payment(request, payment_id):
 def cancel_payment(request, payment_id):
     """Vista para cancelar un pago."""
     payment = get_object_or_404(Payment, id=payment_id, user=request.user)
-
-    if payment.status != "pending":
-        messages.error(request, _("Este pago ya ha sido procesado."))
-        return redirect("usuarios:dashboard")
-
-    payment.status = "cancelled"
-    payment.save()
-
-    messages.info(request, _("Pago cancelado."))
-    return redirect("usuarios:dashboard")
+    
+    if payment.status == "pending":
+        payment.status = "cancelled"
+        payment.save()
+        messages.info(request, "Pago cancelado.")
+    else:
+        messages.error(request, "Este pago no puede ser cancelado.")
+    
+    return redirect("carrito:cart_detail")
 
 
 @login_required
@@ -135,25 +134,78 @@ def confirm_cart_payment(request, payment_id):
         if resp.get("status") == "AUTHORIZED":
             payment.status = "completed"
             payment.save()
+            
             # Procesar los items del carrito
             cart = Cart.objects.filter(user=request.user, is_active=True).first()
+            purchased_items = []
+            has_new_membership = False
+            has_new_courses = False
+            
             if cart:
+                # Guardar items para mostrar en confirmación
+                purchased_items = list(cart.items.all())
+                
                 for item in cart.items.all():
                     if item.item_type == "course" and item.course:
-                        request.user.courses.add(item.course)
+                        from cursos.models import UserCourse
+                        UserCourse.objects.get_or_create(
+                            user=request.user, 
+                            course=item.course,
+                            defaults={'progress': 0.0, 'completed': False}
+                        )
+                        has_new_courses = True
                     elif item.item_type == "membership" and item.membership_plan:
-                        request.user.membership = item.membership_plan
-                        request.user.save()
+                        from membresias.models import Membership
+                        # Verificar si ya existe una membresía activa
+                        existing_membership = Membership.objects.filter(
+                            user=request.user, 
+                            status='active'
+                        ).first()
+                        
+                        if existing_membership:
+                            # Actualizar membresía existente
+                            existing_membership.plan = item.membership_plan
+                            existing_membership.courses_remaining = item.membership_plan.courses_per_month
+                            existing_membership.consultations_remaining = item.membership_plan.consultations
+                            existing_membership.save()
+                        else:
+                            # Crear nueva membresía
+                            Membership.objects.create(
+                                user=request.user,
+                                plan=item.membership_plan,
+                                status="active",
+                                courses_remaining=item.membership_plan.courses_per_month,
+                                consultations_remaining=item.membership_plan.consultations
+                            )
+                        has_new_membership = True
+                
                 cart.is_active = False
                 cart.save()
-            messages.success(request, "¡Pago completado exitosamente!")
-            return redirect("usuarios:profile")
+            
+            # Guardar información en sesión para la página de confirmación
+            request.session['purchase_success_data'] = {
+                'payment_id': payment.id,
+                'purchased_items': [
+                    {
+                        'item_type': item.item_type,
+                        'course_title': item.course.title if item.course else None,
+                        'membership_name': item.membership_plan.name if item.membership_plan else None,
+                        'price_applied': float(item.price_applied)
+                    } for item in purchased_items
+                ],
+                'has_new_membership': has_new_membership,
+                'has_new_courses': has_new_courses,
+                'total_amount': float(payment.amount)
+            }
+            
+            return redirect("pagos:purchase_success")
         else:
             payment.status = "failed"
             payment.save()
             messages.error(request, "El pago no pudo ser procesado.")
             return redirect("carrito:cart_detail")
     except Exception as e:
+        logger.error(f"Error al confirmar el pago: {e}", exc_info=True)
         payment.status = "failed"
         payment.save()
         messages.error(request, f"Error al confirmar el pago: {e}")
@@ -181,40 +233,110 @@ def webpay_return(request):
 
             # Procesar los ítems del carrito
             cart = Cart.objects.filter(user=request.user, is_active=True).first()
+            purchased_items = []
+            has_new_membership = False
+            has_new_courses = False
+            
             if cart:
+                # Guardar items para mostrar en confirmación
+                purchased_items = list(cart.items.all())
+                
                 for item in cart.items.all():
                     if item.item_type == "course" and item.course:
                         from cursos.models import UserCourse
-
                         UserCourse.objects.get_or_create(
-                            user=request.user, course=item.course
+                            user=request.user, 
+                            course=item.course,
+                            defaults={'progress': 0.0, 'completed': False}
                         )
+                        has_new_courses = True
                     elif item.item_type == "membership" and item.membership_plan:
                         from membresias.models import Membership
-
-                        Membership.objects.create(
-                            user=request.user,
-                            plan=item.membership_plan,
-                            status="active",
-                        )
+                        # Verificar si ya existe una membresía activa
+                        existing_membership = Membership.objects.filter(
+                            user=request.user, 
+                            status='active'
+                        ).first()
+                        
+                        if existing_membership:
+                            # Actualizar membresía existente
+                            existing_membership.plan = item.membership_plan
+                            existing_membership.courses_remaining = item.membership_plan.courses_per_month
+                            existing_membership.consultations_remaining = item.membership_plan.consultations
+                            existing_membership.save()
+                        else:
+                            # Crear nueva membresía
+                            Membership.objects.create(
+                                user=request.user,
+                                plan=item.membership_plan,
+                                status="active",
+                                courses_remaining=item.membership_plan.courses_per_month,
+                                consultations_remaining=item.membership_plan.consultations
+                            )
+                        has_new_membership = True
+                
                 cart.is_active = False
                 cart.save()
 
-            messages.success(request, "¡Pago procesado exitosamente!")
+            # Guardar información en sesión para la página de confirmación
+            request.session['purchase_success_data'] = {
+                'payment_id': payment.id,
+                'purchased_items': [
+                    {
+                        'item_type': item.item_type,
+                        'course_title': item.course.title if item.course else None,
+                        'membership_name': item.membership_plan.name if item.membership_plan else None,
+                        'price_applied': float(item.price_applied)
+                    } for item in purchased_items
+                ],
+                'has_new_membership': has_new_membership,
+                'has_new_courses': has_new_courses,
+                'total_amount': float(payment.amount)
+            }
+            
+            return redirect("pagos:purchase_success")
         else:
             payment.status = "failed"
             payment.save()
             messages.error(request, "El pago fue rechazado.")
 
     except Exception as e:
+        logger.error(f"Error al confirmar el pago: {e}", exc_info=True)
         payment.status = "failed"
         payment.save()
         messages.error(request, f"Error al confirmar el pago: {str(e)}")
 
-    return redirect("usuarios:dashboard")
+    return redirect("carrito:cart_detail")
 
 
 @login_required
 def webpay_final(request):
     """Vista final después del pago."""
     return redirect("usuarios:dashboard")
+
+
+@login_required
+def purchase_success(request):
+    """Vista para mostrar la confirmación de compra exitosa."""
+    # Obtener datos de la sesión
+    success_data = request.session.get('purchase_success_data')
+    
+    if not success_data:
+        messages.warning(request, "No se encontró información de compra reciente.")
+        return redirect("usuarios:dashboard")
+    
+    # Limpiar la sesión después de obtener los datos
+    del request.session['purchase_success_data']
+    
+    # Obtener el pago
+    payment = get_object_or_404(Payment, id=success_data['payment_id'], user=request.user)
+    
+    context = {
+        'payment': payment,
+        'purchased_items': success_data['purchased_items'],
+        'has_new_membership': success_data['has_new_membership'],
+        'has_new_courses': success_data['has_new_courses'],
+        'total_amount': success_data['total_amount'],
+    }
+    
+    return render(request, 'pagos/purchase_success_fixed.html', context)

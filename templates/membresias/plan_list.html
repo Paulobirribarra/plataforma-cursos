@@ -1,0 +1,167 @@
+{% extends "base.html" %} {% load i18n %} {% block content %}
+<div class="container py-5">
+  <div class="row">
+    <div class="col-12">
+      <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-primary">
+          {% trans "Planes de Membresía" %}
+        </h1>
+        <p class="lead text-muted">
+          {% trans "Elige el plan que mejor se adapte a tus necesidades de
+          aprendizaje" %}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row justify-content-center">
+    {% for plan in plans %}
+    <div class="col-lg-4 col-md-6 mb-4">
+      <div
+        class="card h-100 shadow-sm border-0 {% if plan.name == 'Plan Pro' %}border-primary{% endif %}"
+      >
+        {% if plan.name == 'Plan Pro' %}
+        <div
+          class="badge bg-primary position-absolute top-0 start-50 translate-middle px-3 py-2"
+        >
+          {% trans "Más Popular" %}
+        </div>
+        {% endif %}
+
+        <div class="card-header bg-white text-center py-4">
+          <h3 class="card-title fw-bold text-dark">{{ plan.name }}</h3>
+          <div class="display-4 fw-bold text-primary">
+            ${{ plan.price|floatformat:0 }}
+            <small class="fs-6 text-muted">CLP/mes</small>
+          </div>
+        </div>
+
+        <div class="card-body d-flex flex-column">
+          <p class="text-muted mb-4">{{ plan.description }}</p>
+
+          <ul class="list-unstyled mb-4">
+            <li class="mb-2">
+              <i class="fas fa-check text-success me-2"></i>
+              <strong>{{ plan.courses_per_month }}</strong> {% trans "cursos por
+              mes" %}
+            </li>
+            <li class="mb-2">
+              <i class="fas fa-check text-success me-2"></i>
+              <strong>{{ plan.consultations }}</strong> {% trans "consultas
+              incluidas" %}
+            </li>
+            <li class="mb-2">
+              <i class="fas fa-check text-success me-2"></i>
+              <strong>{{ plan.discount_percentage }}%</strong> {% trans
+              "descuento en cursos adicionales" %}
+            </li>
+            <li class="mb-2">
+              <i class="fas fa-check text-success me-2"></i>
+              {% trans "Nivel Telegram" %}:
+              <strong>{{ plan.get_telegram_level_display }}</strong>
+            </li>
+
+            {% if plan.features %} {% for feature in plan.features %}
+            <li class="mb-2">
+              <i class="fas fa-check text-success me-2"></i>
+              {{ feature }}
+            </li>
+            {% endfor %} {% endif %}
+          </ul>
+
+          <div class="mt-auto">
+            {% if user.is_authenticated %} {% if user.has_active_membership %}
+            {% if user.get_active_membership.plan == plan %}
+            <div class="alert alert-success text-center">
+              <i class="fas fa-check-circle me-2"></i>
+              {% trans "Plan Actual" %}
+            </div>
+            {% else %}
+            <div class="alert alert-warning text-center">
+              <i class="fas fa-exclamation-triangle me-2"></i>
+              {% trans "Ya tienes una membresía activa" %}
+            </div>
+            {% endif %} {% else %}
+            <div class="d-grid gap-2">
+              <a
+                href="{% url 'membresias:plan_detail' plan.slug %}"
+                class="btn btn-outline-primary"
+              >
+                {% trans "Ver Detalles" %}
+              </a>
+              <a
+                href="{% url 'carrito:add_membership_to_cart' plan.id %}"
+                class="btn btn-primary"
+              >
+                <i class="fas fa-shopping-cart me-2"></i>
+                {% trans "Agregar al Carrito" %}
+              </a>
+            </div>
+            {% endif %} {% else %}
+            <div class="d-grid gap-2">
+              <a
+                href="{% url 'membresias:plan_detail' plan.slug %}"
+                class="btn btn-outline-primary"
+              >
+                {% trans "Ver Detalles" %}
+              </a>
+              <a href="{% url 'account_login' %}" class="btn btn-primary">
+                {% trans "Iniciar Sesión para Comprar" %}
+              </a>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+      <div class="alert alert-info text-center">
+        <h4>{% trans "No hay planes disponibles" %}</h4>
+        <p>{% trans "Pronto tendremos nuevos planes para ti." %}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if user.is_authenticated and not user.has_active_membership %}
+  <div class="row mt-5">
+    <div class="col-12">
+      <div class="card bg-light">
+        <div class="card-body text-center">
+          <h4 class="card-title">
+            {% trans "¿Tienes dudas sobre qué plan elegir?" %}
+          </h4>
+          <p class="card-text">
+            {% trans "Nuestro equipo está aquí para ayudarte a encontrar el plan
+            perfecto para tus objetivos." %}
+          </p>
+          <a href="#" class="btn btn-outline-primary">
+            <i class="fas fa-envelope me-2"></i>
+            {% trans "Contactar Asesor" %}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<style>
+  .card {
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+  }
+
+  .border-primary {
+    border: 2px solid #0d6efd !important;
+  }
+
+  .badge {
+    z-index: 1;
+  }
+</style>
+{% endblock %}

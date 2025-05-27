@@ -1,8 +1,9 @@
 import requests
+from decouple import config
 
-WEBPAY_BASE_URL = "https://webpay3gint.transbank.cl/rswebpaytransaction/api/webpay/v1.2"
-COMMERCE_CODE = "597055555532"  # Código de comercio de pruebas oficial
-API_KEY = "XqGG7dQfVQZTqdlzJzQz"  # API Key de pruebas oficial
+WEBPAY_BASE_URL = config("WEBPAY_BASE_URL")
+COMMERCE_CODE = config("WEBPAY_COMMERCE_CODE")
+API_KEY = config("WEBPAY_API_KEY")
 
 HEADERS = {
     "Tbk-Api-Key-Id": COMMERCE_CODE,

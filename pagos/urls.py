@@ -15,4 +15,5 @@ urlpatterns = [
     ),
     path("webpay/return/", views.webpay_return, name="webpay_return"),
     path("webpay/final/", views.webpay_final, name="webpay_final"),
+    path("exito/", views.purchase_success, name="purchase_success"),
 ]
