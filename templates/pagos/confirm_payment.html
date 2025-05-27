@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-2xl font-bold mb-4">Confirmación de Pago</h2>
+        
+        <div class="mb-6">
+            <h3 class="text-lg font-semibold mb-2">Detalles del Pago</h3>
+            <p class="text-gray-600">Monto: ${{ payment.amount }}</p>
+            <p class="text-gray-600">Descripción: {{ payment.description }}</p>
+            <p class="text-gray-600">Estado: {{ payment.status }}</p>
+        </div>
+
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <input type="hidden" name="token_ws" value="{{ payment.transaction_id }}">
+            <button type="submit" class="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                Confirmar Pago
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %} 

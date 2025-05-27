@@ -1,0 +1,119 @@
+{% extends 'base.html' %} {% load static %} {% load i18n %} {% block content %}
+<!-- Cursos Gratuitos -->
+<div class="container mx-auto py-12 px-4">
+  <h2 class="text-3xl font-bold text-center mb-8">Cursos Gratuitos</h2>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    {% for course in free_courses %}
+    <div
+      class="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-shadow"
+    >
+      <img
+        src="{% static 'imagenes/servicio1.jpg' %}"
+        alt="{{ course.title }}"
+        class="w-full h-48 object-cover"
+      />
+      <div class="p-4">
+        <h3 class="text-xl font-semibold mb-2">{{ course.title }}</h3>
+        <p class="text-gray-600 mb-2">Duración: {{ course.duration }}</p>
+        <p class="text-gray-800 font-bold">Gratuito</p>
+        <a
+          href="{% url 'cursos:course_detail' course.pk %}"
+          class="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+          >Ver Detalle</a
+        >
+        {% if user.is_authenticated %}
+        <a
+          href="{% url 'carrito:add_course_to_cart' course.pk %}"
+          class="mt-2 inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+          >Agregar al carrito</a
+        >
+        {% endif %}
+      </div>
+    </div>
+    {% empty %}
+    <p class="text-center text-gray-500">
+      No hay cursos gratuitos disponibles en este momento.
+    </p>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Cursos Generales -->
+<div class="container mx-auto py-12 px-4">
+  <h2 class="text-3xl font-bold text-center mb-8">Cursos Generales</h2>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    {% for course in general_courses %}
+    <div
+      class="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-shadow"
+    >
+      <img
+        src="{% static 'imagenes/servicio1.jpg' %}"
+        alt="{{ course.title }}"
+        class="w-full h-48 object-cover"
+      />
+      <div class="p-4">
+        <h3 class="text-xl font-semibold mb-2">{{ course.title }}</h3>
+        <p class="text-gray-600 mb-2">Duración: {{ course.duration }}</p>
+        <p class="text-gray-800 font-bold">
+          Precio: {{ course.base_price }} CLP
+        </p>
+        <a
+          href="{% url 'cursos:course_detail' course.pk %}"
+          class="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+          >Ver Detalle</a
+        >
+        {% if user.is_authenticated %}
+        <a
+          href="{% url 'carrito:add_course_to_cart' course.pk %}"
+          class="mt-2 inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+          >Agregar al carrito</a
+        >
+        {% endif %}
+      </div>
+    </div>
+    {% empty %}
+    <p class="text-center text-gray-500">
+      No hay cursos generales disponibles en este momento.
+    </p>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Planes de Membresía -->
+<div class="container mx-auto py-12 px-4">
+  <h2 class="text-3xl font-bold text-center mb-8">Membresías</h2>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    {% for plan in plans %}
+    <div
+      class="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-shadow"
+    >
+      <div class="p-4">
+        <h3 class="text-xl font-semibold mb-2">{{ plan.name }}</h3>
+        <p class="text-gray-600 mb-2">{{ plan.description }}</p>
+        <p class="text-gray-800 font-bold">
+          ${{ plan.price|floatformat:0 }} / mes
+        </p>
+        <ul class="text-gray-700 text-sm mb-2">
+          <li>{{ plan.courses_per_month }} cursos por mes</li>
+          <li>{{ plan.consultations }} consultas incluidas</li>
+          <li>{{ plan.discount_percentage }}% de descuento en cursos</li>
+          <li>Nivel Telegram: {{ plan.get_telegram_level_display }}</li>
+        </ul>
+        <a
+          href="{% url 'membresias:plan_detail' plan.slug %}"
+          class="mt-2 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+          >Ver Detalles</a
+        >
+        {% if user.is_authenticated %}
+        <a
+          href="{% url 'carrito:add_membership_to_cart' plan.id %}"
+          class="mt-2 inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+          >Agregar al carrito</a
+        >
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">{% trans "Procesar Pago" %}</h2>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h3>{{ payment.description }}</h3>
+                        <p class="lead">
+                            {% trans "Monto" %}: ${{ payment.amount|floatformat:0 }}
+                        </p>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'pagos:confirm_payment' payment.id %}" class="btn btn-success btn-lg">
+                            {% trans "Confirmar Pago" %}
+                        </a>
+                        <a href="{% url 'pagos:cancel_payment' payment.id %}" class="btn btn-danger">
+                            {% trans "Cancelar" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

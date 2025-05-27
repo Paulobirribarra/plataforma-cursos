@@ -1,0 +1,24 @@
+{% extends 'base.html' %} {% load static %} {% load i18n %} {% block content %}
+<!-- Quiénes Somos -->
+<div class="container mx-auto py-12 px-4">
+  <div class="flex flex-col md:flex-row items-center gap-8">
+    <div class="md:w-1/2">
+      <img
+        src="{% static 'imagenes/quienes-somos.jpeg' %}"
+        alt="Quiénes Somos"
+        class="w-full h-110 object-cover rounded-lg shadow-lg hover:shadow-xl transition-shadow"
+      />
+    </div>
+    <div class="md:w-1/2">
+      <h2 class="text-3xl font-bold mb-4">¿Quiénes somos?</h2>
+      <p class="text-gray-700">
+        En Asesorias Futuro LTD, somos un equipo de profesionales apasionados
+        por ayudar a emprendedores a alcanzar sus objetivos. Nos especializamos
+        en ofrecer soluciones personalizadas a través de cursos, asesoría
+        empresarial y formación. Con nuestra experiencia, buscamos acompañarte
+        en cada paso del camino hacia el éxito.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,62 +1,129 @@
-{% load static %}
-{% load widget_tweaks %}
+{% load static %} {% load widget_tweaks %}
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Asesorias Futuro LTD{% endblock %}</title>
-    <link rel="icon" href="{% static 'imagenes/favicon.ico' %}">
+    <link rel="icon" href="{% static 'imagenes/favicon.ico' %}" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-</head>
-<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+  </head>
+  <body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
     <header class="bg-white shadow-md py-4">
-        <div class="container mx-auto px-4 flex justify-between items-center">
-            <a href="{% url 'home' %}">
-                <img src="{% static 'imagenes/AFLogo.png' %}" alt="Asesorias Futuro LTD" class="h-12">
-            </a>
-            <nav class="flex space-x-6">
-                <a href="{% url 'home' %}" class="hover:text-blue-600 font-medium">Inicio</a>
-                <a href="#" class="hover:text-blue-600 font-medium">Nosotros</a>
-                <a href="{% url 'cursos:course_list' %}" class="hover:text-blue-600 font-medium">Cursos</a>
-                <a href="#" class="hover:text-blue-600 font-medium">Contacto</a>
-                {% if user.is_authenticated %}
-                    <a href="{% url 'dashboard' %}" class="hover:text-blue-600 font-medium">Mi Cuenta</a>
-                    <form method="POST" action="{% url 'account_logout' %}" class="inline">
-                        {% csrf_token %}
-                        <button type="submit" class="hover:text-blue-600 font-medium">Cerrar Sesión</button>
-                    </form>
-                {% else %}
-                    <a href="{% url 'account_login' %}" class="hover:text-blue-600 font-medium">Iniciar Sesión</a>
-                    <a href="{% url 'account_signup' %}" class="hover:text-blue-600 font-medium">Registrarse</a>
-                {% endif %}
-            </nav>
-        </div>
+      <div class="container mx-auto px-4 flex justify-between items-center">
+        <a href="{% url 'home' %}">
+          <img
+            src="{% static 'imagenes/AFLogo.png' %}"
+            alt="Asesorias Futuro LTD"
+            class="h-12"
+          />
+        </a>
+        <nav class="flex space-x-6">
+          <a href="{% url 'home' %}" class="hover:text-blue-600 font-medium"
+            >Inicio</a
+          >
+          <a href="{% url 'nosotros' %}" class="hover:text-blue-600 font-medium"
+            >Nosotros</a
+          >
+          <a
+            href="{% url 'cursos:course_list' %}"
+            class="hover:text-blue-600 font-medium"
+            >Cursos</a
+          >
+          <a href="#" class="hover:text-blue-600 font-medium">Contacto</a>
+          {% if user.is_authenticated %}
+          <a
+            href="{% url 'dashboard' %}"
+            class="hover:text-blue-600 font-medium"
+            >Mi Cuenta</a
+          >
+          <form
+            method="POST"
+            action="{% url 'account_logout' %}"
+            class="inline"
+          >
+            {% csrf_token %}
+            <button type="submit" class="hover:text-blue-600 font-medium">
+              Cerrar Sesión
+            </button>
+          </form>
+          {% else %}
+          <a
+            href="{% url 'account_login' %}"
+            class="hover:text-blue-600 font-medium"
+            >Iniciar Sesión</a
+          >
+          <a
+            href="{% url 'account_signup' %}"
+            class="hover:text-blue-600 font-medium"
+            >Registrarse</a
+          >
+          {% endif %}
+        </nav>
+      </div>
     </header>
 
     <main class="flex-grow container mx-auto px-4 py-8">
-        {% block content %}
-        {% endblock %}
+      {% block content %} {% endblock %}
     </main>
 
     <footer class="bg-gray-800 text-white py-6">
-        <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
-            <div class="mb-4 md:mb-0">
-                <img src="{% static 'imagenes/AFLogo.png' %}" alt="Asesorias Futuro LTD" class="h-8 mb-2">
-                <p class="text-sm">© 2025 Asesorias Futuro LTD. Todos los derechos reservados.</p>
-            </div>
-            <div class="flex space-x-4">
-                <a href="https://www.facebook.com/profile.php?id=61560354453187&locale=es_LA" target="_blank" class="hover:text-gray-300"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://www.instagram.com/asesoriasfuturoltda/" target="_blank" class="hover:text-gray-300"><i class="fab fa-instagram"></i></a>
-                <a href="https://x.com/asesoriasfuturo" target="_blank" class="hover:text-gray-300"><i class="fab fa-twitter"></i></a>
-                <a href="https://wa.me/56956602092" target="_blank" class="hover:text-gray-300"><i class="fab fa-whatsapp"></i></a>
-            </div>
+      <div
+        class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center"
+      >
+        <div class="mb-4 md:mb-0">
+          <img
+            src="{% static 'imagenes/AFLogo.png' %}"
+            alt="Asesorias Futuro LTD"
+            class="h-8 mb-2"
+          />
+          <p class="text-sm">
+            © 2025 Asesorias Futuro LTD. Todos los derechos reservados.
+          </p>
         </div>
+        <div class="flex space-x-4">
+          <a
+            href="https://www.facebook.com/profile.php?id=61560354453187&locale=es_LA"
+            target="_blank"
+            class="hover:text-gray-300"
+            ><i class="fab fa-facebook-f"></i
+          ></a>
+          <a
+            href="https://www.instagram.com/asesoriasfuturoltda/"
+            target="_blank"
+            class="hover:text-gray-300"
+            ><i class="fab fa-instagram"></i
+          ></a>
+          <a
+            href="https://x.com/asesoriasfuturo"
+            target="_blank"
+            class="hover:text-gray-300"
+            ><i class="fab fa-twitter"></i
+          ></a>
+          <a
+            href="https://wa.me/56956602092"
+            target="_blank"
+            class="hover:text-gray-300"
+            ><i class="fab fa-whatsapp"></i
+          ></a>
+        </div>
+      </div>
     </footer>
 
-    <a href="https://wa.me/56956602092" target="_blank" class="fixed bottom-5 right-5 transition-transform hover:scale-110">
-        <img src="{% static 'imagenes/whatsapp.png' %}" alt="WhatsApp" class="h-12 w-12">
+    <a
+      href="https://wa.me/56956602092"
+      target="_blank"
+      class="fixed bottom-5 right-5 transition-transform hover:scale-110"
+    >
+      <img
+        src="{% static 'imagenes/whatsapp.png' %}"
+        alt="WhatsApp"
+        class="h-12 w-12"
+      />
     </a>
-</body>
+  </body>
 </html>

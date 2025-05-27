@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">{{ plan.name }}</h2>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <h1 class="display-4">
+                            ${{ plan.price|floatformat:0 }}
+                            <small class="text-muted fs-6">/{% trans "mes" %}</small>
+                        </h1>
+                    </div>
+
+                    <div class="mb-4">
+                        <h3>{% trans "Características" %}</h3>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <i class="fas fa-graduation-cap text-primary me-2"></i>
+                                {{ plan.courses_per_month }} {% trans "cursos por mes" %}
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-comments text-primary me-2"></i>
+                                {{ plan.consultations }} {% trans "consultas incluidas" %}
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-percent text-primary me-2"></i>
+                                {{ plan.discount_percentage }}% {% trans "de descuento en cursos adicionales" %}
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fab fa-telegram text-primary me-2"></i>
+                                {% trans "Nivel" %} {{ plan.get_telegram_level_display }} {% trans "en Telegram" %}
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-4">
+                        <h3>{% trans "Descripción" %}</h3>
+                        <p class="lead">{{ plan.description }}</p>
+                    </div>
+
+                    {% if user_membership %}
+                        {% if user_membership.plan == plan %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                {% trans "Ya tienes este plan activo" %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                {% trans "Tienes una membresía activa diferente. Debes cancelarla antes de adquirir esta." %}
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="d-grid">
+                            <a href="{% url 'membresias:purchase_membership' plan.id %}" class="btn btn-primary btn-lg">
+                                {% trans "Adquirir Membresía" %}
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

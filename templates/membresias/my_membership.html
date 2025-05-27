@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            {% if membership %}
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="mb-0">{% trans "Mi Membresía" %}</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <h3>{{ membership.plan.name }}</h3>
+                            <p class="text-muted">
+                                {% trans "Estado" %}: 
+                                <span class="badge {% if membership.status == 'active' %}bg-success{% elif membership.status == 'pending' %}bg-warning{% else %}bg-danger{% endif %}">
+                                    {{ membership.get_status_display }}
+                                </span>
+                            </p>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{% trans "Cursos" %}</h5>
+                                        <p class="card-text">
+                                            {{ membership.courses_remaining }} {% trans "cursos restantes" %}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{% trans "Consultas" %}</h5>
+                                        <p class="card-text">
+                                            {{ membership.consultations_remaining }} {% trans "consultas restantes" %}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h4>{% trans "Detalles de la Membresía" %}</h4>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <i class="fas fa-calendar-alt text-primary me-2"></i>
+                                    {% trans "Fecha de inicio" %}: {{ membership.start_date|date:"d/m/Y" }}
+                                </li>
+                                <li class="list-group-item">
+                                    <i class="fas fa-calendar-times text-primary me-2"></i>
+                                    {% trans "Fecha de fin" %}: {{ membership.end_date|date:"d/m/Y" }}
+                                </li>
+                                <li class="list-group-item">
+                                    <i class="fas fa-sync text-primary me-2"></i>
+                                    {% trans "Renovación automática" %}: 
+                                    {% if membership.auto_renew %}
+                                        <span class="badge bg-success">{% trans "Activada" %}</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">{% trans "Desactivada" %}</span>
+                                    {% endif %}
+                                </li>
+                            </ul>
+                        </div>
+
+                        {% if membership.status == 'active' %}
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'membresias:plan_list' %}" class="btn btn-outline-primary">
+                                    {% trans "Ver Otros Planes" %}
+                                </a>
+                                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">
+                                    {% trans "Cancelar Membresía" %}
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Modal de Cancelación -->
+                <div class="modal fade" id="cancelModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">{% trans "Cancelar Membresía" %}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>{% trans "¿Estás seguro de que deseas cancelar tu membresía?" %}</p>
+                                <p class="text-danger">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    {% trans "Esta acción no se puede deshacer." %}
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    {% trans "Cerrar" %}
+                                </button>
+                                <form method="post" action="{% url 'membresias:cancel_membership' membership.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">
+                                        {% trans "Confirmar Cancelación" %}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center">
+                    <h2 class="mb-4">{% trans "No tienes una membresía activa" %}</h2>
+                    <p class="lead mb-4">{% trans "¡Únete a nuestra comunidad y accede a todos los beneficios!" %}</p>
+                    <a href="{% url 'membresias:plan_list' %}" class="btn btn-primary btn-lg">
+                        {% trans "Ver Planes Disponibles" %}
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

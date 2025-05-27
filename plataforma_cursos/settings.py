@@ -5,135 +5,139 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', cast=bool)
+DEBUG = config("DEBUG", cast=bool)
 
 ALLOWED_HOSTS = []
 
 # Application definition
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django.contrib.sites',  # Requerido por Allauth
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'usuarios.apps.UsuariosConfig',
-    'cursos.apps.CursosConfig',
-    'pagos.apps.PagosConfig',
-    'widget_tweaks',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django.contrib.sites",  # Requerido por Allauth
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "usuarios.apps.UsuariosConfig",
+    "cursos.apps.CursosConfig",
+    "pagos.apps.PagosConfig",
+    "membresias.apps.MembresiasConfig",
+    "widget_tweaks",
+    "carrito",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'allauth.account.middleware.AccountMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
-ROOT_URLCONF = 'plataforma_cursos.urls'
+ROOT_URLCONF = "plataforma_cursos.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'plataforma_cursos.wsgi.application'
+WSGI_APPLICATION = "plataforma_cursos.wsgi.application"
 
 # Database
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'plataforma_cursos',
-        'USER': 'postgres',
-        'PASSWORD': config('DATABASE_PASSWORD'),
-        'HOST': 'localhost',
-        'PORT': '5432',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "plataforma_cursos",
+        "USER": "postgres",
+        "PASSWORD": config("DATABASE_PASSWORD"),
+        "HOST": "localhost",
+        "PORT": "5432",
     }
 }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
-AUTH_USER_MODEL = 'usuarios.CustomUser'
+AUTH_USER_MODEL = "usuarios.CustomUser"
 
 # Internationalization
-LANGUAGE_CODE = 'es'
+LANGUAGE_CODE = "es"
 
-TIME_ZONE = 'America/Santiago'
+TIME_ZONE = "America/Santiago"
 
 USE_I18N = True
 
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Media files (archivos subidos por usuarios)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Default primary key field type
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Configuración de Allauth
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
 ]
 SITE_ID = 1
-ACCOUNT_LOGIN_METHODS = {'email'}
-ACCOUNT_SIGNUP_FIELDS = ['email*', 'username', 'password1*', 'password2*']
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_SIGNUP_FIELDS = ["email*", "username", "password1*", "password2*"]
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_LOGOUT_ON_GET = True
-ACCOUNT_SIGNUP_REDIRECT_URL = '/usuarios/dashboard/'
-LOGIN_REDIRECT_URL = '/usuarios/dashboard/'
-ACCOUNT_LOGOUT_REDIRECT_URL = '/'
-ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = '/account/login/'
-ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = '/usuarios/dashboard/'
+ACCOUNT_SIGNUP_REDIRECT_URL = "/usuarios/dashboard/"
+LOGIN_REDIRECT_URL = "/usuarios/dashboard/"
+ACCOUNT_LOGOUT_REDIRECT_URL = "/"
+ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = "/account/login/"
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = "/usuarios/dashboard/"
 
 # Configuración de correo (para pruebas)
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-DEFAULT_FROM_EMAIL = 'no-reply@asesorias-futuro.cl'
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = "no-reply@asesorias-futuro.cl"
 
 
-CSRF_COOKIE_SECURE = False  # En desarrollo, debería ser False (True solo en producción con HTTPS)
+CSRF_COOKIE_SECURE = (
+    False  # En desarrollo, debería ser False (True solo en producción con HTTPS)
+)
 SESSION_COOKIE_SECURE = False  # Igual que CSRF_COOKIE_SECURE
 
 # Configuración de correo (SMTP GMAIL, descomentar para producción)
@@ -146,17 +150,17 @@ SESSION_COOKIE_SECURE = False  # Igual que CSRF_COOKIE_SECURE
 
 # Logging para depuración
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
         },
     },
-    'loggers': {
-        '': {
-            'handlers': ['console'],
-            'level': 'INFO',
+    "loggers": {
+        "": {
+            "handlers": ["console"],
+            "level": "INFO",
         },
     },
 }
