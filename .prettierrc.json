@@ -1,0 +1,31 @@
+{
+  "overrides": [
+    {
+      "files": ["*.html"],
+      "options": {
+        "parser": "html",
+        "printWidth": 120,
+        "tabWidth": 2,
+        "useTabs": false,
+        "singleQuote": false,
+        "quoteProps": "as-needed",
+        "trailingComma": "none",
+        "bracketSpacing": true,
+        "bracketSameLine": false,
+        "htmlWhitespaceSensitivity": "ignore"
+      }
+    },
+    {
+      "files": ["templates/**/*.html", "**/templates/**/*.html"],
+      "options": {
+        "parser": "html",
+        "printWidth": 120,
+        "htmlWhitespaceSensitivity": "ignore",
+        "formatSelection": false
+      }
+    }
+  ],
+  "ignoreUnknownDirectives": true,
+  "requirePragma": false,
+  "insertPragma": false
+}

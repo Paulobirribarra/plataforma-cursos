@@ -1,282 +1,355 @@
-{% extends 'base.html' %} {% load i18n %} {% block title %}Mis Cursos{% endblock
-%} {% block content %}
-<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-  <!-- Encabezado -->
-  <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
-    <div class="px-4 py-5 sm:px-6">
-      <h1 class="text-3xl font-bold text-gray-900">Mis Cursos</h1>
-      <p class="mt-1 max-w-2xl text-sm text-gray-500">
-        Aquí puedes ver todos los cursos a los que tienes acceso
-      </p>
-    </div>
-  </div>
+{% extends 'base.html' %}
+{% load i18n %}
 
-  <!-- Estadísticas rápidas -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-      <div class="p-5">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <svg
-              class="h-6 w-6 text-blue-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-              ></path>
+{% block title %}Mis Cursos{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+  <!-- Hero Section -->
+  <div class="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Breadcrumb -->
+      <nav class="mb-6" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-2 text-sm">
+          <li>
+            <a href="{% url 'home' %}" class="text-purple-200 hover:text-white transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+              </svg>
+            </a>
+          </li>
+          <li>
+            <svg class="w-4 h-4 text-purple-300" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
             </svg>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">
-                Total de Cursos
-              </dt>
-              <dd class="text-lg font-medium text-gray-900">
-                {{ user_courses.count }}
-              </dd>
-            </dl>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-      <div class="p-5">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <svg
-              class="h-6 w-6 text-green-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12l2 2 4-4"
-              ></path>
+          </li>
+          <li>
+            <a href="{% url 'usuarios:dashboard' %}" class="text-purple-200 hover:text-white transition-colors">Dashboard</a>
+          </li>
+          <li>
+            <svg class="w-4 h-4 text-purple-300" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
             </svg>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">
-                Completados
-              </dt>
-              <dd class="text-lg font-medium text-gray-900">
-                {{ completed_count }}
-              </dd>
-            </dl>
-          </div>
+          </li>
+          <li class="text-white font-medium">Mis Cursos</li>
+        </ol>
+      </nav>
+
+      <div class="text-center">
+        <div class="w-20 h-20 bg-white bg-opacity-20 rounded-full mx-auto flex items-center justify-center backdrop-blur-sm mb-6">
+          <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+          </svg>
         </div>
-      </div>
-    </div>
-
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-      <div class="p-5">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <svg
-              class="h-6 w-6 text-yellow-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M13 10V3L4 14h7v7l9-11h-7z"
-              ></path>
-            </svg>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">
-                En Progreso
-              </dt>
-              <dd class="text-lg font-medium text-gray-900">
-                {{ in_progress_count }}
-              </dd>
-            </dl>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Filtros -->
-  <div class="bg-white shadow sm:rounded-lg mb-6">
-    <div class="px-4 py-5 sm:p-6">
-      <div class="flex flex-wrap gap-4">
-        <a
-          href="?filter=all"
-          class="px-4 py-2 text-sm font-medium rounded-md {% if current_filter == 'all' %}bg-blue-600 text-white{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %}"
-        >
-          Todos
-        </a>
-        <a
-          href="?filter=in_progress"
-          class="px-4 py-2 text-sm font-medium rounded-md {% if current_filter == 'in_progress' %}bg-blue-600 text-white{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %}"
-        >
-          En Progreso
-        </a>
-        <a
-          href="?filter=completed"
-          class="px-4 py-2 text-sm font-medium rounded-md {% if current_filter == 'completed' %}bg-blue-600 text-white{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %}"
-        >
-          Completados
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <!-- Lista de cursos -->
-  {% if user_courses %}
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    {% for user_course in user_courses %}
-    <div
-      class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow"
-    >
-      <div class="p-6">
-        <!-- Estado del curso -->
-        <div class="flex items-center justify-between mb-4">
-          <span
-            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {% if user_course.completed %} bg-green-100 text-green-800 {% elif user_course.progress > 0 %} bg-yellow-100 text-yellow-800 {% else %} bg-gray-100 text-gray-800 {% endif %}"
-          >
-            {% if user_course.completed %}
-            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fill-rule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clip-rule="evenodd"
-              ></path>
-            </svg>
-            Completado {% elif user_course.progress > 0 %} En progreso {% else
-            %} No iniciado {% endif %}
-          </span>
-        </div>
-
-        <!-- Información del curso -->
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">
-          {{ user_course.course.title }}
-        </h3>
-        <p class="text-sm text-gray-600 mb-4 line-clamp-3">
-          {{ user_course.course.description|truncatewords:15 }}
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">Mi Biblioteca de Aprendizaje</h1>
+        <p class="text-xl text-purple-100 max-w-2xl mx-auto mb-6">
+          Explora y continúa tu progreso en todos los cursos disponibles para ti
         </p>
-
-        <!-- Progreso -->
-        <div class="mb-4">
-          <div class="flex justify-between text-sm text-gray-600 mb-1">
-            <span>Progreso</span>
-            <span>{{ user_course.progress|floatformat:0 }}%</span>
-          </div>
-          <div class="w-full bg-gray-200 rounded-full h-2">
-            <div
-              class="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style="width: {{ user_course.progress }}%"
-            ></div>
-          </div>
-        </div>
-
-        <!-- Información adicional -->
-        <div class="text-xs text-gray-500 mb-4">
-          <p>Acceso desde: {{ user_course.access_start|date:"d/m/Y" }}</p>
-          {% if user_course.access_end %}
-          <p>Válido hasta: {{ user_course.access_end|date:"d/m/Y" }}</p>
-          {% endif %}
-        </div>
-
-        <!-- Botones de acción -->
-        <div class="flex space-x-2">
-          <a
-            href="{% url 'cursos:course_detail' user_course.course.id %}"
-            class="flex-1 bg-blue-600 text-white px-4 py-2 rounded text-sm text-center hover:bg-blue-700 transition-colors"
-          >
-            {% if user_course.progress == 0 %} Comenzar {% elif
-            user_course.completed %} Revisar {% else %} Continuar {% endif %}
-          </a>
-          {% if not user_course.completed %}
-          <button
-            class="px-3 py-2 text-gray-600 hover:text-gray-800 transition-colors"
-            title="Marcar como favorito"
-          >
-            <svg
-              class="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-              ></path>
-            </svg>
-          </button>
-          {% endif %}
+        <div class="inline-flex items-center bg-white bg-opacity-20 rounded-lg px-4 py-2 backdrop-blur-sm">
+          <svg class="w-5 h-5 mr-2 text-purple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+          </svg>
+          <span class="text-white">{{ total_courses }} cursos disponibles</span>
         </div>
       </div>
     </div>
-    {% endfor %}
   </div>
-  {% else %}
-  <!-- Estado vacío -->
-  <div class="text-center py-12">
-    <svg
-      class="mx-auto h-12 w-12 text-gray-400"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-      ></path>
-    </svg>
-    <h3 class="mt-2 text-sm font-medium text-gray-900">No tienes cursos</h3>
-    <p class="mt-1 text-sm text-gray-500">
-      Empieza explorando nuestro catálogo de cursos disponibles.
-    </p>
-    <div class="mt-6">
-      <a
-        href="{% url 'cursos:course_list' %}"
-        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-      >
-        <svg
-          class="-ml-1 mr-2 h-5 w-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-          ></path>
-        </svg>
-        Explorar Cursos
-      </a>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <!-- Estadísticas Modernizadas -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+      <!-- Total de Cursos -->
+      <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+        <div class="flex items-center">
+          <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+          </div>
+          <div class="ml-5">
+            <p class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Total de Cursos</p>
+            <p class="text-3xl font-bold text-gray-900">{{ total_courses|default:0 }}</p>
+            <p class="text-sm text-blue-600 font-medium">En tu biblioteca</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cursos Completados -->
+      <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+        <div class="flex items-center">
+          <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+            </svg>
+          </div>
+          <div class="ml-5">
+            <p class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Completados</p>
+            <p class="text-3xl font-bold text-gray-900">{{ completed_count|default:0 }}</p>
+            <p class="text-sm text-green-600 font-medium">¡Felicitaciones!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- En Progreso -->
+      <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+        <div class="flex items-center">
+          <div class="w-14 h-14 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+          </div>          <div class="ml-5">
+            <p class="text-sm font-semibold text-gray-600 uppercase tracking-wide">En Progreso</p>
+            <p class="text-3xl font-bold text-gray-900">{{ in_progress_count|default:0 }}</p>
+            <p class="text-sm text-yellow-600 font-medium">Continúa aprendiendo</p>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- Filtros Modernizados -->
+    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden mb-8">
+      <div class="bg-gradient-to-r from-indigo-500 to-purple-500 px-8 py-6">
+        <h2 class="text-2xl font-bold text-white flex items-center">
+          <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+          </svg>
+          Filtrar Cursos
+        </h2>
+        <p class="text-indigo-100 mt-2">Organiza tu vista según tu preferencia</p>
+      </div>
+      <div class="p-8">
+        <div class="flex flex-wrap gap-4">
+          <a href="?filter=all"
+             class="px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 {% if current_filter == 'all' or not current_filter %}bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+            <span class="flex items-center">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14-4H9m4 8H7m6 4H5"></path>
+              </svg>
+              Todos los Cursos
+            </span>
+          </a>
+          <a href="?filter=in_progress"
+             class="px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 {% if current_filter == 'in_progress' %}bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+            <span class="flex items-center">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+              En Progreso
+            </span>
+          </a>
+          <a href="?filter=completed"
+             class="px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 {% if current_filter == 'completed' %}bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+            <span class="flex items-center">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path>
+              </svg>
+              Completados
+            </span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <!-- Lista de Cursos Modernizada -->
+    {% if user_courses %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {% for user_course in user_courses %}
+      <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:scale-105 course-card">
+        <!-- Imagen del curso o placeholder -->
+        <div class="h-48 bg-gradient-to-br from-blue-500 to-purple-600 relative overflow-hidden">
+          {% if user_course.course.image %}
+          <img src="{{ user_course.course.image.url }}" alt="{{ user_course.course.title }}" class="w-full h-full object-cover">
+          {% endif %}
+          <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+          
+          <!-- Badge de estado -->
+          <div class="absolute top-4 left-4">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold
+              {% if user_course.completed %}bg-green-500 text-white
+              {% elif user_course.progress > 0 %}bg-yellow-500 text-white
+              {% else %}bg-gray-500 text-white{% endif %}">
+              {% if user_course.completed %}
+                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                Completado
+              {% elif user_course.progress > 0 %}
+                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                En Progreso
+              {% else %}
+                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                </svg>
+                No Iniciado
+              {% endif %}
+            </span>
+          </div>
+
+          <!-- Botón de favorito -->
+          <div class="absolute top-4 right-4">
+            <button class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center backdrop-blur-sm hover:bg-opacity-30 transition-all duration-300">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="p-6">
+          <!-- Información del curso -->
+          <div class="mb-4">
+            <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
+              {{ user_course.course.title }}
+            </h3>
+            <p class="text-gray-600 text-sm line-clamp-3 leading-relaxed">
+              {{ user_course.course.description|truncatewords:20 }}
+            </p>
+          </div>
+
+          <!-- Barra de progreso mejorada -->
+          <div class="mb-6">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm font-semibold text-gray-700">Progreso del curso</span>
+              <span class="text-sm font-bold text-blue-600">{{ user_course.progress|floatformat:0 }}%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full transition-all duration-500 ease-out shadow-sm"
+                   style="width: {{ user_course.progress }}%"></div>
+            </div>
+          </div>
+
+          <!-- Información adicional con iconos -->
+          <div class="space-y-2 mb-6">
+            <div class="flex items-center text-xs text-gray-500">
+              <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              <span>Acceso desde: {{ user_course.access_start|date:"d/m/Y" }}</span>
+            </div>
+            {% if user_course.access_end %}
+            <div class="flex items-center text-xs text-gray-500">
+              <svg class="w-4 h-4 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span>Válido hasta: {{ user_course.access_end|date:"d/m/Y" }}</span>
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Botón de acción principal -->
+          <a href="{% url 'cursos:course_detail' user_course.course.id %}"
+             class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 flex items-center justify-center group">
+            {% if user_course.progress == 0 %}
+              <svg class="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.01M15 10h1.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              Comenzar Curso
+            {% elif user_course.completed %}
+              <svg class="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+              </svg>
+              Revisar Contenido
+            {% else %}
+              <svg class="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+              Continuar Aprendiendo
+            {% endif %}
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}    <!-- Estado Vacío Modernizado -->
+    <div class="text-center py-20">
+      <div class="max-w-md mx-auto">
+        <!-- Ilustración grande -->
+        <div class="w-32 h-32 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-8">
+          <svg class="w-16 h-16 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+          </svg>
+        </div>
+        
+        <h3 class="text-2xl font-bold text-gray-900 mb-4">Tu Biblioteca Está Esperando</h3>
+        <p class="text-lg text-gray-600 mb-8 leading-relaxed">
+          ¡Es hora de comenzar tu viaje de aprendizaje! Explora nuestro catálogo completo de cursos y encuentra el conocimiento que buscas.
+        </p>
+        
+        <!-- Estadísticas motivacionales -->
+        <div class="grid grid-cols-2 gap-6 mb-8">
+          <div class="bg-blue-50 rounded-xl p-4">
+            <div class="text-2xl font-bold text-blue-600">500+</div>
+            <div class="text-sm text-blue-600">Cursos Disponibles</div>
+          </div>
+          <div class="bg-purple-50 rounded-xl p-4">
+            <div class="text-2xl font-bold text-purple-600">24/7</div>
+            <div class="text-sm text-purple-600">Acceso Completo</div>
+          </div>
+        </div>
+        
+        <!-- Botones de acción -->
+        <div class="space-y-4">
+          <a href="{% url 'cursos:course_list' %}"
+             class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-bold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 inline-flex items-center justify-center group">
+            <svg class="w-6 h-6 mr-3 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            Explorar Catálogo Completo
+          </a>
+          
+          <a href="{% url 'membresias:plan_list' %}"
+             class="w-full bg-white border-2 border-gray-200 text-gray-700 px-8 py-4 rounded-xl font-semibold hover:border-blue-300 hover:text-blue-600 transition-all duration-300 inline-flex items-center justify-center">
+            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+            </svg>
+            Ver Planes de Membresía
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
   </div>
-  {% endif %}
 </div>
 
+<!-- Estilos personalizados -->
 <style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
   .line-clamp-3 {
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+
+  .course-card {
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .hover\:scale-105:hover {
+    transform: scale(1.05);
+  }
+
+  .group:hover .group-hover\:rotate-12 {
+    transform: rotate(12deg);
+  }
 </style>
+
 {% endblock %}

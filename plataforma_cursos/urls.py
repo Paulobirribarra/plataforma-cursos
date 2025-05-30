@@ -9,6 +9,7 @@ from django.views.generic import RedirectView
 urlpatterns = [
     path("", views.home, name="home"),  # Nueva página principal
     path("nosotros/", views.nosotros, name="nosotros"),  # Página Quiénes Somos
+    path("contacto/", views.contacto, name="contacto"),  # Página de Contacto
     path("accounts/", include("allauth.urls")),  # URLs de django-allauth
     path(
         "cursos/", include("cursos.urls", namespace="cursos")

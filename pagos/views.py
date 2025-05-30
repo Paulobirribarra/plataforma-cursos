@@ -72,9 +72,7 @@ def initiate_cart_payment(request):
     cart = Cart.objects.filter(user=request.user, is_active=True).first()
     if not cart or not cart.items.exists():
         messages.error(request, "Tu carrito está vacío.")
-        return redirect("carrito:cart_detail")
-
-    # Calcular el total
+        return redirect("carrito:cart_detail")    # Calcular el total
     total = sum(item.price_applied for item in cart.items.all())
     description = "Compra de "
     items_desc = []
@@ -94,6 +92,11 @@ def initiate_cart_payment(request):
         payment_type="cart",
         user=request.user,
     )
+
+    # Si el total es 0, procesar como pago gratuito
+    if total == 0:
+        logger.info(f"Procesando pago gratuito para pago {payment.id}")
+        return process_free_payment(request, payment)
 
     # Iniciar transacción con Webpay REST
     return_url = request.build_absolute_uri(
@@ -327,8 +330,7 @@ def purchase_success(request):
     
     # Limpiar la sesión después de obtener los datos
     del request.session['purchase_success_data']
-    
-    # Obtener el pago
+      # Obtener el pago
     payment = get_object_or_404(Payment, id=success_data['payment_id'], user=request.user)
     
     context = {
@@ -339,4 +341,86 @@ def purchase_success(request):
         'total_amount': success_data['total_amount'],
     }
     
-    return render(request, 'pagos/purchase_success_fixed.html', context)
+    return render(request, 'pagos/purchase_success.html', context)
+
+
+def process_free_payment(request, payment):
+    """Procesa un pago gratuito (monto = 0) sin pasar por Webpay."""
+    try:
+        # Marcar el pago como completado
+        payment.status = "completed"
+        payment.save()
+        
+        # Procesar los items del carrito igual que en confirm_cart_payment
+        cart = Cart.objects.filter(user=request.user, is_active=True).first()
+        purchased_items = []
+        has_new_membership = False
+        has_new_courses = False
+        
+        if cart:
+            # Guardar items para mostrar en confirmación
+            purchased_items = list(cart.items.all())
+            
+            for item in cart.items.all():
+                if item.item_type == "course" and item.course:
+                    from cursos.models import UserCourse
+                    UserCourse.objects.get_or_create(
+                        user=request.user, 
+                        course=item.course,
+                        defaults={'progress': 0.0, 'completed': False}
+                    )
+                    has_new_courses = True
+                elif item.item_type == "membership" and item.membership_plan:
+                    from membresias.models import Membership
+                    # Verificar si ya existe una membresía activa
+                    existing_membership = Membership.objects.filter(
+                        user=request.user, 
+                        status='active'
+                    ).first()
+                    
+                    if existing_membership:
+                        # Actualizar membresía existente
+                        existing_membership.plan = item.membership_plan
+                        existing_membership.courses_remaining = item.membership_plan.courses_per_month
+                        existing_membership.consultations_remaining = item.membership_plan.consultations
+                        existing_membership.save()
+                    else:
+                        # Crear nueva membresía
+                        Membership.objects.create(
+                            user=request.user,
+                            plan=item.membership_plan,
+                            status="active",
+                            courses_remaining=item.membership_plan.courses_per_month,
+                            consultations_remaining=item.membership_plan.consultations
+                        )
+                    has_new_membership = True
+            
+            cart.is_active = False
+            cart.save()
+
+        # Guardar información en sesión para la página de confirmación
+        request.session['purchase_success_data'] = {
+            'payment_id': payment.id,
+            'purchased_items': [
+                {
+                    'item_type': item.item_type,
+                    'course_title': item.course.title if item.course else None,
+                    'membership_name': item.membership_plan.name if item.membership_plan else None,
+                    'price_applied': float(item.price_applied)
+                } for item in purchased_items
+            ],
+            'has_new_membership': has_new_membership,
+            'has_new_courses': has_new_courses,
+            'total_amount': float(payment.amount)
+        }
+        
+        logger.info(f"Pago gratuito procesado exitosamente para pago {payment.id}")
+        messages.success(request, "¡Curso gratuito agregado exitosamente!")
+        return redirect("pagos:purchase_success")
+        
+    except Exception as e:
+        logger.error(f"Error al procesar pago gratuito: {e}", exc_info=True)
+        payment.status = "failed"
+        payment.save()
+        messages.error(request, f"Error al procesar el curso gratuito: {e}")
+        return redirect("carrito:cart_detail")

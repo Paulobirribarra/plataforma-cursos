@@ -1,0 +1,19 @@
+# Ignorar todos los templates Django HTML
+templates/**/*.html
+**/templates/**/*.html
+
+# Archivos específicos de Django
+*.django.html
+*.html
+
+# Directorios de templates comunes
+templates/
+static/
+
+# Archivos de configuración que no deben formatearse
+*.env
+*.env.*
+manage.py
+
+# Archivos de migración de Django
+**/migrations/**

@@ -62,27 +62,71 @@ def dashboard(request):
 
 @login_required
 def my_courses(request):
-    """Vista para mostrar los cursos del usuario."""
-    # Filtrar cursos del usuario
+    """Vista para mostrar los cursos del usuario (comprados + accesibles por membresía)."""
+    from cursos.models import Course
+    from membresias.models import Membership
+    from cursos.views import check_course_access
+    
+    # Filtro de tipo
     filter_type = request.GET.get('filter', 'all')
     
-    user_courses = request.user.user_courses.all()
+    # Obtener cursos comprados directamente
+    purchased_courses = request.user.user_courses.all()
     
+    # Obtener cursos accesibles por membresía activa
+    accessible_course_ids = []
+    active_membership = request.user.get_active_membership()
+    
+    if active_membership:
+        # Verificar qué cursos puede acceder con su membresía
+        membership_courses = Course.objects.filter(
+            membership_required=True,
+            is_available=True
+        )
+        
+        for course in membership_courses:
+            can_access, _ = check_course_access(request.user, course)
+            if can_access:
+                accessible_course_ids.append(course.id)
+    
+    # Crear lista unificada evitando duplicados
+    user_courses_list = list(purchased_courses)
+    
+    # Agregar cursos de membresía que no estén ya comprados
+    already_purchased_course_ids = [uc.course.id for uc in purchased_courses]
+    
+    for course_id in accessible_course_ids:
+        if course_id not in already_purchased_course_ids:
+            course = Course.objects.get(id=course_id)
+            # Crear un objeto pseudo-UserCourse para cursos de membresía
+            pseudo_user_course = type('obj', (object,), {
+                'course': course,
+                'progress': 0.0,
+                'completed': False,
+                'access_start': active_membership.start_date,
+                'access_end': active_membership.end_date,
+                'is_membership_access': True
+            })()
+            user_courses_list.append(pseudo_user_course)
+    
+    # Aplicar filtros
     if filter_type == 'completed':
-        user_courses = user_courses.filter(completed=True)
+        user_courses_list = [uc for uc in user_courses_list if getattr(uc, 'completed', False)]
     elif filter_type == 'in_progress':
-        user_courses = user_courses.filter(completed=False, progress__gt=0)
+        user_courses_list = [uc for uc in user_courses_list if not getattr(uc, 'completed', False) and getattr(uc, 'progress', 0) > 0]
     
     # Estadísticas
-    total_courses = request.user.user_courses.count()
-    completed_count = request.user.user_courses.filter(completed=True).count()
-    in_progress_count = request.user.user_courses.filter(completed=False, progress__gt=0).count()
+    total_courses = len(user_courses_list)
+    completed_count = len([uc for uc in user_courses_list if getattr(uc, 'completed', False)])
+    in_progress_count = len([uc for uc in user_courses_list if not getattr(uc, 'completed', False) and getattr(uc, 'progress', 0) > 0])
     
     context = {
-        'user_courses': user_courses.order_by('-access_start'),
+        'user_courses': user_courses_list,
         'current_filter': filter_type,
         'completed_count': completed_count,
         'in_progress_count': in_progress_count,
+        'total_courses': total_courses,
+        'active_membership': active_membership,
     }
     
     return render(request, 'usuarios/my_courses.html', context)

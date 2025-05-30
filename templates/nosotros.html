@@ -1,24 +1,210 @@
 {% extends 'base.html' %} {% load static %} {% load i18n %} {% block content %}
-<!-- Quiénes Somos -->
-<div class="container mx-auto py-12 px-4">
-  <div class="flex flex-col md:flex-row items-center gap-8">
-    <div class="md:w-1/2">
-      <img
-        src="{% static 'imagenes/quienes-somos.jpeg' %}"
-        alt="Quiénes Somos"
-        class="w-full h-110 object-cover rounded-lg shadow-lg hover:shadow-xl transition-shadow"
-      />
-    </div>
-    <div class="md:w-1/2">
-      <h2 class="text-3xl font-bold mb-4">¿Quiénes somos?</h2>
-      <p class="text-gray-700">
-        En Asesorias Futuro LTD, somos un equipo de profesionales apasionados
-        por ayudar a emprendedores a alcanzar sus objetivos. Nos especializamos
-        en ofrecer soluciones personalizadas a través de cursos, asesoría
-        empresarial y formación. Con nuestra experiencia, buscamos acompañarte
-        en cada paso del camino hacia el éxito.
+
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+  <!-- Hero Section -->
+  <div class="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-5xl font-bold mb-6">Sobre Asesorías Futuro LTD</h1>
+      <p class="text-xl max-w-3xl mx-auto opacity-90">
+        Transformamos vidas a través de la educación especializada y la asesoría empresarial de excelencia
       </p>
     </div>
   </div>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    
+    <!-- Who We Are Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
+      <div class="order-2 lg:order-1">
+        <div class="bg-white rounded-2xl shadow-xl p-8">
+          <div class="flex items-center mb-6">
+            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+              <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-900">¿Quiénes Somos?</h2>
+          </div>
+          <p class="text-gray-700 text-lg leading-relaxed mb-6">
+            En <strong class="text-blue-600">Asesorías Futuro LTD</strong>, somos un equipo de profesionales apasionados 
+            por impulsar el éxito empresarial y personal. Desde 2020, hemos ayudado a más de 1,000 emprendedores 
+            y profesionales a alcanzar sus objetivos a través de nuestra metodología única de formación.
+          </p>
+          <p class="text-gray-700 text-lg leading-relaxed">
+            Nos especializamos en ofrecer soluciones educativas personalizadas que combinan teoría sólida 
+            con experiencia práctica del mundo real, garantizando resultados tangibles para nuestros estudiantes.
+          </p>
+        </div>
+      </div>
+      <div class="order-1 lg:order-2">
+        <img
+          src="{% static 'imagenes/quienes-somos.jpeg' %}"
+          alt="Equipo Asesorías Futuro LTD"
+          class="w-full h-96 object-cover rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+        />
+      </div>
+    </div>
+
+    <!-- Mission & Vision -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+      <div class="bg-white rounded-2xl shadow-xl p-8 transform hover:scale-105 transition-all duration-300">
+        <div class="flex items-center mb-6">
+          <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900">Nuestra Misión</h3>
+        </div>
+        <p class="text-gray-700 leading-relaxed">
+          Democratizar el acceso a la educación empresarial de calidad, proporcionando herramientas 
+          prácticas y conocimientos especializados que permitan a nuestros estudiantes construir 
+          negocios sostenibles y alcanzar la libertad financiera.
+        </p>
+      </div>
+      
+      <div class="bg-white rounded-2xl shadow-xl p-8 transform hover:scale-105 transition-all duration-300">
+        <div class="flex items-center mb-6">
+          <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900">Nuestra Visión</h3>
+        </div>
+        <p class="text-gray-700 leading-relaxed">
+          Ser la plataforma de referencia en educación empresarial en América Latina, reconocida 
+          por formar emprendedores exitosos y contribuir al desarrollo económico de la región 
+          a través de la innovación educativa.
+        </p>
+      </div>
+    </div>
+
+    <!-- Values Section -->
+    <div class="bg-white rounded-2xl shadow-xl p-8 mb-20">
+      <h3 class="text-3xl font-bold text-center text-gray-900 mb-12">Nuestros Valores</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h4 class="text-xl font-semibold text-gray-900 mb-3">Excelencia</h4>
+          <p class="text-gray-600">Compromiso con la calidad en cada curso y asesoría que ofrecemos.</p>
+        </div>
+        
+        <div class="text-center">
+          <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+            </svg>
+          </div>
+          <h4 class="text-xl font-semibold text-gray-900 mb-3">Innovación</h4>
+          <p class="text-gray-600">Utilizamos las últimas tecnologías y metodologías educativas.</p>
+        </div>
+        
+        <div class="text-center">
+          <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+          </div>
+          <h4 class="text-xl font-semibold text-gray-900 mb-3">Resultados</h4>
+          <p class="text-gray-600">Enfocados en generar impacto real en la vida de nuestros estudiantes.</p>
+        </div>
+        
+        <div class="text-center">
+          <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+            </svg>
+          </div>
+          <h4 class="text-xl font-semibold text-gray-900 mb-3">Compromiso</h4>
+          <p class="text-gray-600">Dedicados al éxito y crecimiento de cada uno de nuestros estudiantes.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="bg-gradient-to-r from-blue-600 to-purple-700 rounded-2xl shadow-xl p-8 text-white mb-20">
+      <h3 class="text-3xl font-bold text-center mb-12">Nuestro Impacto</h3>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+        <div>
+          <div class="text-4xl font-bold mb-2">1,000+</div>
+          <div class="text-lg opacity-90">Estudiantes Formados</div>
+        </div>
+        <div>
+          <div class="text-4xl font-bold mb-2">50+</div>
+          <div class="text-lg opacity-90">Cursos Disponibles</div>
+        </div>
+        <div>
+          <div class="text-4xl font-bold mb-2">95%</div>
+          <div class="text-lg opacity-90">Satisfacción del Cliente</div>
+        </div>
+        <div>
+          <div class="text-4xl font-bold mb-2">24/7</div>
+          <div class="text-lg opacity-90">Soporte Disponible</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team Section -->
+    <div class="bg-white rounded-2xl shadow-xl p-8">
+      <h3 class="text-3xl font-bold text-center text-gray-900 mb-12">Nuestro Equipo</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="text-center">
+          <div class="w-32 h-32 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+            <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+          </div>
+          <h4 class="text-xl font-semibold text-gray-900 mb-2">Equipo Directivo</h4>
+          <p class="text-gray-600 mb-4">Líderes con más de 15 años de experiencia en educación y emprendimiento.</p>
+        </div>
+        
+        <div class="text-center">
+          <div class="w-32 h-32 bg-gradient-to-br from-green-400 to-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+            <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+          </div>
+          <h4 class="text-xl font-semibold text-gray-900 mb-2">Instructores Expertos</h4>
+          <p class="text-gray-600 mb-4">Profesionales activos en la industria que comparten conocimiento práctico.</p>
+        </div>
+        
+        <div class="text-center">
+          <div class="w-32 h-32 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+            <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+          </div>
+          <h4 class="text-xl font-semibold text-gray-900 mb-2">Soporte Técnico</h4>
+          <p class="text-gray-600 mb-4">Equipo dedicado disponible 24/7 para resolver cualquier consulta.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
+
+<style>
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeInUp 0.6s ease-out;
+  }
+</style>
+
 {% endblock %}

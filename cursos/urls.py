@@ -8,6 +8,7 @@ urlpatterns = [
     # Vistas públicas
     path('', views.course_list, name='course_list'),
     path('course/<int:pk>/', views.course_detail, name='course_detail'),
+    path('course/<int:course_id>/resource/<int:resource_id>/', views.access_resource, name='access_resource'),
     # Vistas de administración
     path('admin/courses/', views.course_list_admin, name='course_list_admin'),
     path('admin/course/create/', views.course_create_or_update, name='course_create_admin'),

@@ -3,7 +3,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Course, UserCourse, DiscountCode
+from django.http import HttpResponseRedirect
+from .models import Course, UserCourse, DiscountCode, CourseResource
 from .forms import CourseForm, CourseResourceForm, DiscountCodeForm
 from decimal import Decimal
 from membresias.models import MembershipPlan
@@ -20,6 +21,39 @@ def extract_youtube_id(url):
         elif "youtu.be/" in url:
             return url.split("youtu.be/")[1].split("?")[0]
     return None
+
+
+def check_course_access(user, course):
+    """
+    Verifica si un usuario puede acceder a un curso y sus recursos.
+    Retorna una tupla (puede_acceder, razon_denegacion)
+    """
+    # Si el curso es gratuito, cualquiera puede acceder
+    if course.is_free:
+        return True, None
+
+    # Si el usuario ya compró este curso específico
+    user_course = UserCourse.objects.filter(user=user, course=course).first()
+    if user_course:
+        return True, None
+
+    # Si el curso requiere membresía, verificar membresía activa
+    if course.membership_required:
+        active_membership = user.get_active_membership()
+        if not active_membership:
+            return False, "membership_required"
+
+        # Verificar si la membresía puede acceder a este curso
+        if course.available_membership_plans.exists():
+            if not course.available_membership_plans.filter(
+                id=active_membership.plan.id
+            ).exists():
+                return False, "membership_plan_insufficient"
+
+        return True, None
+
+    # Para cursos de pago sin membresía requerida, necesita haberlo comprado
+    return False, "payment_required"
 
 
 # --------------------------
@@ -52,6 +86,9 @@ def course_detail(request, pk):
         if max_discount > 0:
             final_price *= 1 - max_discount / 100
 
+    # Verificar acceso al curso y recursos
+    can_access, denial_reason = check_course_access(request.user, course)
+
     # Preprocesar recursos con sus youtube_ids
     resources_with_youtube = [
         (resource, extract_youtube_id(resource.url))
@@ -67,8 +104,51 @@ def course_detail(request, pk):
             "final_price": final_price,
             "resources_with_youtube": resources_with_youtube,
             "user_course": user_course,
+            "can_access_resources": can_access,
+            "denial_reason": denial_reason,
         },
     )
+
+
+@login_required
+def access_resource(request, course_id, resource_id):
+    """Vista para acceder a un recurso específico del curso con validación de permisos"""
+    course = get_object_or_404(Course, id=course_id, is_available=True)
+    resource = get_object_or_404(CourseResource, id=resource_id, course=course)
+
+    # Verificar acceso al curso
+    can_access, denial_reason = check_course_access(request.user, course)
+
+    if not can_access:
+        if denial_reason == "membership_required":
+            messages.warning(
+                request,
+                f"Para acceder a los recursos del curso '{course.title}' necesitas una membresía activa."
+            )
+            return redirect('membresias:plan_list')
+        elif denial_reason == "membership_plan_insufficient":
+            messages.warning(
+                request,
+                f"Tu plan de membresía actual no incluye acceso a '{course.title}'. "
+                f"Actualiza tu plan para acceder a este contenido."
+            )
+            return redirect('membresias:plan_list')
+        elif denial_reason == "payment_required":
+            messages.warning(
+                request,
+                f"Para acceder a los recursos del curso '{course.title}' debes comprarlo primero."
+            )
+            return redirect('carrito:add_course_to_cart', course_id=course.id)
+
+    # Si tiene acceso, redirigir al recurso
+    if resource.url:
+        return HttpResponseRedirect(resource.url)
+    elif resource.file:
+        # Aquí podrías implementar descarga segura del archivo
+        return HttpResponseRedirect(resource.file.url)
+    else:
+        messages.error(request, "El recurso no está disponible.")
+        return redirect('cursos:course_detail', pk=course.id)
 
 
 def course_list(request):

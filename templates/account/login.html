@@ -2,24 +2,258 @@
 {% load i18n %}
 {% load widget_tweaks %}
 
+{% block title %}Iniciar Sesión - Asesorias Futuro LTD{% endblock %}
+
 {% block content %}
-<div class="max-w-md mx-auto bg-white p-6 rounded shadow">
-    <h1 class="text-2xl font-bold mb-4">Iniciar Sesión</h1>
-    <form method="post" action="{% url 'account_login' %}">
-        {% csrf_token %}
-        <div class="mb-4">
-            <label for="id_login" class="block text-sm font-medium">Correo</label>
-            <input type="email" name="login" id="id_login" class="w-full p-2 border rounded" required>
+<!-- Hero Section -->
+<div class="bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 text-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-4" aria-label="Breadcrumb">
+      <ol class="inline-flex items-center space-x-1 md:space-x-3">
+        <li class="inline-flex items-center">
+          <a href="{% url 'home' %}" 
+             class="inline-flex items-center text-blue-200 hover:text-white transition-colors duration-300">
+            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+            </svg>
+            Inicio
+          </a>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <svg class="w-5 h-5 text-blue-300" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="ml-1 text-blue-200 font-medium">Iniciar Sesión</span>
+          </div>
+        </li>
+      </ol>
+    </nav>
+
+    <div class="text-center">
+      <!-- Icono principal más pequeño -->
+      <div class="mx-auto w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-4">
+        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+        </svg>
+      </div>
+      
+      <h1 class="text-3xl md:text-4xl font-bold mb-3">
+        Iniciar Sesión
+      </h1>
+      <p class="text-lg text-blue-100 max-w-2xl mx-auto leading-relaxed">
+        Accede a tu cuenta y continúa tu crecimiento profesional.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Contenido Principal -->
+<div class="py-8 bg-gray-50">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <!-- Mensajes de Django -->
+    {% if messages %}
+    <div class="mb-8">
+      {% for message in messages %}
+      <div class="flex items-center p-4 mb-4 text-sm rounded-lg {% if message.tags == 'success' %}text-green-800 bg-green-50 border border-green-200{% elif message.tags == 'error' %}text-red-800 bg-red-50 border border-red-200{% else %}text-blue-800 bg-blue-50 border border-blue-200{% endif %}" role="alert">
+        <svg class="flex-shrink-0 inline w-4 h-4 mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+        </svg>
+        <span class="font-medium">{{ message }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+      
+      <!-- Columna Principal: Formulario -->
+      <div class="lg:col-span-3">
+        <div class="bg-white rounded-2xl shadow-xl p-8">
+          <div class="flex items-center mb-6">
+            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-4">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900">Accede a tu Cuenta</h2>
+              <p class="text-gray-600">Ingresa tus credenciales para continuar</p>
+            </div>
+          </div>
+
+          <!-- Errores del formulario -->
+          {% if form.errors %}
+          <div class="mb-6">
+            {% for error in form.non_field_errors %}
+            <div class="flex items-center p-4 mb-4 text-sm text-red-800 bg-red-50 border border-red-200 rounded-lg" role="alert">
+              <svg class="flex-shrink-0 inline w-4 h-4 mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+              </svg>
+              <span class="font-medium">{{ error }}</span>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <form method="post" action="{% url 'account_login' %}" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- Campo Email -->
+            <div>
+              <label for="id_login" class="block text-sm font-medium text-gray-700 mb-2">
+                Correo Electrónico *
+              </label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                  </svg>
+                </div>
+                <input type="email" name="login" id="id_login" 
+                       class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300" 
+                       placeholder="tu@email.com"
+                       required>
+              </div>
+            </div>
+            
+            <!-- Campo Contraseña -->
+            <div>
+              <label for="id_password" class="block text-sm font-medium text-gray-700 mb-2">
+                Contraseña *
+              </label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                  </svg>
+                </div>
+                <input type="password" name="password" id="id_password" 
+                       class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300" 
+                       placeholder="Tu contraseña"
+                       required>
+              </div>
+            </div>
+
+            <!-- Checkbox Recordar -->
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <input type="checkbox" name="remember" id="id_remember" 
+                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                <label for="id_remember" class="ml-2 block text-sm text-gray-700">
+                  Recordar mi sesión
+                </label>
+              </div>
+              <a href="{% url 'account_reset_password' %}" 
+                 class="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors duration-300">
+                ¿Olvidaste tu contraseña?
+              </a>
+            </div>
+            
+            <button type="submit" 
+                    class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium py-3 px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 flex items-center justify-center">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+              </svg>
+              Iniciar Sesión
+            </button>
+          </form>
+
+          <!-- Enlaces adicionales -->
+          <div class="mt-8 pt-6 border-t border-gray-200">
+            <div class="text-center">
+              <p class="text-gray-600 mb-4">¿No tienes una cuenta?</p>
+              <a href="{% url 'account_signup' %}" 
+                 class="inline-flex items-center justify-center px-6 py-3 border border-blue-600 text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-all duration-300">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                </svg>
+                Crear Cuenta Nueva
+              </a>
+            </div>
+          </div>
         </div>
-        <div class="mb-4">
-            <label for="id_password" class="block text-sm font-medium">Contraseña</label>
-            <input type="password" name="password" id="id_password" class="w-full p-2 border rounded" required>
+      </div>
+
+      <!-- Sidebar: Información y Beneficios -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-2xl shadow-xl p-6 sticky top-8 space-y-6">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">¿Por qué unirte a nosotros?</h3>
+            
+            <div class="space-y-3">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                  <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="font-medium text-gray-900 text-sm">Cursos Especializados</h4>
+                  <p class="text-xs text-gray-600">Contenido de alta calidad</p>
+                </div>
+              </div>
+              
+              <div class="flex items-center">
+                <div class="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                  <svg class="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="font-medium text-gray-900 text-sm">Certificaciones</h4>
+                  <p class="text-xs text-gray-600">Reconocimiento profesional</p>
+                </div>
+              </div>
+              
+              <div class="flex items-center">
+                <div class="flex-shrink-0 w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                  <svg class="w-3 h-3 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="font-medium text-gray-900 text-sm">Asesoría Personalizada</h4>
+                  <p class="text-xs text-gray-600">Apoyo continuo</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="border-t border-gray-200 pt-6">
+            <h4 class="font-medium text-gray-900 mb-3">¿Necesitas Ayuda?</h4>
+            <div class="space-y-2">
+              <a href="{% url 'contacto' %}" 
+                 class="flex items-center text-blue-600 hover:text-blue-800 text-sm transition-colors duration-300">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+                Contactar Soporte
+              </a>
+              <a href="{% url 'home' %}" 
+                 class="flex items-center text-blue-600 hover:text-blue-800 text-sm transition-colors duration-300">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                Volver al Inicio
+              </a>
+            </div>
+          </div>
+
+          <!-- Testimonios rápidos -->
+          <div class="border-t border-gray-200 pt-6">
+            <h4 class="font-medium text-gray-900 mb-3">💬 Lo que dicen nuestros estudiantes</h4>
+            <div class="text-xs text-gray-600 space-y-2">
+              <p class="italic">"Excelente plataforma de aprendizaje"</p>
+              <p class="italic">"Cursos muy prácticos y actualizados"</p>
+              <p class="italic">"El mejor apoyo educativo"</p>
+            </div>
+          </div>
         </div>
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Iniciar Sesión</button>
-    </form>
-    <p class="mt-4">
-        <a href="{% url 'account_signup' %}" class="text-blue-600">Crear una cuenta</a> |
-        <a href="{% url 'account_reset_password' %}" class="text-blue-600">¿Olvidaste tu contraseña?</a>
-    </p>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

@@ -315,3 +315,6 @@ class DiscountCode(models.Model):
             models.Index(fields=["course"]),
             models.Index(fields=["code"]),
         ]
+
+
+

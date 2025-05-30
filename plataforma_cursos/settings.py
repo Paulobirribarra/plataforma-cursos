@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "cursos.apps.CursosConfig",
     "pagos.apps.PagosConfig",
     "membresias.apps.MembresiasConfig",
+    "blogs.apps.BlogsConfig",  # App para contacto y blogs
     "widget_tweaks",
     "carrito",
 ]
