@@ -42,35 +42,45 @@
           <p class="text-gray-600 mb-6 text-center">{{ plan.description }}</p>
 
           <!-- Features List -->
-          <ul class="space-y-4 mb-8">
-            <li class="flex items-center">
+          <ul class="space-y-4 mb-8">            <li class="flex items-center">
               <div class="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3">
                 <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
               </div>
               <span class="text-gray-700">
-                <strong class="text-blue-600">{{ plan.courses_per_month }}</strong> cursos por mes
+                {% if plan.courses_per_month >= 999 %}
+                <strong class="text-blue-600">Acceso Ilimitado</strong> a todos los cursos
+                {% else %}
+                <strong class="text-blue-600">{{ plan.courses_per_month }}</strong> curso{% if plan.courses_per_month > 1 %}s{% endif %} por mes
+                {% endif %}
               </span>
-            </li>
-            <li class="flex items-center">
+            </li>            <li class="flex items-center">
               <div class="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3">
                 <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
               </div>
               <span class="text-gray-700">
-                <strong class="text-blue-600">{{ plan.consultations }}</strong> consultas incluidas
+                {% if plan.consultations > 0 %}
+                <strong class="text-blue-600">{{ plan.consultations }}</strong> 
+                {% if plan.slug == 'basico' %}asesoría grupal{% elif plan.slug == 'intermedio' %}asesorías grupales{% elif plan.slug == 'premium' %}consulta individual{% endif %} por mes
+                {% else %}
+                Sin consultas incluidas
+                {% endif %}
               </span>
-            </li>
-            <li class="flex items-center">
+            </li>            <li class="flex items-center">
               <div class="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3">
                 <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
               </div>
               <span class="text-gray-700">
-                <strong class="text-blue-600">{{ plan.discount_percentage }}%</strong> descuento en cursos adicionales
+                {% if plan.discount_percentage > 0 %}
+                <strong class="text-blue-600">{{ plan.discount_percentage }}%</strong> descuento en compras adicionales
+                {% else %}
+                Sin descuentos adicionales
+                {% endif %}
               </span>
             </li>
             <li class="flex items-center">

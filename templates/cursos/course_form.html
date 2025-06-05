@@ -1,235 +1,811 @@
 {% extends 'base.html' %}
-{% block title %}{% if course %}Editar Curso{% else %}Crear Curso{% endif %}{% endblock %}
+{% load i18n %}
+{% load widget_tweaks %}
+{% block title %}{% if course %}Editar Curso{% else %}Crear Nuevo Curso{% endif %} | Administración{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6">{% if course %}Editar Curso{% else %}Crear Curso{% endif %}</h1>
-
-    <!-- Mensajes -->
-    {% if messages %}
-    <div class="mb-4">
-        {% for message in messages %}
-        <div class="p-4 rounded {% if message.tags == 'error' %}bg-red-100 border border-red-400 text-red-700{% else %}bg-green-100 border border-green-400 text-green-700{% endif %}">
-            {{ message }}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+  <!-- Hero Section -->
+  <div class="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="flex items-center space-x-4 mb-4">
+            <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center backdrop-blur-sm">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+              </svg>
+            </div>
+            <div>
+              <h1 class="text-3xl md:text-4xl font-bold">
+                {% if course %}Editar Curso{% else %}Crear Nuevo Curso{% endif %}
+              </h1>
+              <p class="text-purple-100 mt-1">
+                {% if course %}Actualiza la información del curso {{ course.title }}{% else %}Completa los datos para crear un nuevo curso{% endif %}
+              </p>
+            </div>
+          </div>
         </div>
-        {% endfor %}
+        <div class="hidden md:block">
+          <a href="{% url 'cursos:course_list_admin' %}" 
+             class="inline-flex items-center bg-white bg-opacity-20 text-white px-4 py-2 rounded-lg backdrop-blur-sm hover:bg-opacity-30 transition-all duration-200">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Volver a Lista
+          </a>
+        </div>
+      </div>
     </div>
-    {% endif %}
+  </div>
 
-    <!-- Acordeón -->
-    <div class="space-y-4">
-        <!-- Sección: Datos del Curso -->
-        <div class="border rounded-md shadow-sm">
-            <button type="button" class="w-full bg-gray-100 px-4 py-3 text-left text-lg font-semibold text-gray-900 flex justify-between items-center hover:bg-gray-200 transition-colors" onclick="toggleSection('course-section')">
-                <span>Datos del Curso</span>
-                <svg class="w-5 h-5 transform transition-transform" id="course-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-            </button>
-            <div id="course-section" class="p-4 space-y-4">
-                <!-- Errores del Formulario del Curso -->
-                {% if request.method == "POST" and "save_course" in request.POST and form.errors %}
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                    {% for field in form %}
-                        {% for error in field.errors %}
-                            <p>{{ field.label }}: {{ error }}</p>
-                        {% endfor %}
-                    {% endfor %}
-                    {% for error in form.non_field_errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-                {% endif %}
+  <!-- Mensajes de Sistema -->
+  {% if messages %}
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    {% for message in messages %}
+    <div class="mb-4 p-4 rounded-lg border-l-4 {% if message.tags == 'success' %}bg-green-50 border-green-400 text-green-700{% elif message.tags == 'error' %}bg-red-50 border-red-400 text-red-700{% elif message.tags == 'warning' %}bg-yellow-50 border-yellow-400 text-yellow-700{% else %}bg-blue-50 border-blue-400 text-blue-700{% endif %}">
+      <div class="flex items-center">
+        {% if message.tags == 'success' %}
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        {% elif message.tags == 'error' %}
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+        {% elif message.tags == 'warning' %}
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+        </svg>
+        {% else %}
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        {% endif %}
+        <span>{{ message }}</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
 
-                <form method="post" class="space-y-6">
-                    {% csrf_token %}
-                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                        <div>
-                            <label for="{{ form.title.id_for_label }}" class="block text-gray-700 font-medium mb-1">Título:</label>
-                            {{ form.title }}
-                        </div>
-                        <div>
-                            <label for="{{ form.category.id_for_label }}" class="block text-gray-700 font-medium mb-1">Categoría:</label>
-                            {{ form.category }}
-                        </div>
-                    </div>
-                    <div>
-                        <label for="{{ form.description.id_for_label }}" class="block text-gray-700 font-medium mb-1">Descripción:</label>
-                        {{ form.description }}
-                    </div>
-                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                        <div>
-                            <label for="{{ form.base_price.id_for_label }}" class="block text-gray-700 font-medium mb-1">Precio Base (CLP):</label>
-                            {{ form.base_price }}
-                        </div>
-                        <div>
-                            <label for="{{ form.duration_minutes.id_for_label }}" class="block text-gray-700 font-medium mb-1">Duración (minutos):</label>
-                            {{ form.duration_minutes }}
-                            <p class="text-sm text-gray-500 mt-1">{{ form.duration_minutes.help_text }}</p>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                        <div>
-                            <label for="{{ form.tags.id_for_label }}" class="block text-gray-700 font-medium mb-1">Etiquetas:</label>
-                            {{ form.tags }}
-                        </div>
-                        <div>
-                            <label for="{{ form.special_discount_percentage.id_for_label }}" class="block text-gray-700 font-medium mb-1">Descuento Especial (%):</label>
-                            {{ form.special_discount_percentage }}
-                            <p class="text-sm text-gray-500 mt-1">{{ form.special_discount_percentage.help_text }}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-6">
-                        <label class="inline-flex items-center">
-                            {{ form.is_free }}
-                            <span class="ml-2 text-gray-700">Gratuito</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            {{ form.is_available }}
-                            <span class="ml-2 text-gray-700">Disponible</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            {{ form.is_visible }}
-                            <span class="ml-2 text-gray-700">Visible</span>
-                        </label>
-                    </div>
-                    <div class="flex space-x-3">
-                        <button type="submit" name="save_course" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">Guardar Curso</button>
-                        <a href="{% url 'cursos:course_list_admin' %}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors">Cancelar</a>
-                    </div>
-                </form>
-            </div>
+  <!-- Contenido Principal -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      
+      <!-- Navegación Lateral -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Navegación</h3>
+          <nav class="space-y-2">
+            <a href="#datos-curso" onclick="scrollToSection('datos-curso')" 
+               class="nav-link flex items-center p-3 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-700 transition-colors cursor-pointer">
+              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              Datos del Curso
+            </a>
+            {% if course %}
+            <a href="#recursos-curso" onclick="scrollToSection('recursos-curso')" 
+               class="nav-link flex items-center p-3 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-700 transition-colors cursor-pointer">
+              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17v4a2 2 0 002 2h4M13 13h4a2 2 0 012 2v4a2 2 0 01-2 2H9"></path>
+              </svg>
+              Recursos
+            </a>
+            <a href="#descuentos-curso" onclick="scrollToSection('descuentos-curso')" 
+               class="nav-link flex items-center p-3 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-700 transition-colors cursor-pointer">
+              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+              </svg>
+              Códigos de Descuento
+            </a>
+            {% endif %}
+          </nav>
         </div>
+      </div>
 
-        <!-- Sección: Añadir Recurso (Solo si el curso existe) -->
-        {% if course %}
-        <div class="border rounded-md shadow-sm">
-            <button type="button" class="w-full bg-gray-100 px-4 py-3 text-left text-lg font-semibold text-gray-900 flex justify-between items-center hover:bg-gray-200 transition-colors" onclick="toggleSection('resource-section')">
-                <span>Añadir Recurso</span>
-                <svg class="w-5 h-5 transform transition-transform" id="resource-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+      <!-- Formularios Principales -->
+      <div class="lg:col-span-3 space-y-8">
+        
+        <!-- Datos del Curso -->
+        <div id="datos-curso" class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center">
+              <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
-            </button>
-            <div id="resource-section" class="p-4 space-y-4 hidden">
-                <!-- Errores del Formulario de Recursos -->
-                {% if request.method == "POST" and "add_resource" in request.POST and resource_form.errors %}
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                    {% for field in resource_form %}
-                        {% for error in field.errors %}
-                            <p>{{ field.label }}: {{ error }}</p>
-                        {% endfor %}
-                    {% endfor %}
-                    {% for error in resource_form.non_field_errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-                {% endif %}
-
-                <form method="post" enctype="multipart/form-data" class="space-y-6">
-                    {% csrf_token %}
-                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                        <div>
-                            <label for="{{ resource_form.title.id_for_label }}" class="block text-gray-700 font-medium mb-1">Título:</label>
-                            {{ resource_form.title }}
-                        </div>
-                        <div>
-                            <label for="{{ resource_form.type.id_for_label }}" class="block text-gray-700 font-medium mb-1">Tipo:</label>
-                            {{ resource_form.type }}
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                        <div>
-                            <label for="{{ resource_form.file.id_for_label }}" class="block text-gray-700 font-medium mb-1">Archivo:</label>
-                            {{ resource_form.file }}
-                        </div>
-                        <div>
-                            <label for="{{ resource_form.url.id_for_label }}" class="block text-gray-700 font-medium mb-1">URL:</label>
-                            {{ resource_form.url }}
-                        </div>
-                    </div>
-                    <button type="submit" name="add_resource" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors">Añadir Recurso</button>
-                </form>
+              </div>
+              <h2 class="text-xl font-bold text-gray-900">Información del Curso</h2>
             </div>
-        </div>
-
-        <!-- Sección: Añadir Código de Descuento -->
-        <div class="border rounded-md shadow-sm">
-            <button type="button" class="w-full bg-gray-100 px-4 py-3 text-left text-lg font-semibold text-gray-900 flex justify-between items-center hover:bg-gray-200 transition-colors" onclick="toggleSection('discount-section')">
-                <span>Añadir Código de Descuento</span>
-                <svg class="w-5 h-5 transform transition-transform" id="discount-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </div>
+          
+          <div class="p-6"># Errores del Formulario del Curso -->
+            {% if request.method == "POST" and "save_course" in request.POST and form.errors %}
+            <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div class="flex items-center mb-2">
+                <svg class="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-            </button>
-            <div id="discount-section" class="p-4 space-y-4 hidden">
-                <!-- Errores del Formulario de Descuentos -->
-                {% if request.method == "POST" and "add_discount" in request.POST and discount_form.errors %}
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                    {% for field in discount_form %}
-                        {% for error in field.errors %}
-                            <p>{{ field.label }}: {{ error }}</p>
-                        {% endfor %}
-                    {% endfor %}
-                    {% for error in discount_form.non_field_errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-                {% endif %}
-
-                <form method="post" class="space-y-6">
-                    {% csrf_token %}
-                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                        <div>
-                            <label for="{{ discount_form.code.id_for_label }}" class="block text-gray-700 font-medium mb-1">Código:</label>
-                            {{ discount_form.code }}
-                            <p class="text-sm text-gray-500 mt-1">Ejemplo: DESC10, BLACK (no distingue mayúsculas/minúsculas)</p>
-                        </div>
-                        <div>
-                            <label for="{{ discount_form.discount_percentage.id_for_label }}" class="block text-gray-700 font-medium mb-1">Porcentaje de Descuento (%):</label>
-                            {{ discount_form.discount_percentage }}
-                        </div>
-                    </div>
-                    <button type="submit" name="add_discount" class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 transition-colors">Añadir Código</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Lista de Códigos de Descuento Existentes -->
-        {% if course.discount_codes.all %}
-        <div class="mt-6">
-            <h2 class="text-2xl font-bold mb-4">Códigos de Descuento Existentes</h2>
-            <ul class="space-y-2">
-                {% for discount in course.discount_codes.all %}
-                <li class="border p-2 rounded bg-gray-50">{{ discount.code }} - {{ discount.discount_percentage }}%</li>
+                <h3 class="text-sm font-medium text-red-800">Por favor corrige los siguientes errores:</h3>
+              </div>
+              <div class="text-sm text-red-700 space-y-1">
+                {% for field in form %}
+                  {% for error in field.errors %}
+                    <p>• <strong>{{ field.label }}:</strong> {{ error }}</p>
+                  {% endfor %}
                 {% endfor %}
-            </ul>
+                {% for error in form.non_field_errors %}
+                  <p>• {{ error }}</p>
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
+
+            <form method="post" class="space-y-6">
+              {% csrf_token %}              <!-- Grid de Campos Principales -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Título -->
+                <div class="lg:col-span-2">
+                  <label for="{{ form.title.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    <span class="flex items-center">
+                      <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                      </svg>
+                      Título del Curso *
+                    </span>
+                  </label>
+                  {{ form.title|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" }}
+                </div>
+                
+                <!-- Categoría -->
+                <div>
+                  <label for="{{ form.category.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    <span class="flex items-center">
+                      <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                      </svg>
+                      Categoría *
+                    </span>
+                  </label>
+                  {{ form.category|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" }}
+                </div>
+                
+                <!-- Precio Base -->
+                <div>
+                  <label for="{{ form.base_price.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    <span class="flex items-center">
+                      <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                      </svg>
+                      Precio Base (CLP)
+                    </span>
+                  </label>
+                  {{ form.base_price|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" }}
+                </div>
+              </div>
+
+              <!-- Descripción -->
+              <div>
+                <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                  <span class="flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
+                    </svg>
+                    Descripción del Curso *
+                  </span>
+                </label>
+                {{ form.description|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors h-32 resize-vertical" }}
+              </div>
+
+              <!-- Segunda fila de campos -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Duración -->
+                <div>
+                  <label for="{{ form.duration_minutes.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    <span class="flex items-center">
+                      <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                      Duración (minutos)
+                    </span>
+                  </label>
+                  {{ form.duration_minutes|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" }}
+                  {% if form.duration_minutes.help_text %}
+                    <p class="text-sm text-gray-500 mt-1">{{ form.duration_minutes.help_text }}</p>
+                  {% endif %}
+                </div>
+                
+                <!-- Descuento Especial -->
+                <div>
+                  <label for="{{ form.special_discount_percentage.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    <span class="flex items-center">
+                      <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z"></path>
+                      </svg>
+                      Descuento Especial (%)
+                    </span>
+                  </label>
+                  {{ form.special_discount_percentage|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" }}
+                  {% if form.special_discount_percentage.help_text %}
+                    <p class="text-sm text-gray-500 mt-1">{{ form.special_discount_percentage.help_text }}</p>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Etiquetas -->
+              <div>
+                <label for="{{ form.tags.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                  <span class="flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                    </svg>
+                    Etiquetas
+                  </span>
+                </label>
+                {{ form.tags|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" }}
+              </div>
+
+              <!-- Campos de Sistema de Recompensas y Membresías -->
+              <div class="bg-gray-50 rounded-lg p-6 space-y-4">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Configuración de Membresías y Recompensas</h3>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <!-- Requiere Membresía -->
+                  <div>
+                    <label class="flex items-center p-4 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer">
+                      {{ form.membership_required|add_class:"mr-3" }}
+                      <div>
+                        <span class="font-medium text-gray-900">Requiere Membresía</span>
+                        <p class="text-sm text-gray-500">El curso solo está disponible para miembros</p>
+                      </div>
+                    </label>
+                  </div>
+
+                  <!-- Es Curso de Recompensa -->
+                  <div>
+                    <label class="flex items-center p-4 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer">
+                      {{ form.is_membership_reward|add_class:"mr-3" }}
+                      <div>
+                        <span class="font-medium text-gray-900">Curso de Recompensa</span>
+                        <p class="text-sm text-gray-500">Los usuarios pueden reclamarlo como beneficio</p>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Planes de Membresía Disponibles -->
+                {% if form.available_membership_plans %}
+                <div>
+                  <label for="{{ form.available_membership_plans.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    Planes de Membresía que pueden acceder
+                  </label>
+                  {{ form.available_membership_plans|add_class:"w-full" }}
+                </div>
+                {% endif %}
+
+                <!-- Planes de Recompensa -->
+                {% if form.reward_for_plans %}
+                <div>
+                  <label for="{{ form.reward_for_plans.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    Planes que pueden reclamar este curso como recompensa
+                  </label>
+                  {{ form.reward_for_plans|add_class:"w-full" }}
+                </div>
+                {% endif %}
+              </div>
+
+              <!-- Configuraciones Básicas -->
+              <div class="bg-blue-50 rounded-lg p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Configuración de Disponibilidad</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <label class="flex items-center p-4 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer">
+                    {{ form.is_free|add_class:"mr-3" }}
+                    <div>
+                      <span class="font-medium text-gray-900">Gratuito</span>
+                      <p class="text-sm text-gray-500">Acceso libre para todos</p>
+                    </div>
+                  </label>
+                  
+                  <label class="flex items-center p-4 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer">
+                    {{ form.is_available|add_class:"mr-3" }}
+                    <div>
+                      <span class="font-medium text-gray-900">Disponible</span>
+                      <p class="text-sm text-gray-500">Curso activo para compra</p>
+                    </div>
+                  </label>
+                  
+                  <label class="flex items-center p-4 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer">
+                    {{ form.is_visible|add_class:"mr-3" }}
+                    <div>
+                      <span class="font-medium text-gray-900">Visible</span>
+                      <p class="text-sm text-gray-500">Aparece en listados públicos</p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Botones de Acción -->
+              <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+                <button type="submit" name="save_course" 
+                        class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  {% if course %}Actualizar Curso{% else %}Crear Curso{% endif %}
+                </button>
+                
+                <a href="{% url 'cursos:course_list_admin' %}" 
+                   class="inline-flex items-center justify-center px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                  </svg>
+                  Cancelar
+                </a>
+              </div>
+            </form>
+          </div>
+        </div>        <!-- Sección: Añadir Recurso (Solo si el curso existe) -->
+        {% if course %}
+        <div id="recursos-curso" class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <button type="button" 
+                  class="w-full bg-gradient-to-r from-green-50 to-emerald-50 px-6 py-4 text-left border-b border-gray-200 hover:from-green-100 hover:to-emerald-100 transition-all duration-200"
+                  onclick="toggleSection('resource-section')">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                  <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                </div>
+                <h2 class="text-xl font-bold text-gray-900">Gestión de Recursos</h2>
+              </div>
+              <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-200" 
+                   id="resource-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </button>
+          
+          <div id="resource-section" class="p-6 space-y-6 hidden">
+            <!-- Errores del Formulario de Recursos -->
+            {% if request.method == "POST" and "add_resource" in request.POST and resource_form.errors %}
+            <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div class="flex items-center mb-2">
+                <svg class="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <h3 class="text-sm font-medium text-red-800">Por favor corrige los siguientes errores:</h3>
+              </div>
+              <div class="text-sm text-red-700 space-y-1">
+                {% for field in resource_form %}
+                  {% for error in field.errors %}
+                    <p>• <strong>{{ field.label }}:</strong> {{ error }}</p>
+                  {% endfor %}
+                {% endfor %}
+                {% for error in resource_form.non_field_errors %}
+                  <p>• {{ error }}</p>
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data" class="space-y-6">
+              {% csrf_token %}
+              
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Título del Recurso -->
+                <div>
+                  <label for="{{ resource_form.title.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    <span class="flex items-center">
+                      <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                      </svg>
+                      Título del Recurso *
+                    </span>
+                  </label>
+                  {{ resource_form.title|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors" }}
+                </div>
+                
+                <!-- Tipo de Recurso -->
+                <div>
+                  <label for="{{ resource_form.type.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    <span class="flex items-center">
+                      <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                      </svg>
+                      Tipo de Recurso *
+                    </span>
+                  </label>
+                  {{ resource_form.type|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors" }}
+                </div>
+              </div>
+              
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Archivo -->
+                <div>
+                  <label for="{{ resource_form.file.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    <span class="flex items-center">
+                      <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                      </svg>
+                      Archivo
+                    </span>
+                  </label>
+                  {{ resource_form.file|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100" }}
+                  <p class="text-sm text-gray-500 mt-1">Sube un archivo para este recurso (opcional si proporcionas URL)</p>
+                </div>
+                
+                <!-- URL -->
+                <div>
+                  <label for="{{ resource_form.url.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    <span class="flex items-center">
+                      <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                      </svg>
+                      URL del Recurso
+                    </span>
+                  </label>
+                  {{ resource_form.url|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors" }}
+                  <p class="text-sm text-gray-500 mt-1">Link directo al recurso (opcional si subes archivo)</p>
+                </div>
+              </div>
+              
+              <div class="flex justify-end pt-4 border-t border-gray-200">
+                <button type="submit" name="add_resource"
+                        class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-lg hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                  </svg>
+                  Añadir Recurso
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>        <!-- Sección: Añadir Código de Descuento -->
+        <div id="descuentos-curso" class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <button type="button" 
+                  class="w-full bg-gradient-to-r from-purple-50 to-pink-50 px-6 py-4 text-left border-b border-gray-200 hover:from-purple-100 hover:to-pink-100 transition-all duration-200"
+                  onclick="toggleSection('discount-section')">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                  <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2-2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z"></path>
+                  </svg>
+                </div>
+                <h2 class="text-xl font-bold text-gray-900">Códigos de Descuento</h2>
+              </div>
+              <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-200" 
+                   id="discount-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </button>
+          
+          <div id="discount-section" class="p-6 space-y-6 hidden">
+            <!-- Errores del Formulario de Descuentos -->
+            {% if request.method == "POST" and "add_discount" in request.POST and discount_form.errors %}
+            <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div class="flex items-center mb-2">
+                <svg class="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <h3 class="text-sm font-medium text-red-800">Por favor corrige los siguientes errores:</h3>
+              </div>
+              <div class="text-sm text-red-700 space-y-1">
+                {% for field in discount_form %}
+                  {% for error in field.errors %}
+                    <p>• <strong>{{ field.label }}:</strong> {{ error }}</p>
+                  {% endfor %}
+                {% endfor %}
+                {% for error in discount_form.non_field_errors %}
+                  <p>• {{ error }}</p>
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
+
+            <form method="post" class="space-y-6">
+              {% csrf_token %}
+              
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Código de Descuento -->
+                <div>
+                  <label for="{{ discount_form.code.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    <span class="flex items-center">
+                      <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                      </svg>
+                      Código de Descuento *
+                    </span>
+                  </label>
+                  {{ discount_form.code|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors font-mono uppercase" }}
+                  <p class="text-sm text-gray-500 mt-1">Ejemplo: DESC10, BLACK (no distingue mayúsculas/minúsculas)</p>
+                </div>
+                
+                <!-- Porcentaje de Descuento -->
+                <div>
+                  <label for="{{ discount_form.discount_percentage.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    <span class="flex items-center">
+                      <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                      </svg>
+                      Porcentaje de Descuento (%) *
+                    </span>
+                  </label>
+                  {{ discount_form.discount_percentage|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors" }}
+                  <p class="text-sm text-gray-500 mt-1">Valor entre 1 y 100</p>
+                </div>
+              </div>
+              
+              <div class="flex justify-end pt-4 border-t border-gray-200">
+                <button type="submit" name="add_discount"
+                        class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-lg hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                  </svg>
+                  Añadir Código
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>        <!-- Lista de Códigos de Descuento Existentes -->
+        {% if course.discount_codes.all %}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div class="bg-gradient-to-r from-purple-50 to-pink-50 px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center">
+              <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+              </div>
+              <h2 class="text-xl font-bold text-gray-900">Códigos de Descuento Activos</h2>
+            </div>
+          </div>
+          
+          <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {% for discount in course.discount_codes.all %}
+              <div class="bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-4 hover:shadow-md transition-all duration-200">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="flex items-center space-x-2">
+                      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 font-mono">
+                        {{ discount.code }}
+                      </span>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-2">
+                      <span class="font-semibold">{{ discount.discount_percentage }}% OFF</span>
+                    </p>
+                  </div>
+                  <div class="text-purple-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2-2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z"></path>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
         </div>
         {% endif %}
 
         <!-- Lista de Recursos Existentes -->
         {% if course.resources.all %}
-        <div class="mt-6">
-            <h2 class="text-2xl font-bold mb-4">Recursos Existentes</h2>
-            <ul class="space-y-2">
-                {% for resource in course.resources.all %}
-                <li class="border p-2 rounded bg-gray-50">{{ resource.title }} ({{ resource.get_type_display }}) - {% if resource.url %}<a href="{{ resource.url }}" target="_blank" class="text-blue-600 hover:underline">Abrir</a>{% endif %}</li>
-                {% endfor %}
-            </ul>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div class="bg-gradient-to-r from-green-50 to-emerald-50 px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center">
+              <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+              </div>
+              <h2 class="text-xl font-bold text-gray-900">Recursos del Curso</h2>
+            </div>
+          </div>
+          
+          <div class="p-6">
+            <div class="space-y-4">
+              {% for resource in course.resources.all %}
+              <div class="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4 hover:shadow-md transition-all duration-200">
+                <div class="flex items-center justify-between">
+                  <div class="flex-1">
+                    <div class="flex items-center space-x-3">
+                      <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                        {% if resource.type == 'video' %}
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H15M9 10V9a2 2 0 012-2h2a2 2 0 012 2v1M9 10v1a2 2 0 002 2h2a2 2 0 002-2v-1"></path>
+                        </svg>
+                        {% elif resource.type == 'document' %}
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        {% else %}
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                        </svg>
+                        {% endif %}
+                      </div>
+                      <div class="flex-1">
+                        <h3 class="font-semibold text-gray-900">{{ resource.title }}</h3>
+                        <p class="text-sm text-gray-600">{{ resource.get_type_display }}</p>
+                      </div>
+                    </div>
+                  </div>
+                  {% if resource.url %}
+                  <a href="{{ resource.url }}" target="_blank"
+                     class="inline-flex items-center px-4 py-2 bg-green-100 text-green-700 text-sm font-medium rounded-lg hover:bg-green-200 transition-colors">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                    </svg>
+                    Abrir
+                  </a>
+                  {% endif %}
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
         </div>
-        {% endif %}
-        {% else %}
-        <div class="mt-4 p-4 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
-            <p>Debe guardar el curso antes de añadir recursos o códigos de descuento.</p>
+        {% endif %}        {% else %}
+        <!-- Mensaje cuando el curso no existe -->
+        <div class="bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-xl p-6">
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mr-4">
+              <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-yellow-800">Información Importante</h3>
+              <p class="text-yellow-700 mt-1">
+                Primero debe guardar el curso antes de poder añadir recursos o códigos de descuento.
+                Complete la información básica del curso y haga clic en "Crear Curso".
+              </p>
+            </div>
+          </div>
         </div>
-        {% endif %}
-    </div>
+        {% endif %}    </div>
+  </div>
 </div>
 
 <script>
+// Función para alternar la visibilidad de las secciones
 function toggleSection(sectionId) {
     const section = document.getElementById(sectionId);
     const arrow = document.getElementById(sectionId.replace('section', 'arrow'));
-    section.classList.toggle('hidden');
-    arrow.classList.toggle('rotate-180');
+    
+    if (section && arrow) {
+        section.classList.toggle('hidden');
+        arrow.classList.toggle('rotate-180');
+        
+        // Scroll suave hacia la sección si se está abriendo
+        if (!section.classList.contains('hidden')) {
+            setTimeout(() => {
+                section.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'nearest' 
+                });
+            }, 100);
+        }
+    }
 }
+
+// Navegación del sidebar
+document.addEventListener('DOMContentLoaded', function() {
+    // Resaltar enlace activo en el sidebar
+    const sidebarLinks = document.querySelectorAll('[data-scroll-to]');
+    const sections = document.querySelectorAll('[id]');
+    
+    // Función para actualizar el enlace activo
+    function updateActiveLink() {
+        const scrollPosition = window.scrollY + 100;
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.offsetHeight;
+            const sectionId = section.getAttribute('id');
+            
+            if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                sidebarLinks.forEach(link => {
+                    link.classList.remove('bg-blue-100', 'text-blue-700', 'border-blue-300');
+                    link.classList.add('text-gray-600', 'border-transparent');
+                });
+                
+                const activeLink = document.querySelector(`[data-scroll-to="${sectionId}"]`);
+                if (activeLink) {
+                    activeLink.classList.remove('text-gray-600', 'border-transparent');
+                    activeLink.classList.add('bg-blue-100', 'text-blue-700', 'border-blue-300');
+                }
+            }
+        });
+    }
+    
+    // Navegación suave al hacer clic en enlaces del sidebar
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('data-scroll-to');
+            const targetElement = document.getElementById(targetId);
+            
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+    
+    // Actualizar enlace activo al hacer scroll
+    window.addEventListener('scroll', updateActiveLink);
+    updateActiveLink(); // Llamar una vez al cargar la página
+    
+    // Animaciones de entrada para las tarjetas
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.1 });
+    
+    // Observar las tarjetas para animaciones
+    document.querySelectorAll('.bg-white.rounded-xl').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(card);
+    });
+    
+    // Validación en tiempo real para campos de porcentaje
+    const percentageInputs = document.querySelectorAll('input[name*="percentage"]');
+    percentageInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            const value = parseInt(this.value);
+            if (value < 0 || value > 100) {
+                this.classList.add('border-red-500', 'focus:ring-red-500');
+                this.classList.remove('border-gray-300', 'focus:ring-blue-500');
+            } else {
+                this.classList.remove('border-red-500', 'focus:ring-red-500');
+                this.classList.add('border-gray-300', 'focus:ring-blue-500');
+            }
+        });
+    });
+    
+    // Auto-formato para códigos de descuento (convertir a mayúsculas)
+    const codeInput = document.querySelector('input[name*="code"]');
+    if (codeInput) {
+        codeInput.addEventListener('input', function() {
+            this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        });
+    }
+});
+
+// Mostrar confirmación antes de abandonar la página si hay cambios sin guardar
+let formChanged = false;
+document.querySelectorAll('input, textarea, select').forEach(field => {
+    field.addEventListener('change', () => {
+        formChanged = true;
+    });
+});
+
+window.addEventListener('beforeunload', function(e) {
+    if (formChanged) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
+
+// Limpiar flag al enviar formulario
+document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', () => {
+        formChanged = false;
+    });
+});
 </script>
 {% endblock %}

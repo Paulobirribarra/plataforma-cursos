@@ -3,7 +3,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.utils import timezone
 from .models import MembershipPlan, Membership
+from cursos.models import Course
 from pagos.utils import create_payment
 
 
@@ -94,4 +98,101 @@ def cancel_membership(request, membership_id):
         messages.success(request, _("Tu membresía ha sido cancelada exitosamente."))
         return redirect("membresias:my_membership")
 
-    return redirect("membresias:my_membership")
+    context = {
+        "membership": membership,
+        "title": _("Cancelar Membresía"),
+    }
+    return render(request, "membresias/cancel_membership.html", context)
+
+
+@login_required
+def welcome_courses(request):
+    """Vista para mostrar los cursos de bienvenida disponibles para reclamar."""
+    # Obtener la membresía activa del usuario
+    membership = Membership.objects.filter(
+        user=request.user, status="active"
+    ).first()
+    
+    if not membership:
+        messages.error(request, _("No tienes una membresía activa."))
+        return redirect("membresias:plan_list")
+    
+    # Para plan Premium, redirigir directamente al dashboard (no necesita reclamar)
+    if membership.plan.slug == 'premium':
+        messages.info(request, _("Como usuario Premium, tienes acceso completo a todos los cursos."))
+        return redirect("usuarios:dashboard")
+    
+    # Obtener cursos de recompensa disponibles
+    available_courses = membership.get_available_reward_courses()
+    
+    context = {
+        "membership": membership,
+        "available_courses": available_courses,
+        "title": _("Reclama tus Cursos de Bienvenida"),
+        "can_claim": membership.can_claim_reward_course(),
+        "courses_remaining": membership.welcome_courses_remaining,
+    }
+    
+    return render(request, "membresias/welcome_courses.html", context)
+
+
+@login_required
+@require_POST
+def claim_reward_course(request, course_id):
+    """Vista para reclamar un curso de recompensa."""
+    course = get_object_or_404(Course, id=course_id)
+    
+    # Obtener la membresía activa del usuario
+    membership = Membership.objects.filter(
+        user=request.user, status="active"
+    ).first()
+    
+    if not membership:
+        return JsonResponse({
+            "success": False,
+            "message": _("No tienes una membresía activa.")
+        })
+    
+    # Intentar reclamar el curso
+    success, message = membership.claim_reward_course(course)
+    
+    if success:
+        # Crear registro de acceso al curso para el usuario
+        from cursos.models import UserCourse
+        user_course, created = UserCourse.objects.get_or_create(
+            user=request.user,
+            course=course,
+            defaults={
+                'access_start': timezone.now(),
+                'progress': 0.0,
+                'completed': False
+            }
+        )
+        
+        return JsonResponse({
+            "success": True,
+            "message": message,
+            "courses_remaining": membership.welcome_courses_remaining,
+            "redirect_url": "/usuarios/dashboard/" if membership.welcome_courses_remaining == 0 else None
+        })
+    else:
+        return JsonResponse({
+            "success": False,
+            "message": message
+        })
+
+
+@login_required
+def skip_welcome_courses(request):
+    """Vista para saltar la selección de cursos de bienvenida."""
+    membership = Membership.objects.filter(
+        user=request.user, status="active"
+    ).first()
+    
+    if membership:
+        messages.info(request, _(
+            "Puedes reclamar tus cursos de bienvenida más tarde desde tu dashboard. "
+            "Tienes {} curso(s) disponible(s) para reclamar."
+        ).format(membership.welcome_courses_remaining))
+    
+    return redirect("usuarios:dashboard")

@@ -54,10 +54,29 @@ def dashboard(request):
         status='active'
     ).first()
     
+    # Información sobre cursos de recompensa
+    reward_courses_info = None
+    if active_membership:
+        reward_courses_info = {
+            'remaining': active_membership.welcome_courses_remaining,
+            'can_claim': active_membership.can_claim_reward_course(),
+            'available_courses': active_membership.get_available_reward_courses()[:3],  # Mostrar solo 3 en el dashboard
+            'total_available': active_membership.get_available_reward_courses().count(),
+        }
+      # Contar cursos del usuario
+    user_courses_count = request.user.user_courses.count()
+      # Contar items en el carrito
+    from carrito.models import Cart, CartItem
+    active_cart = Cart.objects.filter(user=request.user, is_active=True).first()
+    cart_items_count = CartItem.objects.filter(cart=active_cart).count() if active_cart else 0
+    
     return render(request, 'usuarios/dashboard.html', {
         'courses': courses,
         'email_verified': email_verified,
         'active_membership': active_membership,
+        'reward_courses_info': reward_courses_info,
+        'user_courses_count': user_courses_count,
+        'cart_items_count': cart_items_count,
     })
 
 @login_required

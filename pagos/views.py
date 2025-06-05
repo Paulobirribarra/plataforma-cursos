@@ -6,7 +6,7 @@ from django.urls import reverse
 from .models import Payment
 from carrito.models import Cart, CartItem
 from membresias.models import MembershipPlan
-from .webpay_rest import crear_transaccion, confirmar_transaccion
+from .webpay_config import crear_transaccion, confirmar_transaccion
 import logging
 
 logger = logging.getLogger(__name__)
@@ -330,9 +330,25 @@ def purchase_success(request):
     
     # Limpiar la sesión después de obtener los datos
     del request.session['purchase_success_data']
-      # Obtener el pago
+    
+    # Obtener el pago
     payment = get_object_or_404(Payment, id=success_data['payment_id'], user=request.user)
     
+    # Si se compró una membresía, redirigir a la selección de cursos de bienvenida
+    if success_data['has_new_membership']:
+        # Verificar si el usuario tiene una membresía que requiere selección de cursos
+        from membresias.models import Membership
+        membership = Membership.objects.filter(user=request.user, status='active').first()
+        
+        if membership and membership.plan.slug != 'premium' and membership.welcome_courses_remaining > 0:
+            messages.success(request, f"¡Felicitaciones! Tu membresía {membership.plan.name} ha sido activada. Ahora puedes elegir tus cursos de bienvenida.")
+            return redirect("membresias:welcome_courses")
+        else:
+            # Para Premium o si no hay cursos de bienvenida, ir al dashboard
+            messages.success(request, "¡Compra exitosa! Tu membresía ha sido activada.")
+            return redirect("usuarios:dashboard")
+    
+    # Para compras de cursos individuales, mostrar página de confirmación normal
     context = {
         'payment': payment,
         'purchased_items': success_data['purchased_items'],

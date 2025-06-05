@@ -53,7 +53,12 @@ class Course(models.Model):
         verbose_name="Categoría",
     )
     base_price = models.IntegerField(default=0, verbose_name="Precio Base (CLP)")
-    is_free = models.BooleanField(default=False, verbose_name="Gratuito")
+    is_free = models.BooleanField(default=False, verbose_name="Gratuito para todos")
+    is_membership_reward = models.BooleanField(
+        default=False,
+        verbose_name="Curso de recompensa por membresía",
+        help_text="Este curso está disponible como recompensa al pagar una membresía",
+    )
     is_available = models.BooleanField(default=True, verbose_name="Disponible")
     is_visible = models.BooleanField(default=True, verbose_name="Visible")
     duration_minutes = models.IntegerField(
@@ -97,6 +102,13 @@ class Course(models.Model):
         related_name="available_courses",
         verbose_name="Planes de Membresía Disponibles",
         help_text="Planes de membresía que pueden acceder a este curso",
+    )
+    reward_for_plans = models.ManyToManyField(
+        "membresias.MembershipPlan",
+        blank=True,
+        related_name="reward_courses",
+        verbose_name="Disponible como recompensa para estos planes",
+        help_text="Planes que pueden reclamar este curso como recompensa de bienvenida",
     )
 
     def clean(self):
@@ -272,8 +284,7 @@ class UserCourse(models.Model):
 class DiscountCode(models.Model):
     id = models.BigAutoField(primary_key=True)
     course = models.ForeignKey(
-        Course,
-        on_delete=models.CASCADE,
+        Course,        on_delete=models.CASCADE,
         related_name="discount_codes",
         verbose_name="Curso",
     )
@@ -298,7 +309,9 @@ class DiscountCode(models.Model):
             raise ValidationError(
                 "El porcentaje de descuento debe estar entre 0 y 100."
             )
-        if self.course.is_free and self.discount_percentage > 0:
+        
+        # Solo validar si el curso ya está asignado (para evitar errores en formularios)
+        if self.course_id and hasattr(self, 'course') and self.course.is_free and self.discount_percentage > 0:
             raise ValidationError("No se pueden aplicar descuentos a cursos gratuitos.")
 
     def save(self, *args, **kwargs):

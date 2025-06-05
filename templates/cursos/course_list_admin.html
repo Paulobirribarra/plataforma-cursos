@@ -1,43 +1,445 @@
 {% extends 'base.html' %}
-{% block title %}Administrar Cursos{% endblock %}
+{% load i18n %}
+{% block title %}Administración de Cursos | Panel de Control{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6">Administrar Cursos</h1>
-    <a href="{% url 'cursos:course_create_admin' %}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4 inline-block">Crear Nuevo Curso</a>
-    <table class="w-full border-collapse">
-        <thead>
-            <tr class="bg-gray-100">
-                <th class="border p-2">Título</th>
-                <th class="border p-2">Categoría</th>
-                <th class="border p-2">Gratuito</th>
-                <th class="border p-2">Precio</th>
-                <th class="border p-2">Disponible</th>
-                <th class="border p-2">Visible</th>
-                <th class="border p-2">Acciones</th>
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+  <!-- Hero Section -->
+  <div class="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="flex items-center space-x-4 mb-4">
+            <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center backdrop-blur-sm">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+              </svg>
+            </div>
+            <div>
+              <h1 class="text-3xl md:text-4xl font-bold">Administración de Cursos</h1>
+              <p class="text-purple-100 mt-1">Gestiona todos los cursos de la plataforma</p>
+            </div>
+          </div>
+        </div>
+        <div class="hidden md:block">
+          <a href="{% url 'cursos:course_create_admin' %}" 
+             class="inline-flex items-center bg-white bg-opacity-20 text-white px-6 py-3 rounded-lg backdrop-blur-sm hover:bg-opacity-30 transition-all duration-200 transform hover:scale-105">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Crear Nuevo Curso
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estadísticas Rápidas -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center">
+          <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-600">Total Cursos</p>
+            <p class="text-2xl font-bold text-gray-900">{{ courses|length }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center">
+          <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-600">Disponibles</p>
+            <p class="text-2xl font-bold text-gray-900">
+              {% for course in courses %}{% if course.is_available %}1{% endif %}{% empty %}0{% endfor %}
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center">
+          <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-600">Gratuitos</p>
+            <p class="text-2xl font-bold text-gray-900">
+              {% for course in courses %}{% if course.is_free %}1{% endif %}{% empty %}0{% endfor %}
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center">
+          <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-600">Visibles</p>
+            <p class="text-2xl font-bold text-gray-900">
+              {% for course in courses %}{% if course.is_visible %}1{% endif %}{% empty %}0{% endfor %}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenido Principal -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+    
+    <!-- Barra de Acciones -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+        <div class="flex items-center space-x-4">
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </div>
+            <input type="text" id="search-courses" 
+                   class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                   placeholder="Buscar cursos...">
+          </div>
+          
+          <select id="filter-category" class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <option value="">Todas las categorías</option>
+            {% regroup courses by category as course_categories %}
+            {% for category in course_categories %}
+              <option value="{{ category.grouper.name }}">{{ category.grouper.name }}</option>
+            {% endfor %}
+          </select>
+          
+          <select id="filter-status" class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <option value="">Todos los estados</option>
+            <option value="available">Disponibles</option>
+            <option value="unavailable">No disponibles</option>
+            <option value="free">Gratuitos</option>
+            <option value="paid">De pago</option>
+          </select>
+        </div>
+        
+        <div class="flex space-x-3">
+          <a href="{% url 'cursos:course_create_admin' %}" 
+             class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Nuevo Curso
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lista de Cursos -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
+        <h2 class="text-xl font-bold text-gray-900">Lista de Cursos</h2>
+      </div>
+      
+      {% if courses %}
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Curso</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Configuración</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
             </tr>
-        </thead>
-        <tbody>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200" id="courses-table-body">
             {% for course in courses %}
-            <tr>
-                <td class="border p-2">{{ course.title }}</td>
-                <td class="border p-2">{{ course.category.name }}</td>
-                <td class="border p-2">{% if course.is_free %}Sí{% else %}No{% endif %}</td>
-                <td class="border p-2">{{ course.base_price }} CLP</td>
-                <td class="border p-2">{% if course.is_available %}Sí{% else %}No{% endif %}</td>
-                <td class="border p-2">{% if course.is_visible %}Sí{% else %}No{% endif %}</td>
-                <td class="border p-2">
-                    <a href="{% url 'cursos:course_edit_admin' course.pk %}" class="text-blue-600 hover:underline">Editar</a>
-                    <a href="{% url 'cursos:course_delete_admin' course.pk %}" class="text-red-600 hover:underline ml-2">Eliminar</a>
-                    <a href="{% url 'cursos:course_resource_create' course.pk %}" class="text-green-600 hover:underline ml-2">Añadir Recurso</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="7" class="border p-2 text-center text-gray-500">No hay cursos disponibles.</td>
+            <tr class="hover:bg-gray-50 transition-colors course-row" 
+                data-title="{{ course.title|lower }}" 
+                data-category="{{ course.category.name|lower }}"
+                data-available="{{ course.is_available|yesno:'true,false' }}"
+                data-free="{{ course.is_free|yesno:'true,false' }}">
+              <!-- Información del Curso -->
+              <td class="px-6 py-4">
+                <div class="flex items-center">
+                  <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-lg mr-4">
+                    {{ course.title|first|upper }}
+                  </div>
+                  <div>
+                    <div class="text-sm font-medium text-gray-900">{{ course.title }}</div>
+                    <div class="text-sm text-gray-500">Creado: {{ course.created_at|date:"d/m/Y" }}</div>
+                  </div>
+                </div>
+              </td>
+              
+              <!-- Categoría -->
+              <td class="px-6 py-4">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  {{ course.category.name }}
+                </span>
+              </td>
+              
+              <!-- Estado -->
+              <td class="px-6 py-4">
+                <div class="space-y-1">
+                  {% if course.is_available %}
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      <div class="w-1.5 h-1.5 bg-green-400 rounded-full mr-1"></div>
+                      Disponible
+                    </span>
+                  {% else %}
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                      <div class="w-1.5 h-1.5 bg-red-400 rounded-full mr-1"></div>
+                      No disponible
+                    </span>
+                  {% endif %}
+                  
+                  {% if course.is_visible %}
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                      </svg>
+                      Visible
+                    </span>
+                  {% endif %}
+                </div>
+              </td>
+              
+              <!-- Precio -->
+              <td class="px-6 py-4">
+                {% if course.is_free %}
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                    </svg>
+                    GRATIS
+                  </span>
+                {% else %}
+                  <div class="text-sm font-semibold text-gray-900">${{ course.base_price|floatformat:0 }} CLP</div>
+                  {% if course.special_discount_percentage %}
+                    <div class="text-xs text-green-600">{{ course.special_discount_percentage }}% descuento</div>
+                  {% endif %}
+                {% endif %}
+              </td>
+              
+              <!-- Configuraciones -->
+              <td class="px-6 py-4">
+                <div class="space-y-1">
+                  {% if course.membership_required %}
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                      </svg>
+                      Membresía
+                    </span>
+                  {% endif %}
+                  
+                  {% if course.is_membership_reward %}
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
+                      </svg>
+                      Recompensa
+                    </span>
+                  {% endif %}
+                </div>
+              </td>
+              
+              <!-- Acciones -->
+              <td class="px-6 py-4">
+                <div class="flex items-center space-x-2">
+                  <a href="{% url 'cursos:course_edit_admin' course.pk %}" 
+                     class="inline-flex items-center p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
+                     title="Editar curso">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                  </a>
+                  
+                  <a href="{% url 'cursos:course_resource_create' course.pk %}" 
+                     class="inline-flex items-center p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-colors"
+                     title="Añadir recursos">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                  </a>
+                  
+                  <button onclick="confirmDelete('{{ course.pk }}', '{{ course.title }}')"
+                          class="inline-flex items-center p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Eliminar curso">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  </button>
+                </div>
+              </td>
             </tr>
             {% endfor %}
-        </tbody>
-    </table>
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <!-- Estado Vacío -->
+      <div class="text-center py-12">
+        <div class="w-24 h-24 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
+          <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No hay cursos creados</h3>
+        <p class="text-gray-500 mb-6">Comienza creando tu primer curso para la plataforma</p>
+        <a href="{% url 'cursos:course_create_admin' %}" 
+           class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+          Crear Primer Curso
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
 </div>
+
+<!-- Modal de Confirmación para Eliminar -->
+<div id="delete-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+  <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-xl bg-white">
+    <div class="mt-3 text-center">
+      <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+        <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">Confirmar Eliminación</h3>
+      <p class="text-sm text-gray-500 mb-6">
+        ¿Estás seguro de que deseas eliminar el curso "<span id="course-name-to-delete" class="font-semibold"></span>"? 
+        Esta acción no se puede deshacer.
+      </p>
+      <div class="flex space-x-3">
+        <button onclick="closeDeleteModal()" 
+                class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+          Cancelar
+        </button>
+        <a id="delete-confirm-link" href="#"
+           class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-center">
+          Eliminar
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Funcionalidad de búsqueda y filtros
+    const searchInput = document.getElementById('search-courses');
+    const categoryFilter = document.getElementById('filter-category');
+    const statusFilter = document.getElementById('filter-status');
+    const courseRows = document.querySelectorAll('.course-row');
+
+    function filterCourses() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const selectedCategory = categoryFilter.value.toLowerCase();
+        const selectedStatus = statusFilter.value;
+
+        courseRows.forEach(row => {
+            const title = row.dataset.title;
+            const category = row.dataset.category;
+            const isAvailable = row.dataset.available === 'true';
+            const isFree = row.dataset.free === 'true';
+
+            let showRow = true;
+
+            // Filtrar por búsqueda
+            if (searchTerm && !title.includes(searchTerm)) {
+                showRow = false;
+            }
+
+            // Filtrar por categoría
+            if (selectedCategory && category !== selectedCategory) {
+                showRow = false;
+            }
+
+            // Filtrar por estado
+            if (selectedStatus) {
+                switch (selectedStatus) {
+                    case 'available':
+                        if (!isAvailable) showRow = false;
+                        break;
+                    case 'unavailable':
+                        if (isAvailable) showRow = false;
+                        break;
+                    case 'free':
+                        if (!isFree) showRow = false;
+                        break;
+                    case 'paid':
+                        if (isFree) showRow = false;
+                        break;
+                }
+            }
+
+            row.style.display = showRow ? '' : 'none';
+        });
+    }
+
+    // Event listeners para filtros
+    searchInput.addEventListener('input', filterCourses);
+    categoryFilter.addEventListener('change', filterCourses);
+    statusFilter.addEventListener('change', filterCourses);
+
+    // Animaciones de entrada
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.1 });
+
+    // Observar las tarjetas para animaciones
+    document.querySelectorAll('.bg-white.rounded-xl').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(card);
+    });
+});
+
+// Función para confirmar eliminación
+function confirmDelete(courseId, courseName) {
+    document.getElementById('course-name-to-delete').textContent = courseName;
+    document.getElementById('delete-confirm-link').href = `/cursos/admin/course/${courseId}/delete/`;
+    document.getElementById('delete-modal').classList.remove('hidden');
+}
+
+// Función para cerrar modal
+function closeDeleteModal() {
+    document.getElementById('delete-modal').classList.add('hidden');
+}
+
+// Cerrar modal al hacer clic fuera
+document.getElementById('delete-modal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeDeleteModal();
+    }
+});
+</script>
 {% endblock %}

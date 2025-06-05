@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import JsonResponse
 from cursos.models import Course
 from membresias.models import MembershipPlan
 from .models import Cart, CartItem
@@ -14,7 +15,50 @@ def get_or_create_cart(user):
 @login_required
 def cart_detail(request):
     cart = get_or_create_cart(request.user)
-    return render(request, "carrito/cart_detail.html", {"cart": cart})
+    applied_discount_code = cart.get_applied_discount_code()
+    context = {
+        "cart": cart,
+        "subtotal": cart.get_subtotal(),
+        "total": cart.get_total(),
+        "discount_amount": cart.discount_amount,
+        "applied_discount_code": applied_discount_code,
+    }
+    return render(request, "carrito/cart_detail.html", context)
+
+
+@login_required
+def apply_discount_code(request):
+    """Vista para aplicar códigos de descuento"""
+    if request.method == "POST":
+        cart = get_or_create_cart(request.user)
+        code = request.POST.get("discount_code", "").strip()
+
+        if not code:
+            messages.error(request, "Por favor, ingresa un código de descuento.")
+            return redirect("carrito:cart_detail")        # Remover descuento anterior si existe
+        if cart.applied_discount_code_id:
+            cart.remove_discount()
+
+        # Aplicar nuevo descuento
+        success, message = cart.apply_discount_code(code)
+
+        if success:
+            messages.success(request, message)
+        else:
+            messages.error(request, message)
+
+    return redirect("carrito:cart_detail")
+
+
+@login_required
+def remove_discount_code(request):
+    """Vista para remover códigos de descuento"""
+    cart = get_or_create_cart(request.user)
+    if cart.applied_discount_code_id:
+        cart.remove_discount()
+        messages.success(request, "Código de descuento removido.")
+
+    return redirect("carrito:cart_detail")
 
 
 @login_required

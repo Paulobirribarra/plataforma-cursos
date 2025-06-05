@@ -97,10 +97,26 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m2-10v.01M6 20h8a2 2 0 002-2V6a2 2 0 00-2-2H8a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
             </svg>
           </div>
-          
-          <!-- Botones de Acción -->
+            <!-- Botones de Acción -->
           <div class="space-y-3">
-            {% if course.base_price == 0 %}
+            {% if user_course %}
+              <!-- Usuario ya tiene el curso -->
+              <div class="w-full bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold inline-flex items-center justify-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Ya tienes este curso
+              </div>
+            {% elif can_access_resources %}
+              <!-- Usuario puede acceder por membresía -->
+              <div class="w-full bg-purple-500 text-white px-6 py-3 rounded-lg font-semibold inline-flex items-center justify-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                </svg>
+                Acceso incluido en tu membresía
+              </div>
+            {% elif course.base_price == 0 %}
+              <!-- Curso gratis y usuario no lo tiene -->
               <a href="{% url 'carrito:add_course_to_cart' course.id %}" 
                  class="w-full bg-green-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition-all duration-300 transform hover:scale-105 inline-flex items-center justify-center">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -109,6 +125,7 @@
                 Obtener Curso Gratis
               </a>
             {% else %}
+              <!-- Curso de pago -->
               <a href="{% url 'carrito:add_course_to_cart' course.id %}" 
                  class="w-full bg-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-yellow-600 transition-all duration-300 transform hover:scale-105 inline-flex items-center justify-center">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

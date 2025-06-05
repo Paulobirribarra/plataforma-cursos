@@ -19,15 +19,17 @@
                                     {{ membership.get_status_display }}
                                 </span>
                             </p>
-                        </div>
-
-                        <div class="row mb-4">
+                        </div>                        <div class="row mb-4">
                             <div class="col-md-6">
                                 <div class="card bg-light">
                                     <div class="card-body">
                                         <h5 class="card-title">{% trans "Cursos" %}</h5>
                                         <p class="card-text">
-                                            {{ membership.courses_remaining }} {% trans "cursos restantes" %}
+                                            {% if membership.plan.courses_per_month >= 999 %}
+                                                <span class="badge bg-success">{% trans "Acceso Ilimitado" %}</span>
+                                            {% else %}
+                                                {{ membership.courses_remaining }} {% trans "cursos restantes" %}
+                                            {% endif %}
                                         </p>
                                     </div>
                                 </div>
@@ -38,6 +40,13 @@
                                         <h5 class="card-title">{% trans "Consultas" %}</h5>
                                         <p class="card-text">
                                             {{ membership.consultations_remaining }} {% trans "consultas restantes" %}
+                                            {% if membership.plan.slug == 'basico' %}
+                                                <br><small class="text-muted">{% trans "Asesorías grupales" %}</small>
+                                            {% elif membership.plan.slug == 'intermedio' %}
+                                                <br><small class="text-muted">{% trans "Asesorías grupales" %}</small>
+                                            {% elif membership.plan.slug == 'premium' %}
+                                                <br><small class="text-muted">{% trans "Consultas individuales" %}</small>
+                                            {% endif %}
                                         </p>
                                     </div>
                                 </div>

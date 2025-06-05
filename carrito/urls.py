@@ -21,4 +21,6 @@ urlpatterns = [
         name="remove_item_from_cart",
     ),
     path("vaciar/", views.clear_cart, name="clear_cart"),
+    path("aplicar-descuento/", views.apply_discount_code, name="apply_discount_code"),
+    path("remover-descuento/", views.remove_discount_code, name="remove_discount_code"),
 ]
