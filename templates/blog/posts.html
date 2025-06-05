@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-10">
+
+  {% for post in posts %}
+  <article class="bg-white border border-gray-300 rounded-lg shadow-md p-8 mb-10">
+    <header class="mb-6 text-center">
+      <h3 class="text-sm text-gray-500 font-medium">{{ post.author }}</h3>
+      <time class="text-xs text-gray-400">{{ post.date_posted|date:"F d, Y" }}</time>
+      <hr class="border-gray-300 mt-3" />
+    </header>
+
+    <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">{{ post.title }}</h2>
+
+    {% if post.intro %}
+    <p class="text-gray-700 text-base leading-relaxed mb-6 text-justify px-4 sm:px-20">{{ post.intro }}</p>
+    {% endif %}
+
+    {% if post.image %}
+    <img src="{{ post.image.url }}" alt="Post Image"
+      class="block mx-auto max-h-96 object-contain rounded-md shadow mb-6" />
+    {% endif %}
+
+    <p class="text-gray-700 text-base leading-relaxed text-justify px-4 sm:px-20">{{ post.content }}</p>
+  </article>
+  {% endfor %}
+
+</div>
+{% endblock %}

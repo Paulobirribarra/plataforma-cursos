@@ -2,78 +2,79 @@
 {% load i18n %}
 {% load static %}
 {% block extra_head %}
+{% endblock %}
 
-    {% endblock %}
 {% block content %}
+<div class="min-h-screen bg-white flex items-center justify-center px-4">
+  <div id="authContainer" class="relative bg-white rounded-3xl shadow-2xl w-full max-w-4xl h-[550px] overflow-hidden flex">
 
-      <div class="container">
-          <div class="form-box login">
-              <form action="#">
-                  <h1>Ingreso</h1>
-                  <div class="input-box">
-                      <input type="text" placeholder="Usuario" required>
-                      <i class='bx bxs-user'></i>
-                  </div>
-                  <div class="input-box">
-                      <input type="password" placeholder="Contraseña" required>
-                      <i class='bx bxs-lock-alt' ></i>
-                  </div>
-                  <div class="forgot-link">
-                      <a href="#">Olvidaste la contraseña?</a>
-                  </div>
-                  <button type="submit" class="btn">Ingresar</button>
-                  <p>O ingresa con redes sociales</p>
-                  <div class="social-icons">
-                      <a href="#"><i class='bx bxl-google' ></i></a>
-                      <a href="#"><i class='bx bxl-facebook' ></i></a>
-                      <a href="#"><i class='bx bxl-github' ></i></a>
-                      <a href="#"><i class='bx bxl-linkedin' ></i></a>
-                  </div>
-              </form>
-          </div>
-
-          <div class="form-box register">
-              <form action="#">
-                  <h1>Registration</h1>
-                  <div class="input-box">
-                      <input type="text" placeholder="Usuario" required>
-                      <i class='bx bxs-user'></i>
-                  </div>
-                  <div class="input-box">
-                      <input type="email" placeholder="Email" required>
-                      <i class='bx bxs-envelope' ></i>
-                  </div>
-                  <div class="input-box">
-                      <input type="password" placeholder="Contraseña" required>
-                      <i class='bx bxs-lock-alt' ></i>
-                  </div>
-                  <button type="submit" class="btn">Registrarse</button>
-                  <p>O registrate con redes sociales</p>
-                  <div class="social-icons">
-                      <a href="#"><i class='bx bxl-google' ></i></a>
-                      <a href="#"><i class='bx bxl-facebook' ></i></a>
-                      <a href="#"><i class='bx bxl-github' ></i></a>
-                      <a href="#"><i class='bx bxl-linkedin' ></i></a>
-                  </div>
-              </form>
-          </div>
-
-          <div class="toggle-box">
-              <div class="toggle-panel toggle-left">
-                  <h1>Hola, Bienvenido!</h1>
-                  <p>No tienes una cuenta?</p>
-                  <button class="btn register-btn">Registrate</button>
-              </div>
-
-              <div class="toggle-panel toggle-right">
-                  <h1>Bienvenido de vuelta!</h1>
-                  <p>Ya tienes una cuenta?</p>
-                  <button class="btn login-btn">Ingresar</button>
-              </div>
-          </div>
+    <!-- Formulario Login -->
+    <form method="post" action="{% url 'account_login' %}" id="loginForm" class="absolute top-0 left-0 w-1/2 h-full p-10 flex flex-col justify-center space-y-6 transition-all duration-700 ease-in-out">
+      <h1 class="text-4xl font-semibold text-gray-800 mb-4">Iniciar Sesión</h1>
+      {% csrf_token %}
+      <div>
+        <input type="email" name="login" placeholder="Correo electrónico" class="w-full p-3 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400" required>
       </div>
+      <div>
+        <input type="password" name="password" placeholder="Contraseña" class="w-full p-3 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+      </div>
+      <a href="{% url 'account_reset_password' %}" class="text-sm text-blue-600 hover:underline self-end">¿Olvidaste tu contraseña?</a>
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Iniciar Sesión</button>
+    </form>
+
+    <!-- Formulario Registro (redirección externa a Django) -->
+    <div id="registerForm" class="absolute top-0 right-0 w-1/2 h-full p-10 flex flex-col justify-center space-y-6 opacity-0 pointer-events-none transition-all duration-700 ease-in-out">
+      <h1 class="text-4xl font-semibold text-gray-800 mb-4">¿Nuevo aquí?</h1>
+      <p class="text-gray-600">Para crear una cuenta, dirígete a nuestra página de registro.</p>
+      <a href="{% url 'account_signup' %}" class="w-full text-center py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">Crear cuenta</a>
+    </div>
+
+    <!-- Panel de cambio -->
+    <div class="absolute top-0 left-1/2 w-1/2 h-full bg-blue-600 rounded-r-3xl text-white flex flex-col justify-center items-center px-12 transition-all duration-700 ease-in-out cursor-pointer select-none" id="togglePanel">
+      <h2 id="toggleTitle" class="text-3xl font-semibold mb-2">¿No tienes cuenta?</h2>
+      <p id="toggleText" class="mb-8">Regístrate para comenzar</p>
+      <button id="toggleBtn" class="border-2 border-white rounded-lg px-8 py-3 font-semibold hover:bg-white hover:text-blue-600 transition">Registrarse</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+  const togglePanel = document.getElementById('togglePanel');
+  const toggleTitle = document.getElementById('toggleTitle');
+  const toggleText = document.getElementById('toggleText');
+  const toggleBtn = document.getElementById('toggleBtn');
+
+  let showingLogin = true;
+
+  toggleBtn.addEventListener('click', () => {
+    showingLogin = !showingLogin;
+
+    if (showingLogin) {
+      loginForm.classList.remove('opacity-0', 'pointer-events-none');
+      registerForm.classList.add('opacity-0', 'pointer-events-none');
+      togglePanel.classList.remove('rounded-l-3xl');
+      togglePanel.classList.add('rounded-r-3xl');
+      togglePanel.style.left = '50%';
+      toggleTitle.textContent = '¿No tienes cuenta?';
+      toggleText.textContent = 'Regístrate para comenzar';
+      toggleBtn.textContent = 'Registrarse';
+    } else {
+      loginForm.classList.add('opacity-0', 'pointer-events-none');
+      registerForm.classList.remove('opacity-0', 'pointer-events-none');
+      togglePanel.classList.remove('rounded-r-3xl');
+      togglePanel.classList.add('rounded-l-3xl');
+      togglePanel.style.left = '0';
+      toggleTitle.textContent = '¿Ya tienes cuenta?';
+      toggleText.textContent = 'Inicia sesión para continuar';
+      toggleBtn.textContent = 'Iniciar Sesión';
+    }
+  });
+</script>
 
 {% block extra_scripts %}
-    <script src="{% static 'js/SignUp_LogIn_Form.js' %}"></script>
-    {% endblock %}
+<script src="{% static 'js/SignUp_LogIn_Form.js' %}"></script>
+{% endblock %}
 {% endblock %}

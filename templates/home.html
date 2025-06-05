@@ -3,6 +3,69 @@
 {% block content %}
 <!DOCTYPE html>
 <html lang="en">
+<head>
+<style>
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  /* Estilo inicial para los elementos */
+  .animate-left,
+  .animate-right {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(100%);
+    /* Los elementos comienzan fuera de la vista (a la derecha) */
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  /* Cuando se agregue la clase visible, activa la animación */
+  .animate-left.visible,
+  .animate-right.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+    animation: slideInRight 0.7s ease forwards;
+  }
+.counter-section {
+  background-color: #f8f8f8;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.counter-title {
+  font-size: 2em;
+  margin-bottom: 40px;
+  font-weight: bold;
+}
+
+.counters {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  flex-wrap: wrap;
+}
+
+.counter-box {
+  flex: 1 1 150px;
+  max-width: 200px;
+}
+
+.counter {
+  font-size: 3em;
+  font-weight: bold;
+  color: #2c3e50;
+}
+</style>
+</head>
+<body>
 
 <!-- Hero Section -->
 
@@ -60,7 +123,7 @@
                 <h3 class="text-xl font-semibold mb-2">{{ course.title }}</h3>
                 <p class="text-gray-600 mb-2">Duración: {{ course.duration }}</p>
                 <p class="text-gray-800 font-bold">Precio: {{ course.price }} CLP</p>
-                <a href="{% url 'course_detail' pk=course.pk %}"
+                <a href="{% url 'cursos:course_detail' pk=course.pk %}"
                     class="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Ver
                     Detalle</a>
             </div>
@@ -71,5 +134,6 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
-<script src="static/js/animaciones.js"></script>
-{% endblock %}
+<script src="{% static 'js/animaciones.js' %}"></script>
+
+{% endblock %} 

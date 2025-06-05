@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'usuarios',  # Nuestra app
     'cursos',
     'map',
+    'blog',
 ]
 
 MIDDLEWARE = [
@@ -146,7 +147,6 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 SITE_ID = 1
-ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_LOGIN_METHODS = {'email': {'required': True}}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'

@@ -37,7 +37,7 @@ psql -U postgres -h localhost -p 5432 -c "CREATE DATABASE plataforma_cursos;" -w
 
 # Paso 6: Eliminar migraciones de todas las apps propias
 Write-Host "Eliminando migraciones de todas las apps propias..." -ForegroundColor Yellow
-$apps = @("cursos", "usuarios", "pagos")  # Añade aquí todas tus apps propias
+$apps = @("cursos", "usuarios", "pagos", "blog")  # Añade aquí todas tus apps propias
 foreach ($app in $apps) {
      $migrationsPath = "$app\migrations"
      if (Test-Path $migrationsPath) {
