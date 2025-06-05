@@ -16,12 +16,45 @@ def get_or_create_cart(user):
 def cart_detail(request):
     cart = get_or_create_cart(request.user)
     applied_discount_code = cart.get_applied_discount_code()
+    
+    # Calcular precios originales y descuentos
+    special_discounts = []
+    original_price_total = 0
+    
+    for item in cart.items.all():
+        if item.item_type == 'course':
+            # Usar el precio base original
+            original_price = item.course.base_price
+            original_price_total += original_price
+            
+            if hasattr(item.course, 'special_discount_percentage') and item.course.special_discount_percentage > 0:
+                discount_value = (original_price * item.course.special_discount_percentage) / 100
+                special_discounts.append({
+                    'course': item.course,
+                    'percentage': item.course.special_discount_percentage,
+                    'amount': discount_value,
+                    'description': f'({item.course.special_discount_percentage}%)'
+                })
+        elif item.item_type == 'membership':
+            original_price = item.membership_plan.price
+            original_price_total += original_price    # Calcular el total de descuentos especiales
+    total_special_discount = sum(discount['amount'] for discount in special_discounts)
+    
+    # Calcular el total de todos los descuentos (especiales + cupón)
+    total_all_discounts = total_special_discount
+    if cart.discount_amount:
+        total_all_discounts += cart.discount_amount
+    
     context = {
         "cart": cart,
         "subtotal": cart.get_subtotal(),
         "total": cart.get_total(),
         "discount_amount": cart.discount_amount,
         "applied_discount_code": applied_discount_code,
+        "special_discounts": special_discounts,
+        "total_special_discount": total_special_discount,
+        "total_all_discounts": total_all_discounts,
+        "original_price_total": original_price_total,
     }
     return render(request, "carrito/cart_detail.html", context)
 

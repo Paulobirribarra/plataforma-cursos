@@ -1,4 +1,4 @@
-{% extends 'base.html' %} {% load static %} {% load i18n %} {% block content %}
+{% extends 'base.html' %} {% load static %} {% load i18n %} {% load cart_extras %} {% block content %}
 
 <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
   <!-- Hero Section -->
@@ -147,10 +147,9 @@
                 💎 PREMIUM
               </span>
             </div>
-            {% if course.special_discount_percentage > 0 %}
-            <div class="absolute top-4 right-4">
+            {% if course.special_discount_percentage > 0 %}            <div class="absolute top-4 right-4">
               <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
-                -{{ course.special_discount_percentage|floatformat:0 }}%
+                -{{ course.special_discount_percentage|format_percentage }}%
               </span>
             </div>
             {% endif %}
@@ -173,16 +172,15 @@
             <p class="text-gray-600 mb-6 line-clamp-3">{{ course.description|truncatewords:15 }}</p>
 
             <!-- Price -->
-            <div class="flex items-center justify-between mb-6">
-              <div>
+            <div class="flex items-center justify-between mb-6">              <div>
                 {% if course.special_discount_percentage > 0 %}
-                <div class="text-lg text-gray-500 line-through">${{ course.base_price|floatformat:0 }}</div>
+                <div class="text-lg text-gray-500 line-through">${{ course.base_price|format_clp }}</div>
                 <div class="text-2xl font-bold text-blue-600">
-                  ${{ course.get_final_price|floatformat:0 }} CLP
+                  ${{ course.get_final_price|format_clp }} CLP
                 </div>
                 {% else %}
                 <div class="text-2xl font-bold text-blue-600">
-                  ${{ course.base_price|floatformat:0 }} CLP
+                  ${{ course.base_price|format_clp }} CLP
                 </div>
                 {% endif %}
               </div>
@@ -266,10 +264,9 @@
           {% endif %}
 
           <!-- Plan Header -->
-          <div class="p-8 text-center {% if plan.name == 'Plan Pro' %}bg-gradient-to-br from-blue-50 to-purple-50{% elif plan.name == 'Plan Premium' %}bg-gradient-to-br from-purple-50 to-pink-50{% else %}bg-gray-50{% endif %} rounded-t-2xl">
-            <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ plan.name }}</h3>
+          <div class="p-8 text-center {% if plan.name == 'Plan Pro' %}bg-gradient-to-br from-blue-50 to-purple-50{% elif plan.name == 'Plan Premium' %}bg-gradient-to-br from-purple-50 to-pink-50{% else %}bg-gray-50{% endif %} rounded-t-2xl">            <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ plan.name }}</h3>
             <div class="text-4xl font-bold {% if plan.name == 'Plan Pro' %}text-blue-600{% elif plan.name == 'Plan Premium' %}text-purple-600{% else %}text-gray-900{% endif %} mb-2">
-              ${{ plan.price|floatformat:0 }}
+              ${{ plan.price|format_clp }}
             </div>
             <span class="text-gray-500 text-sm">CLP por mes</span>
           </div>

@@ -1,0 +1,1 @@
+# Plataforma de Cursos - Configuración principal del proyecto Django

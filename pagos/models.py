@@ -35,6 +35,9 @@ class Payment(models.Model):
     payment_type = models.CharField(
         _("tipo de pago"), max_length=20, choices=PAYMENT_TYPES
     )
+    transaction_id = models.CharField(
+        _("ID de transacción"), max_length=255, null=True, blank=True
+    )
     # Campos para la relación genérica
     content_type = models.ForeignKey(
         ContentType, on_delete=models.CASCADE, null=True, blank=True

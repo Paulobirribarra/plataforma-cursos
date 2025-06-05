@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load cart_extras %}
 
 {% block content %}
 <div class="container py-5">
@@ -11,9 +12,8 @@
                 </div>
                 <div class="card-body">
                     <div class="mb-4">
-                        <h3>{{ payment.description }}</h3>
-                        <p class="lead">
-                            {% trans "Monto" %}: ${{ payment.amount|floatformat:0 }}
+                        <h3>{{ payment.description }}</h3>                        <p class="lead">
+                            {% trans "Monto" %}: ${{ payment.amount|format_clp }}
                         </p>
                     </div>
 

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load cart_extras %}
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
@@ -7,7 +8,7 @@
         
         <div class="mb-6">
             <h3 class="text-lg font-semibold mb-2">Detalles del Pago</h3>
-            <p class="text-gray-600">Monto: ${{ payment.amount }}</p>
+            <p class="text-gray-600">Monto: ${{ payment.amount|format_clp }}</p>
             <p class="text-gray-600">Descripción: {{ payment.description }}</p>
             <p class="text-gray-600">Estado: {{ payment.status }}</p>
         </div>

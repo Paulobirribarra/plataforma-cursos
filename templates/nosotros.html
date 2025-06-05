@@ -148,6 +148,37 @@
           <div class="text-4xl font-bold mb-2">24/7</div>
           <div class="text-lg opacity-90">Soporte Disponible</div>
         </div>
+      </div>    </div>
+
+    <!-- Blog Posts Destacados Section -->
+    <div class="bg-white rounded-2xl shadow-xl p-8 mb-20">      <div class="flex justify-between items-center mb-8">
+        <h3 class="text-3xl font-bold text-gray-900">Últimas Noticias y Actualizaciones</h3>
+        <a href="{% url 'blog:list' %}" 
+           class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-all duration-300 flex items-center">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3v8m0-8V3a2 2 0 00-2-2H9a2 2 0 00-2 2v4h4z"></path>
+          </svg>
+          Ver Todo el Blog
+        </a>
+      </div>
+      
+      <div id="blog-posts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Los posts se cargarán aquí dinámicamente -->
+        <div class="animate-pulse">
+          <div class="bg-gray-200 h-48 rounded-lg mb-4"></div>
+          <div class="h-4 bg-gray-200 rounded mb-2"></div>
+          <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+        </div>
+        <div class="animate-pulse">
+          <div class="bg-gray-200 h-48 rounded-lg mb-4"></div>
+          <div class="h-4 bg-gray-200 rounded mb-2"></div>
+          <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+        </div>
+        <div class="animate-pulse">
+          <div class="bg-gray-200 h-48 rounded-lg mb-4"></div>
+          <div class="h-4 bg-gray-200 rounded mb-2"></div>
+          <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+        </div>
       </div>
     </div>
 
@@ -206,5 +237,98 @@
     animation: fadeInUp 0.6s ease-out;
   }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Cargar posts destacados del blog
+    fetch('{% url "blog:api_featured_posts" %}')
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('blog-posts-container');
+            
+            if (data.posts && data.posts.length > 0) {
+                container.innerHTML = '';
+                
+                data.posts.forEach(post => {
+                    const postElement = document.createElement('div');
+                    postElement.className = 'bg-gray-50 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:scale-105';
+                    
+                    const imageUrl = post.imagen_destacada || '{% static "images/blog-default.jpg" %}';
+                    const categoryColors = {
+                        'eventos': 'bg-green-100 text-green-800',
+                        'noticias': 'bg-blue-100 text-blue-800',
+                        'resultados': 'bg-yellow-100 text-yellow-800',
+                        'proximos_cursos': 'bg-purple-100 text-purple-800',
+                        'testimonios': 'bg-pink-100 text-pink-800',
+                        'general': 'bg-gray-100 text-gray-800'
+                    };
+                    const categoryColor = categoryColors[post.categoria] || categoryColors['general'];
+                    
+                    postElement.innerHTML = `
+                        <div class="relative">
+                            <img src="${imageUrl}" alt="${post.titulo}" 
+                                 class="w-full h-48 object-cover"
+                                 onerror="this.src='{% static "images/blog-default.jpg" %}'">
+                            <div class="absolute top-4 left-4">
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full ${categoryColor}">
+                                    ${post.categoria_display}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <h4 class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                                ${post.titulo}
+                            </h4>
+                            <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                                ${post.resumen}
+                            </p>
+                            <div class="flex items-center justify-between text-sm text-gray-500">
+                                <span>${new Date(post.fecha_publicacion).toLocaleDateString('es-ES')}</span>
+                                <a href="${post.url}" 
+                                   class="text-blue-600 hover:text-blue-800 font-medium">
+                                    Leer más →
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.appendChild(postElement);
+                });
+            } else {
+                // Si no hay posts, mostrar mensaje
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-8">
+                        <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3v8m0-8V3a2 2 0 00-2-2H9a2 2 0 00-2 2v4h4z"></path>
+                        </svg>
+                        <h4 class="text-lg font-semibold text-gray-900 mb-2">Próximamente</h4>
+                        <p class="text-gray-600">Estamos preparando contenido increíble para compartir contigo.</p>                        <a href="{% url 'blog:list' %}" 
+                           class="inline-block mt-4 text-blue-600 hover:text-blue-800 font-medium">
+                            Ir al Blog →
+                        </a>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading blog posts:', error);
+            // Mostrar mensaje de error elegante
+            document.getElementById('blog-posts-container').innerHTML = `
+                <div class="col-span-full text-center py-8">
+                    <div class="text-gray-400 mb-4">
+                        <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3v8m0-8V3a2 2 0 00-2-2H9a2 2 0 00-2 2v4h4z"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-900 mb-2">No se pudieron cargar las noticias</h4>
+                    <p class="text-gray-600 mb-4">Pero puedes visitar nuestro blog para ver todo el contenido disponible.</p>                    <a href="{% url 'blog:list' %}" 
+                       class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-all duration-300">
+                        Ir al Blog
+                    </a>
+                </div>
+            `;
+        });
+});
+</script>
 
 {% endblock %}

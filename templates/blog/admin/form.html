@@ -1,0 +1,488 @@
+{% extends 'base.html' %} 
+{% load static %} 
+{% load i18n %} 
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Banner superior con gradiente -->
+    <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl shadow-lg mb-8">
+        <div class="px-8 py-6 sm:px-10 sm:py-8 flex flex-col sm:flex-row justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-white">{{ title }}</h1>
+                <p class="text-purple-100 mt-2">Crea contenido atractivo para tus lectores</p>
+            </div>
+            <div class="mt-4 sm:mt-0">
+                <a href="{% url 'blog:admin_list' %}" class="inline-flex items-center bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 backdrop-blur-sm">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"></path>
+                    </svg>
+                    Volver al listado
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario -->
+    <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+        <form method="post" enctype="multipart/form-data" class="space-y-6" id="blog-form">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+            <div class="bg-red-100 border border-red-300 text-red-800 px-4 py-3 rounded">
+                {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <!-- Campo oculto para el autor -->
+            {{ form.autor }}
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Título -->
+                <div class="col-span-1 md:col-span-2">
+                    <label for="{{ form.titulo.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        <svg class="w-4 h-4 mr-1 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 10.5A18.022 18.022 0 008.095 5H5a1 1 0 00-1 1v14a1 1 0 001 1h14a1 1 0 001-1v-3.095a18.022 18.022 0 00-8.5-1.049M17 12v2m-4.5-8h-9"></path>
+                        </svg>
+                        Título <span class="text-red-500 ml-1">*</span>
+                    </label>
+                    {{ form.titulo }}
+                    {% if form.titulo.errors %}
+                    <div class="text-red-500 text-sm mt-2 flex items-start">
+                        <svg class="w-4 h-4 mr-1 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>
+                            {% for error in form.titulo.errors %}
+                            {{ error }}{% if not forloop.last %}<br>{% endif %}
+                            {% endfor %}
+                        </span>
+                    </div>
+                    {% else %}
+                    <p class="text-xs text-gray-500 mt-1">El título aparecerá en los listados de artículos y en las búsquedas.</p>
+                    {% endif %}
+                </div>
+                
+                <!-- Categoría -->
+                <div>
+                    <label for="{{ form.categoria.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        <svg class="w-4 h-4 mr-1 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                        </svg>
+                        Categoría <span class="text-red-500 ml-1">*</span>
+                    </label>
+                    {{ form.categoria }}
+                    {% if form.categoria.errors %}
+                    <div class="text-red-500 text-sm mt-2 flex items-start">
+                        <svg class="w-4 h-4 mr-1 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>
+                            {% for error in form.categoria.errors %}
+                            {{ error }}{% if not forloop.last %}<br>{% endif %}
+                            {% endfor %}
+                        </span>
+                    </div>
+                    {% else %}
+                    <p class="text-xs text-gray-500 mt-1">Selecciona la categoría para organizar tus contenidos.</p>
+                    {% endif %}
+                </div>
+                
+                <!-- Imagen Destacada -->
+                <div>
+                    <label for="{{ form.imagen_destacada.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        <svg class="w-4 h-4 mr-1 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        Imagen Destacada
+                    </label>
+                    <div class="mt-2 flex items-center">
+                        {% if post.imagen_destacada %}
+                        <div class="relative group mr-4">
+                            <div class="h-24 w-24 rounded-lg overflow-hidden border border-gray-200">
+                                <img class="h-full w-full object-cover" src="{{ post.imagen_destacada.url }}" alt="{{ post.titulo }}">
+                            </div>
+                            <div class="absolute inset-0 bg-gray-900 bg-opacity-50 rounded-lg opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
+                                <span class="text-white text-xs font-medium">Imagen actual</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <div class="flex-grow">
+                            <div class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg px-4 py-6 flex flex-col items-center justify-center">
+                                <svg class="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                </svg>
+                                <div class="text-sm text-gray-600 mb-3">
+                                    <label for="{{ form.imagen_destacada.id_for_label }}" class="cursor-pointer text-purple-600 hover:text-purple-700 font-medium">
+                                        Haz clic para seleccionar
+                                    </label>
+                                    <p class="text-xs text-gray-500">PNG, JPG o WEBP (max. 2MB)</p>
+                                </div>
+                                <input type="file" name="{{ form.imagen_destacada.name }}" id="{{ form.imagen_destacada.id_for_label }}" 
+                                       class="hidden" accept="image/png, image/jpeg, image/webp">
+                            </div>
+                        </div>
+                    </div>
+                    {% if form.imagen_destacada.errors %}
+                    <div class="text-red-500 text-sm mt-2 flex items-start">
+                        <svg class="w-4 h-4 mr-1 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>
+                            {% for error in form.imagen_destacada.errors %}
+                            {{ error }}{% if not forloop.last %}<br>{% endif %}
+                            {% endfor %}
+                        </span>
+                    </div>
+                    {% else %}
+                    <p class="text-xs text-gray-500 mt-1">Esta imagen se mostrará en la vista previa del artículo.</p>
+                    {% endif %}
+                </div>
+                  <!-- Resumen -->
+                <div class="col-span-1 md:col-span-2">
+                    <label for="{{ form.resumen.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        <svg class="w-4 h-4 mr-1 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
+                        </svg>
+                        Resumen
+                    </label>
+                    {{ form.resumen }}
+                    {% if form.resumen.errors %}
+                    <div class="text-red-500 text-sm mt-2 flex items-start">
+                        <svg class="w-4 h-4 mr-1 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>
+                            {% for error in form.resumen.errors %}
+                            {{ error }}{% if not forloop.last %}<br>{% endif %}
+                            {% endfor %}
+                        </span>
+                    </div>
+                    {% else %}
+                    <p class="text-xs text-gray-500 mt-1">Breve descripción que se mostrará en los listados (opcional, máx. 240 caracteres).</p>
+                    {% endif %}
+                </div>
+                
+                <!-- Contenido -->
+                <div class="col-span-1 md:col-span-2">
+                    <label for="{{ form.contenido.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        <svg class="w-4 h-4 mr-1 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        Contenido <span class="text-red-500 ml-1">*</span>
+                    </label>
+                    {{ form.contenido }}
+                    {% if form.contenido.errors %}
+                    <div class="text-red-500 text-sm mt-2 flex items-start">
+                        <svg class="w-4 h-4 mr-1 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>
+                            {% for error in form.contenido.errors %}
+                            {{ error }}{% if not forloop.last %}<br>{% endif %}
+                            {% endfor %}
+                        </span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Meta Descripción -->
+                <div class="col-span-1 md:col-span-2">
+                    <label for="{{ form.meta_description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        <svg class="w-4 h-4 mr-1 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        Meta Descripción (SEO)
+                    </label>
+                    {{ form.meta_description }}
+                    {% if form.meta_description.errors %}
+                    <div class="text-red-500 text-sm mt-2 flex items-start">
+                        <svg class="w-4 h-4 mr-1 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>
+                            {% for error in form.meta_description.errors %}
+                            {{ error }}{% if not forloop.last %}<br>{% endif %}
+                            {% endfor %}
+                        </span>
+                    </div>
+                    {% else %}
+                    <p class="text-xs text-gray-500 mt-1">Descripción para los motores de búsqueda (máx. 160 caracteres).</p>
+                    <div class="mt-2">
+                        <div class="relative flex items-center">
+                            <div class="overflow-hidden h-2 text-xs flex rounded bg-gray-200 w-full">
+                                <div id="metaProgressBar" class="w-0 shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500 transition-all duration-300"></div>
+                            </div>
+                            <span id="metaCount" class="ml-2 text-xs text-gray-500">0/160</span>
+                        </div>
+                    </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const metaInput = document.getElementById('{{ form.meta_description.id_for_label }}');
+                            const progressBar = document.getElementById('metaProgressBar');
+                            const counter = document.getElementById('metaCount');
+                            
+                            const updateMeta = () => {
+                                const count = metaInput.value.length;
+                                const percent = Math.min((count / 160) * 100, 100);
+                                counter.textContent = `${count}/160`;
+                                progressBar.style.width = `${percent}%`;
+                                
+                                if (count > 140 && count <= 160) {
+                                    progressBar.classList.replace('bg-green-500', 'bg-yellow-500');
+                                } else if (count > 160) {
+                                    progressBar.classList.replace('bg-green-500', 'bg-red-500');
+                                    progressBar.classList.replace('bg-yellow-500', 'bg-red-500');
+                                } else {
+                                    progressBar.classList.replace('bg-yellow-500', 'bg-green-500');
+                                    progressBar.classList.replace('bg-red-500', 'bg-green-500');
+                                }
+                            };
+                            
+                            metaInput.addEventListener('input', updateMeta);
+                            updateMeta(); // Inicializar
+                        });
+                    </script>
+                    {% endif %}
+                </div>
+                
+                <!-- Opciones de publicación -->
+                <div class="col-span-1 md:col-span-2 mt-6">
+                    <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            Opciones de publicación
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-white p-4 rounded-lg border border-gray-200 flex items-center hover:border-purple-300 hover:shadow-sm transition-all duration-300">
+                                {{ form.activo }}
+                                <label for="{{ form.activo.id_for_label }}" class="ml-3 block">
+                                    <span class="block text-sm font-medium text-gray-900">Publicar contenido</span>
+                                    <span class="block text-xs text-gray-500 mt-1">El artículo será visible para todos los lectores</span>
+                                </label>
+                            </div>
+                            
+                            <div class="bg-white p-4 rounded-lg border border-gray-200 flex items-center hover:border-purple-300 hover:shadow-sm transition-all duration-300">
+                                {{ form.destacado }}
+                                <label for="{{ form.destacado.id_for_label }}" class="ml-3 block">
+                                    <span class="block text-sm font-medium text-gray-900">Destacar publicación</span>
+                                    <span class="block text-xs text-gray-500 mt-1">El artículo se mostrará en secciones destacadas</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+              <!-- Botones de acción -->
+            <div class="pt-8 border-t border-gray-200 mt-8">
+                <div class="flex flex-col-reverse sm:flex-row sm:justify-between sm:items-center">
+                    <a href="{% url 'blog:admin_list' %}" class="mt-3 sm:mt-0 py-3 px-4 inline-flex justify-center items-center border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-all duration-300">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        Cancelar
+                    </a>
+                    <div class="flex space-x-3">
+                        {% if action == 'editar' %}
+                        <button type="submit" name="preview" value="true" class="py-3 px-6 bg-white border border-purple-300 text-purple-700 hover:bg-purple-50 rounded-lg text-sm font-medium transition-all duration-300">
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                                Previsualizar
+                            </div>
+                        </button>
+                        {% endif %}
+                        <button type="submit" class="py-3 px-6 bg-gradient-to-r from-purple-600 to-indigo-600 border border-transparent rounded-lg text-sm font-medium text-white hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-300 transform hover:scale-105">
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                {{ button_text }}
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Cargamos el editor QuillJS desde CDN -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+<style>
+    /* Estilos personalizados para el editor */
+    .editor-container {
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+    
+    .ql-toolbar {
+        background-color: #f9fafb;
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+        border-color: #e5e7eb;
+    }
+    
+    .ql-container {
+        border-bottom-left-radius: 0.5rem;
+        border-bottom-right-radius: 0.5rem;
+        border-color: #e5e7eb;
+        font-family: 'Helvetica', 'Arial', sans-serif;
+        font-size: 16px;
+        height: 400px;
+        background-color: white;
+    }
+    
+    /* Añadimos una transición suave al enfoque */
+    .ql-toolbar.ql-snow + .ql-container.ql-snow:focus-within {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+    }
+</style>
+
+<script>    document.addEventListener('DOMContentLoaded', function() {
+        // Crear contenedor para el editor
+        const editorContainer = document.createElement('div');
+        editorContainer.id = 'editor-container';
+        editorContainer.className = 'editor-container';
+        
+        // Obtener el textarea original y ocultarlo
+        // Usar querySelector para buscar el textarea correcto
+        const textarea = document.getElementById('id_contenido');
+        textarea.style.display = 'none';
+        
+        // Insertar el contenedor del editor después del textarea
+        textarea.parentNode.insertBefore(editorContainer, textarea.nextSibling);
+        
+        // Inicializar el editor Quill
+        const quill = new Quill('#editor-container', {
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'align': [] }],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    ['blockquote', 'code-block'],
+                    ['link', 'image'],
+                    ['clean']
+                ]
+            },
+            theme: 'snow'
+        });
+        
+        // Si hay contenido existente, lo cargamos en el editor
+        if (textarea.value) {
+            quill.root.innerHTML = textarea.value;
+        }
+        
+        // Manejar la validación y envío del formulario
+        const form = document.getElementById('blog-form');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Evitar envío automático
+            
+            // Sincronizar contenido del editor con el textarea
+            textarea.value = quill.root.innerHTML;
+            
+            // Si el título está vacío, mostrar error
+            const titulo = document.getElementById('id_titulo').value;
+            if (!titulo || titulo.trim() === '') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de validación',
+                    text: 'El título es obligatorio',
+                    confirmButtonColor: '#3085d6'
+                });
+                return false;
+            }
+            
+            // Enviar el formulario
+            this.submit();
+        });
+    });
+</script>
+
+<!-- SweetAlert2 para mensajes elegantes -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    // Función para previsualizar la imagen seleccionada
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputImagen = document.getElementById("{{ form.imagen_destacada.id_for_label }}");
+        
+        inputImagen.addEventListener("change", function() {
+            const file = this.files[0];
+            if (file) {
+                // Verificar que sea una imagen
+                if (!file.type.match('image.*')) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Archivo no válido',
+                        text: 'Por favor selecciona una imagen válida (jpg, png, webp).',
+                        confirmButtonColor: '#3085d6'
+                    });
+                    return;
+                }
+                
+                // Verificar tamaño (max 2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Archivo demasiado grande',
+                        text: 'La imagen no debe superar los 2MB.',
+                        confirmButtonColor: '#3085d6'
+                    });
+                    return;
+                }
+                
+                // Crear previsualización
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Buscar si ya existe una previsualización
+                    let container = inputImagen.closest('.flex-grow').previousElementSibling;
+                    
+                    // Si no existe, crearla
+                    if (!container || !container.classList.contains('relative')) {
+                        container = document.createElement('div');
+                        container.className = 'relative group mr-4';
+                        container.innerHTML = `
+                            <div class="h-24 w-24 rounded-lg overflow-hidden border border-gray-200">
+                                <img class="h-full w-full object-cover" src="" alt="Vista previa">
+                            </div>
+                            <div class="absolute inset-0 bg-gray-900 bg-opacity-50 rounded-lg opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
+                                <span class="text-white text-xs font-medium">Vista previa</span>
+                            </div>
+                        `;
+                        
+                        // Insertar antes del contenedor de subida
+                        const uploadContainer = inputImagen.closest('.flex-grow');
+                        uploadContainer.parentNode.insertBefore(container, uploadContainer);
+                    } else {
+                        // Si ya existe, actualizamos sólo la imagen
+                        const img = container.querySelector('img');
+                        if (img) {
+                            img.src = e.target.result;
+                            img.alt = "Vista previa";
+                        }
+                    }
+                    
+                    // Actualizar la imagen
+                    const img = container.querySelector('img');
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+</script>
+{% endblock %}

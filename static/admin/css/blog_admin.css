@@ -1,0 +1,156 @@
+/* Estilos personalizados para el admin del blog */
+
+/* Mejorar la apariencia de los badges de categoría */
+.categoria-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 11px;
+    font-weight: bold;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Estilos para los fieldsets del blog */
+.blog-fieldset {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f9f9f9;
+}
+
+.blog-fieldset h2 {
+    background: #417690;
+    color: white;
+    padding: 8px 15px;
+    margin: -15px -15px 15px -15px;
+    border-radius: 7px 7px 0 0;
+    font-size: 13px;
+}
+
+/* Mejorar la visualización de la imagen destacada */
+.field-imagen_destacada .help {
+    font-style: italic;
+    color: #666;
+    font-size: 11px;
+}
+
+.field-imagen_destacada input[type="file"] {
+    padding: 8px;
+    border: 2px dashed #ccc;
+    border-radius: 4px;
+    background: #fafafa;
+}
+
+.field-imagen_destacada input[type="file"]:hover {
+    border-color: #417690;
+    background: #f0f8ff;
+}
+
+/* Estilos para las estadísticas de solo lectura */
+.readonly-stats {
+    background: #e8f4f8;
+    padding: 10px;
+    border-radius: 5px;
+    border-left: 4px solid #417690;
+}
+
+.readonly-stats .form-row {
+    margin-bottom: 5px;
+}
+
+/* Mejorar la visualización del contenido HTML */
+.field-contenido textarea {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+/* Alertas de seguridad */
+.security-alert {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    color: #856404;
+    padding: 10px;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+
+.security-alert .alert-icon {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+/* Mejorar la lista del admin */
+.admin-blog-list .field-categoria_badge {
+    text-align: center;
+}
+
+.admin-blog-list .field-visitas {
+    text-align: right;
+    font-weight: bold;
+    color: #417690;
+}
+
+/* Botones de acción personalizados */
+.blog-actions {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 15px 0;
+}
+
+.blog-actions select {
+    margin-right: 10px;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+    .blog-fieldset {
+        margin: 10px 0;
+        padding: 10px;
+    }
+    
+    .blog-fieldset h2 {
+        padding: 6px 10px;
+        margin: -10px -10px 10px -10px;
+        font-size: 12px;
+    }
+}
+
+/* Animaciones suaves */
+.categoria-badge, .field-imagen_destacada input[type="file"] {
+    transition: all 0.3s ease;
+}
+
+/* Focus states mejorados */
+.field-titulo input:focus,
+.field-contenido textarea:focus,
+.field-resumen textarea:focus {
+    outline: none;
+    border-color: #417690;
+    box-shadow: 0 0 0 2px rgba(65, 118, 144, 0.2);
+}
+
+/* Indicadores visuales para campos requeridos */
+.required label::after {
+    content: " *";
+    color: #ba2121;
+    font-weight: bold;
+}
+
+/* Mejoras para dark mode del admin */
+@media (prefers-color-scheme: dark) {
+    .blog-fieldset {
+        background: #2d3748;
+        border-color: #4a5568;
+    }
+    
+    .security-alert {
+        background: #2d3748;
+        border-color: #4a5568;
+        color: #e2e8f0;
+    }
+}

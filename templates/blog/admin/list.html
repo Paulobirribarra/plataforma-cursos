@@ -1,0 +1,240 @@
+{% extends 'base.html' %} 
+{% load static %} 
+{% load i18n %} 
+
+{% block title %}Panel de Administración del Blog{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Cabecera con título y botón de crear -->
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Panel de Gestión del Blog</h1>
+        <a href="{% url 'blog:create' %}" 
+           class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transition-all flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Nueva Publicación
+        </a>
+    </div>
+
+    <!-- Alertas/Mensajes -->
+    {% if messages %}
+    <div class="mb-6">
+        {% for message in messages %}
+        <div class="{% if message.tags == 'success' %}bg-green-100 text-green-800 border-green-300{% elif message.tags == 'error' %}bg-red-100 text-red-800 border-red-300{% else %}bg-blue-100 text-blue-800 border-blue-300{% endif %} border px-4 py-3 rounded-lg shadow-sm">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Filtros y Búsqueda -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <form method="GET" class="flex items-center col-span-1 md:col-span-2">
+                <input type="text" name="q" value="{{ query|default:'' }}" 
+                       placeholder="Buscar publicaciones..." 
+                       class="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-r-lg hover:bg-blue-700 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </button>
+            </form>
+
+            <div class="flex space-x-2">
+                <select id="categoria-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                    <option value="">Todas las categorías</option>
+                    {% for id, nombre in categorias %}
+                    <option value="{{ id }}" {% if categoria_actual == id %}selected{% endif %}>{{ nombre }}</option>
+                    {% endfor %}
+                </select>
+
+                <select id="estado-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                    <option value="">Todos los estados</option>
+                    <option value="activo" {% if estado_actual == 'activo' %}selected{% endif %}>Publicados</option>
+                    <option value="inactivo" {% if estado_actual == 'inactivo' %}selected{% endif %}>Borradores</option>
+                    <option value="destacado" {% if estado_actual == 'destacado' %}selected{% endif %}>Destacados</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de publicaciones -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Publicación</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for post in page_obj %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                {% if post.imagen_destacada %}
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    <img class="h-10 w-10 rounded-lg object-cover" src="{{ post.imagen_destacada.url }}" alt="{{ post.titulo }}">
+                                </div>
+                                {% else %}
+                                <div class="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-lg flex items-center justify-center">
+                                    <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                                {% endif %}
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900 truncate max-w-xs">{{ post.titulo }}</div>
+                                    <div class="text-sm text-gray-500">{{ post.autor.email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                {% if post.categoria == 'eventos' %}bg-purple-100 text-purple-800
+                                {% elif post.categoria == 'noticias' %}bg-blue-100 text-blue-800
+                                {% elif post.categoria == 'resultados' %}bg-green-100 text-green-800
+                                {% elif post.categoria == 'tips' %}bg-yellow-100 text-yellow-800
+                                {% elif post.categoria == 'proximos_cursos' %}bg-indigo-100 text-indigo-800
+                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {{ post.get_categoria_display }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                {% if post.activo %}
+                                <span class="h-2.5 w-2.5 rounded-full bg-green-400 mr-2"></span>
+                                <span class="text-sm text-gray-700">Publicado</span>
+                                {% else %}
+                                <span class="h-2.5 w-2.5 rounded-full bg-gray-400 mr-2"></span>
+                                <span class="text-sm text-gray-700">Borrador</span>
+                                {% endif %}
+                                
+                                {% if post.destacado %}
+                                <span class="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                    Destacado
+                                </span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <div>{{ post.fecha_publicacion|date:"d/m/Y" }}</div>
+                            <div class="text-xs">{{ post.visitas }} visitas</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                            <div class="inline-flex rounded-md shadow-sm">
+                                <a href="{% url 'blog:edit' post.id %}" class="inline-flex items-center px-2.5 py-1.5 border border-gray-300 text-xs font-medium rounded-l-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    <svg class="h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                    </svg>
+                                </a>
+                                <a href="{% url 'blog:preview' post.id %}" target="_blank" class="inline-flex items-center px-2.5 py-1.5 border border-l-0 border-gray-300 text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    <svg class="h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                                    </svg>
+                                </a>
+                                <a href="{% url 'blog:delete' post.id %}" class="inline-flex items-center px-2.5 py-1.5 border border-l-0 border-gray-300 text-xs font-medium rounded-r-md text-gray-700 bg-white hover:bg-red-50 hover:text-red-700 hover:border-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                    <svg class="h-4 w-4 text-gray-500 hover:text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-10 text-center text-sm text-gray-500">
+                            <div class="flex flex-col items-center">
+                                <svg class="h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                <p class="font-medium mb-2">No hay publicaciones</p>
+                                <p class="text-gray-500 mb-4">Crea tu primera publicación para el blog</p>
+                                <a href="{% url 'blog:create' %}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                    Nueva Publicación
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Paginación -->
+    {% if page_obj.paginator.num_pages > 1 %}
+    <div class="flex justify-center">
+        <nav class="inline-flex rounded-md shadow-sm">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if categoria_actual %}&categoria={{ categoria_actual }}{% endif %}{% if estado_actual %}&estado={{ estado_actual }}{% endif %}" 
+                class="inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-l-md">
+                <svg class="mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Anterior
+            </a>
+            {% endif %}
+
+            <span class="inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if categoria_actual %}&categoria={{ categoria_actual }}{% endif %}{% if estado_actual %}&estado={{ estado_actual }}{% endif %}"
+                class="inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-r-md">
+                Siguiente
+                <svg class="ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+            </a>
+            {% endif %}
+        </nav>
+    </div>
+    {% endif %}
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Filtro por categoría
+        document.getElementById('categoria-filter').addEventListener('change', function() {
+            applyFilters();
+        });
+        
+        // Filtro por estado
+        document.getElementById('estado-filter').addEventListener('change', function() {
+            applyFilters();
+        });
+        
+        // Función para aplicar los filtros
+        function applyFilters() {
+            const categoria = document.getElementById('categoria-filter').value;
+            const estado = document.getElementById('estado-filter').value;
+            const query = new URLSearchParams(window.location.search).get('q') || '';
+            
+            let url = '{% url "blog:admin_list" %}?';
+            if (query) url += `q=${encodeURIComponent(query)}&`;
+            if (categoria) url += `categoria=${encodeURIComponent(categoria)}&`;
+            if (estado) url += `estado=${encodeURIComponent(estado)}&`;
+            
+            // Eliminar el último '&' si existe
+            url = url.endsWith('&') ? url.slice(0, -1) : url;
+            
+            window.location.href = url;
+        }
+    });
+</script>
+{% endblock %}

@@ -6,6 +6,11 @@ from django.conf.urls.static import static
 from . import views
 from django.views.generic import RedirectView
 
+# Personalizar títulos del admin para mayor seguridad
+admin.site.site_header = "Sistema de Gestión Interno"
+admin.site.site_title = "Gestión Interna"
+admin.site.index_title = "Panel de Control - Acceso Restringido"
+
 urlpatterns = [
     path("", views.home, name="home"),  # Nueva página principal
     path("nosotros/", views.nosotros, name="nosotros"),  # Página Quiénes Somos
@@ -15,10 +20,13 @@ urlpatterns = [
         "cursos/", include("cursos.urls", namespace="cursos")
     ),  # Prefijo para las URLs de cursos
     path("usuarios/", include("usuarios.urls", namespace="usuarios")),
-    path("admin/", admin.site.urls),
+    # URL secreta para admin (cambiar por algo más seguro en producción)
+    path("sistema-gestion-admin-2025/", admin.site.urls),
     path("pagos/", include("pagos.urls")),
     path("membresias/", include("membresias.urls")),
     path("carrito/", include("carrito.urls", namespace="carrito")),
+    # Blog URLs
+    path("blog/", include("blogs.urls", namespace="blog")),
     # Redirección personalizada
     path(
         "accounts/confirm-email/",

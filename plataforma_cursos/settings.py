@@ -42,6 +42,9 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    # Middleware de seguridad para admin
+    "plataforma_cursos.middleware.admin_security.AdminSecurityMiddleware",
+    "plataforma_cursos.middleware.admin_security.AdminSessionSecurityMiddleware",
 ]
 
 ROOT_URLCONF = "plataforma_cursos.urls"
@@ -134,6 +137,7 @@ ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = "/usuarios/dashboard/"
 # Configuración de correo (para pruebas)
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_FROM_EMAIL = "no-reply@asesorias-futuro.cl"
+CONTACT_EMAIL = config('CONTACT_EMAIL', default='contacto@asesorias-futuro.cl')  # Email donde recibirás las consultas
 
 
 CSRF_COOKIE_SECURE = (

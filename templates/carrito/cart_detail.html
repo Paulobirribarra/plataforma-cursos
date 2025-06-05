@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load cart_extras %}
 {% block title %}Mi Carrito de Compras{% endblock %}
 
 {% block content %}
@@ -101,12 +102,10 @@
                                         <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ item.course.description|truncatewords:20 }}</p>
                                         {% elif item.item_type == 'membership' and item.membership_plan.description %}
                                         <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ item.membership_plan.description|truncatewords:20 }}</p>
-                                        {% endif %}
-
-                                        <!-- Precio -->
+                                        {% endif %}                                        <!-- Precio -->
                                         <div class="flex items-center justify-between">
                                             <div class="text-2xl font-bold text-green-600">
-                                                ${{ item.price_applied|floatformat:0 }} CLP
+                                                ${{ item.price_applied|format_clp }} CLP
                                             </div>
                                         </div>
                                     </div>
@@ -162,36 +161,49 @@
                             <!-- Cálculo del total -->
                             {% comment %}
                             <!-- Aquí puedes agregar lógica para calcular el total -->
-                            {% endcomment %}                            <div class="space-y-4">
-                                <div class="flex justify-between text-gray-600">
-                                    <span>Subtotal</span>
-                                    <span>${{ subtotal|floatformat:0 }} CLP</span>
-                                </div>
-                                {% if applied_discount_code %}
+                            {% endcomment %}                            <div class="space-y-4">                                <div class="flex justify-between text-gray-600">
+                                    <span>Precio Base</span>
+                                    <span>${{ original_price_total|default:subtotal|format_clp }} CLP</span>
+                                </div>{% for discount in special_discounts %}
+                                    <div class="flex justify-between items-center text-gray-600">
+                                        <span class="flex items-center">
+                                            Descuento Especial ({{ discount.percentage }}%)
+                                        </span>
+                                        <span class="text-green-600">
+                                            - ${{ discount.amount|format_clp }} CLP
+                                        </span>
+                                    </div>
+                                {% endfor %}
+                                  {% if applied_discount_code %}
                                 <div class="flex justify-between items-center text-gray-600">
                                     <span class="flex items-center">
-                                        Descuento ({{ applied_discount_code.code }})
+                                        Cupón ({{ applied_discount_code.code }})
                                         <a href="{% url 'carrito:remove_discount_code' %}" 
                                            class="ml-2 text-red-500 hover:text-red-700 text-sm"
-                                           title="Remover descuento">
+                                           title="Remover cupón">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                             </svg>
                                         </a>
                                     </span>
-                                    <span class="text-green-600">- ${{ discount_amount|floatformat:0 }} CLP</span>
-                                </div>
-                                {% else %}
-                                <div class="flex justify-between text-gray-600">
-                                    <span>Descuentos</span>
-                                    <span class="text-green-600">- $0 CLP</span>
+                                    <span class="text-green-600">- ${{ discount_amount|format_clp }} CLP</span>
                                 </div>
                                 {% endif %}
-                                <div class="border-t border-gray-200 pt-4">
+                                  {% if total_all_discounts > 0 %}
+                                <div class="flex justify-between items-center text-gray-600 font-medium mt-2">
+                                    <span class="flex items-center">
+                                        Total Descuentos
+                                    </span>
+                                    <span class="text-green-600">
+                                        - ${{ total_all_discounts|format_clp }} CLP
+                                    </span>
+                                </div>
+                                {% endif %}
+                                  <div class="border-t border-gray-200 pt-4">
                                     <div class="flex justify-between text-xl font-bold text-gray-900">
                                         <span>Total</span>
                                         <span class="text-green-600">
-                                            ${{ total|floatformat:0 }} CLP
+                                            ${{ total|format_clp }} CLP
                                         </span>
                                     </div>
                                 </div>
@@ -237,10 +249,9 @@
                                     <div class="flex items-center">
                                         <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                        <div>
+                                        </svg>                                        <div>
                                             <p class="text-green-800 font-semibold">Código aplicado: {{ applied_discount_code.code }}</p>
-                                            <p class="text-green-600 text-sm">Descuento: ${{ discount_amount|floatformat:0 }} CLP</p>
+                                            <p class="text-green-600 text-sm">Descuento: ${{ discount_amount|format_clp }} CLP</p>
                                         </div>
                                     </div>
                                     <a href="{% url 'carrito:remove_discount_code' %}" 

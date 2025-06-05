@@ -1,4 +1,5 @@
 asgiref==3.8.1
+bleach==6.2.0
 certifi==2025.4.26
 chardet==3.0.4
 charset-normalizer==3.4.2

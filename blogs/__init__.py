@@ -1,0 +1,1 @@
+# Blogs app - Manejo de contacto y contenido del blog
