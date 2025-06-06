@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ boletin.titulo }} - Asesorias Futuro LTD</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4;">
+    <div style="max-width: 600px; margin: 0 auto; background: #ffffff; padding: 0;">
+        <!-- Header -->
+        <header style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px 20px; text-align: center;">
+            <h1 style="margin: 0; font-size: 28px; font-weight: bold;">
+                {% if es_prueba %}🧪 [PRUEBA] {% endif %}{{ boletin.titulo }}
+            </h1>
+            <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">
+                Asesorias Futuro LTD - Plataforma de Cursos
+            </p>
+        </header>
+
+        <!-- Main Content -->
+        <main style="padding: 30px 20px;">
+            <!-- Boletin Content -->
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+                {{ boletin.contenido|safe }}
+            </div>
+
+            <!-- Metadata -->
+            <div style="background: #e3f2fd; padding: 20px; border-radius: 8px; border-left: 4px solid #2196f3;">
+                <h3 style="margin: 0 0 15px 0; color: #1565c0; font-size: 16px;">
+                    📋 Informacion del Boletin
+                </h3>
+                <table style="width: 100%; font-size: 14px; color: #555;">
+                    <tr>
+                        <td style="padding: 5px 0; font-weight: bold;">Creado por:</td>
+                        <td style="padding: 5px 0;">{{ boletin.creado_por.get_full_name|default:boletin.creado_por.username }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px 0; font-weight: bold;">Fecha:</td>
+                        <td style="padding: 5px 0;">{{ boletin.fecha_creacion|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px 0; font-weight: bold;">Estado:</td>
+                        <td style="padding: 5px 0;">{{ boletin.get_estado_display }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px 0; font-weight: bold;">Categoria:</td>
+                        <td style="padding: 5px 0;">{{ boletin.categoria }}</td>
+                    </tr>
+                </table>
+            </div>
+
+            {% if es_prueba %}
+            <!-- Test Notice -->
+            <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107; margin-top: 20px;">
+                <p style="margin: 0; font-size: 14px; color: #856404;">
+                    <strong>⚠️ Modo de Prueba</strong><br>
+                    Este es un email de prueba del sistema de boletines. 
+                    Los usuarios reales no han recibido este mensaje.
+                </p>
+            </div>
+            {% endif %}
+
+            <!-- Call to Action -->
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="{{ url_base }}" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;">
+                    Visitar Plataforma
+                </a>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer style="background: #2c3e50; color: #ecf0f1; padding: 20px; text-align: center; font-size: 12px;">
+            <p style="margin: 0 0 10px 0;">
+                <strong>Asesorias Futuro LTD</strong><br>
+                Plataforma de Cursos Online
+            </p>
+            <p style="margin: 0; opacity: 0.8;">
+                © 2024 Asesorias Futuro LTD. Todos los derechos reservados.
+            </p>
+            {% if es_prueba %}
+            <p style="margin: 10px 0 0 0; color: #3498db; font-weight: bold;">
+                ✅ Configuracion SMTP verificada exitosamente
+            </p>
+            {% endif %}
+        </footer>
+    </div>
+</body>
+</html>

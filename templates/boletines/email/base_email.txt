@@ -1,0 +1,28 @@
+{{ boletin.get_categoria_display|upper }} - {{ boletin.titulo }}
+========================================
+
+{% if boletin.resumen %}
+{{ boletin.resumen }}
+
+{% endif %}
+{{ boletin.contenido|striptags }}
+
+{% if boletin.blog_relacionado %}
+
+📖 Leer artículo completo:
+{{ request.scheme }}://{{ request.get_host }}{{ boletin.blog_relacionado.get_absolute_url }}
+{% endif %}
+
+{% if boletin.curso_relacionado %}
+
+🎓 Ver curso:
+{{ request.scheme }}://{{ request.get_host }}{{ boletin.curso_relacionado.get_absolute_url }}
+{% endif %}
+
+--
+🎓 Plataforma de Cursos Online
+Tu destino para el aprendizaje continuo
+
+Ver en navegador: {{ request.scheme }}://{{ request.get_host }}/boletines/{{ boletin.slug }}/
+
+Darse de baja: {{ request.scheme }}://{{ request.get_host }}/boletines/unsubscribe/{{ usuario.id }}/{{ boletin.slug }}/

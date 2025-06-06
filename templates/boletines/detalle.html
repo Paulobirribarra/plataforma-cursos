@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ boletin.titulo }} - Boletín{% endblock %}
+
+{% block extra_css %}
+<style>
+@media print {
+    .bg-gradient-to-r,
+    .shadow-xl,
+    .border,
+    footer,
+    .print-hidden {
+        display: none !important;
+    }
+    
+    .prose {
+        max-width: none !important;
+    }
+    
+    body {
+        font-size: 12pt !important;
+        line-height: 1.4 !important;
+    }
+    
+    h1 {
+        color: #000 !important;
+        background: none !important;
+        -webkit-background-clip: unset !important;
+        background-clip: unset !important;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <nav class="mb-8">
+        <ol class="flex items-center space-x-2 text-sm text-gray-500">
+            <li><a href="{% url 'home' %}" class="hover:text-blue-600 transition-colors">Inicio</a></li>
+            <li><span class="mx-2">/</span></li>
+            <li><a href="{% url 'boletines:lista' %}" class="hover:text-blue-600 transition-colors">Boletines</a></li>
+            <li><span class="mx-2">/</span></li>
+            <li class="text-gray-900 font-medium">{{ boletin.titulo|truncatechars:50 }}</li>
+        </ol>
+    </nav>
+    
+    <!-- Header del boletín -->
+    <header class="text-center mb-12 pb-8 border-b border-gray-200">
+        <div class="mb-6">
+            <span class="inline-block px-4 py-2 text-sm font-semibold rounded-full 
+                       {% if boletin.categoria == 'noticias' %}bg-blue-100 text-blue-800
+                       {% elif boletin.categoria == 'cursos' %}bg-green-100 text-green-800
+                       {% elif boletin.categoria == 'promociones' %}bg-red-100 text-red-800
+                       {% elif boletin.categoria == 'eventos' %}bg-purple-100 text-purple-800
+                       {% else %}bg-gray-100 text-gray-800{% endif %}">
+                {{ boletin.get_categoria_display }}
+            </span>
+        </div>
+        
+        <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6 leading-tight">
+            {{ boletin.titulo }}
+        </h1>
+        
+        <div class="flex items-center justify-center space-x-4 text-gray-600 mb-6">
+            <span class="flex items-center">
+                📅 {{ boletin.fecha_creacion|date:"d \d\e F \d\e Y \a \l\a\s H:i" }}
+            </span>
+            {% if boletin.es_automatico %}
+                <span class="flex items-center">
+                    🤖 Generado automáticamente
+                </span>
+            {% endif %}
+        </div>
+        
+        {% if boletin.resumen %}
+        <div class="max-w-3xl mx-auto">
+            <p class="text-xl text-gray-700 font-medium leading-relaxed italic">
+                {{ boletin.resumen }}
+            </p>
+        </div>
+        {% endif %}
+    </header>
+    
+    <!-- Contenido del boletín -->
+    <article class="prose prose-lg max-w-none">
+        <div class="bg-white rounded-xl shadow-xl p-8 border border-gray-100">
+            <div class="text-gray-800 leading-relaxed">
+                {{ boletin.contenido|safe }}
+            </div>
+        </div>
+    </article>
+    
+    <!-- Footer del boletín -->
+    <footer class="mt-12 pt-8 border-t border-gray-200 print-hidden">
+        <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+            <div class="text-sm text-gray-500">
+                <p>Boletín publicado el {{ boletin.fecha_creacion|date:"d \d\e F \d\e Y" }}</p>
+                {% if boletin.plantilla %}
+                <p>Basado en la plantilla: <span class="font-medium">{{ boletin.plantilla.nombre }}</span></p>
+                {% endif %}
+            </div>
+            
+            <div class="flex space-x-4">
+                <a href="{% url 'boletines:lista' %}" 
+                   class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                    ← Volver a boletines
+                </a>
+                
+                <button onclick="window.print()" 
+                        class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                    🖨️ Imprimir
+                </button>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Suscripción -->
+    <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 mt-12 text-white text-center print-hidden">
+        <h3 class="text-2xl font-bold mb-4">¿Te gustó este boletín?</h3>
+        <p class="text-blue-100 mb-6">Suscríbete para recibir nuestros boletines directamente en tu correo electrónico</p>
+        
+        <form method="post" action="{% url 'boletines:suscribir' %}" class="max-w-md mx-auto">
+            {% csrf_token %}
+            <div class="flex flex-col sm:flex-row gap-3">                <input type="email" 
+                       name="email" 
+                       placeholder="Tu correo electrónico" 
+                       required
+                       class="flex-1 px-4 py-3 rounded-lg text-gray-900 placeholder-gray-500 border border-gray-300 focus:ring-2 focus:ring-white focus:border-white">
+                <button type="submit" 
+                        class="px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors whitespace-nowrap">
+                    📬 Suscribirse
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+        

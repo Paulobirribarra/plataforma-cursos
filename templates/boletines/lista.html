@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Boletines{% endblock %}
+
+{% block extra_css %}
+<style>
+.categoria-badge {
+    @apply inline-block px-3 py-1 rounded-full text-xs font-bold uppercase text-white mb-3;
+}
+.categoria-blog { @apply bg-blue-500; }
+.categoria-cursos { @apply bg-green-500; }
+.categoria-promociones { @apply bg-red-500; }
+.categoria-membresias { @apply bg-purple-500; }
+.categoria-anuncios { @apply bg-orange-500; }
+.categoria-eventos { @apply bg-pink-500; }
+.categoria-general { @apply bg-gray-500; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header de la página -->
+    <header class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+            📰 Boletines
+        </h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            Mantente al día con nuestras últimas noticias, cursos, promociones y eventos
+        </p>
+    </header>
+    
+    <!-- Filtros -->
+    <div class="bg-white rounded-xl shadow-xl p-6 mb-8 border border-gray-100">
+        <form method="get" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                <div class="space-y-2">
+                    <label for="categoria" class="block text-sm font-semibold text-gray-700">
+                        Categoría
+                    </label>
+                    <select name="categoria" id="categoria" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                        <option value="">Todas las categorías</option>
+                        {% for value, label in categorias %}
+                            <option value="{{ value }}" {% if request.GET.categoria == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="space-y-2">
+                    <label for="orden" class="block text-sm font-semibold text-gray-700">
+                        Ordenar por
+                    </label>
+                    <select name="orden" id="orden" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                        <option value="-fecha_creacion" {% if request.GET.orden == '-fecha_creacion' %}selected{% endif %}>
+                            Más recientes
+                        </option>
+                        <option value="fecha_creacion" {% if request.GET.orden == 'fecha_creacion' %}selected{% endif %}>
+                            Más antiguos
+                        </option>
+                        <option value="titulo" {% if request.GET.orden == 'titulo' %}selected{% endif %}>
+                            Título A-Z
+                        </option>
+                        <option value="-titulo" {% if request.GET.orden == '-titulo' %}selected{% endif %}>
+                            Título Z-A
+                        </option>
+                    </select>
+                </div>
+                
+                <div>
+                    <button type="submit" 
+                            class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-2 px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        🔍 Filtrar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Resultados -->
+    {% if boletines %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {% for boletin in boletines %}
+            <article class="bg-white rounded-xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 flex flex-col">
+                <div class="p-6 flex-1 flex flex-col">
+                    <div class="mb-4">
+                        <span class="categoria-badge 
+                                   {% if boletin.categoria == 'noticias' %}categoria-blog
+                                   {% elif boletin.categoria == 'cursos' %}categoria-cursos
+                                   {% elif boletin.categoria == 'promociones' %}categoria-promociones
+                                   {% elif boletin.categoria == 'eventos' %}categoria-eventos
+                                   {% else %}categoria-general{% endif %}">
+                            {{ boletin.get_categoria_display }}
+                        </span>
+                    </div>
+                    
+                    <h2 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2 flex-shrink-0">
+                        <a href="{% url 'boletines:detalle' boletin.slug %}" 
+                           class="hover:text-blue-600 transition-colors">
+                            {{ boletin.titulo }}
+                        </a>
+                    </h2>
+                    
+                    <div class="text-sm text-gray-500 mb-4 flex items-center space-x-2 flex-shrink-0">
+                        <span>📅 {{ boletin.fecha_creacion|date:"d \d\e F \d\e Y" }}</span>
+                        {% if boletin.es_automatico %}
+                            <span>• 🤖 Automático</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="flex-1">
+                        {% if boletin.resumen %}
+                        <p class="text-gray-600 line-clamp-3">{{ boletin.resumen }}</p>
+                        {% else %}
+                        <p class="text-gray-600 line-clamp-3">{{ boletin.contenido_preview }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-t border-gray-100">
+                        <a href="{% url 'boletines:detalle' boletin.slug %}" 
+                           class="inline-flex items-center text-blue-600 hover:text-blue-800 font-semibold transition-colors">
+                            Leer completo
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        
+        <!-- Paginación -->
+        {% if is_paginated %}
+        <div class="flex justify-center">
+            <nav class="flex items-center space-x-2">
+                {% if page_obj.has_previous %}
+                    <a href="?{% if request.GET.categoria %}categoria={{ request.GET.categoria }}&{% endif %}{% if request.GET.orden %}orden={{ request.GET.orden }}&{% endif %}page=1"
+                       class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        ⏮️ Primera
+                    </a>
+                    <a href="?{% if request.GET.categoria %}categoria={{ request.GET.categoria }}&{% endif %}{% if request.GET.orden %}orden={{ request.GET.orden }}&{% endif %}page={{ page_obj.previous_page_number }}"
+                       class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        ← Anterior
+                    </a>
+                {% endif %}
+                
+                <span class="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg">
+                    Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                </span>
+                
+                {% if page_obj.has_next %}
+                    <a href="?{% if request.GET.categoria %}categoria={{ request.GET.categoria }}&{% endif %}{% if request.GET.orden %}orden={{ request.GET.orden }}&{% endif %}page={{ page_obj.next_page_number }}"
+                       class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        Siguiente →
+                    </a>
+                    <a href="?{% if request.GET.categoria %}categoria={{ request.GET.categoria }}&{% endif %}{% if request.GET.orden %}orden={{ request.GET.orden }}&{% endif %}page={{ page_obj.paginator.num_pages }}"
+                       class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        ⏭️ Última
+                    </a>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+        
+    {% else %}
+        <!-- Sin resultados -->
+        <div class="text-center py-12">
+            <div class="text-6xl mb-4">📭</div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-2">No se encontraron boletines</h3>
+            <p class="text-gray-600 mb-6">No hay boletines que coincidan con los filtros seleccionados.</p>
+            <a href="{% url 'boletines:lista' %}" 
+               class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                Ver todos los boletines
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

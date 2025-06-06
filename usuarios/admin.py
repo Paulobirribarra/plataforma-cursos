@@ -8,8 +8,8 @@ from .models import CustomUser
 
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
-    list_display = ('email', 'username', 'full_name', 'is_email_verified', 'is_staff', 'is_active', 'created_at')
-    list_filter = ('is_staff', 'is_active', 'is_email_verified', 'failed_login_attempts')
+    list_display = ('email', 'username', 'full_name', 'is_email_verified', 'suscrito_newsletter', 'is_staff', 'is_active', 'created_at')
+    list_filter = ('is_staff', 'is_active', 'is_email_verified', 'suscrito_newsletter', 'failed_login_attempts')
     search_fields = ('email', 'username', 'full_name')
     actions = ['verify_emails', 'unverify_emails', 'unlock_accounts']
     
@@ -17,14 +17,14 @@ class CustomUserAdmin(UserAdmin):
         (None, {'fields': ('email', 'password')}),
         ('Información personal', {'fields': ('username', 'full_name', 'phone', 'telegram_id', 'profile_picture')}),
         ('Permisos', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
-        ('Seguridad', {'fields': ('is_email_verified', 'failed_login_attempts', 'account_locked_until', 'last_login_ip')}),
+        ('Seguridad', {'fields': ('is_email_verified', 'suscrito_newsletter', 'failed_login_attempts', 'account_locked_until', 'last_login_ip')}),
         ('Fechas', {'fields': ('last_login', 'created_at', 'updated_at')}),
         ('Datos adicionales', {'fields': ('preferences',), 'classes': ('collapse',)}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'username', 'full_name', 'password1', 'password2', 'is_email_verified'),
+            'fields': ('email', 'username', 'full_name', 'password1', 'password2', 'is_email_verified', 'suscrito_newsletter'),
         }),
     )
     readonly_fields = ('created_at', 'updated_at', 'last_login')

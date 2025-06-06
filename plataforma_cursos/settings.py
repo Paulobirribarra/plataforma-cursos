@@ -23,12 +23,12 @@ INSTALLED_APPS = [
     "django.contrib.sites",  # Requerido por Allauth
     "allauth",
     "allauth.account",
-    "allauth.socialaccount",
-    "usuarios.apps.UsuariosConfig",
+    "allauth.socialaccount",    "usuarios.apps.UsuariosConfig",
     "cursos.apps.CursosConfig",
     "pagos.apps.PagosConfig",
     "membresias.apps.MembresiasConfig",
     "blogs.apps.BlogsConfig",  # App para contacto y blogs
+    "boletines.apps.BoletinesConfig",  # App para boletines informativos
     "widget_tweaks",
     "carrito",
 ]
@@ -134,24 +134,27 @@ ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = "/account/login/"
 ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = "/usuarios/dashboard/"
 
-# Configuración de correo (para pruebas)
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-DEFAULT_FROM_EMAIL = "no-reply@asesorias-futuro.cl"
-CONTACT_EMAIL = config('CONTACT_EMAIL', default='contacto@asesorias-futuro.cl')  # Email donde recibirás las consultas
+# Configuración de correo (SMTP GMAIL - ACTIVO)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = config('EMAIL_HOST_USER')  # Usar tu email de Gmail
+CONTACT_EMAIL = config('CONTACT_EMAIL', default='contact@yoursite.com')  # Email donde recibirás las consultas
 
+# Configuración de codificación para emails
+DEFAULT_CHARSET = 'utf-8'
+FILE_CHARSET = 'utf-8'
+
+# Configuración de correo (para pruebas en consola - DESACTIVADO)
+# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 CSRF_COOKIE_SECURE = (
     False  # En desarrollo, debería ser False (True solo en producción con HTTPS)
 )
 SESSION_COOKIE_SECURE = False  # Igual que CSRF_COOKIE_SECURE
-
-# Configuración de correo (SMTP GMAIL, descomentar para producción)
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-# EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 # Logging para depuración
 LOGGING = {

@@ -1,0 +1,514 @@
+{% extends 'base.html' %} 
+{% load static %} 
+{% load i18n %} 
+
+{% block title %}Previsualización: {{ boletin.titulo }}{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Estilos específicos para el contenido del boletín generado por TinyMCE */
+.newsletter-content {
+    line-height: 1.7;
+    color: #374151;
+}
+
+.newsletter-content h1,
+.newsletter-content h2,
+.newsletter-content h3,
+.newsletter-content h4,
+.newsletter-content h5,
+.newsletter-content h6 {
+    font-weight: 600;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    color: #1f2937;
+}
+
+.newsletter-content h1 { font-size: 2.25rem; }
+.newsletter-content h2 { font-size: 1.875rem; }
+.newsletter-content h3 { font-size: 1.5rem; }
+.newsletter-content h4 { font-size: 1.25rem; }
+.newsletter-content h5 { font-size: 1.125rem; }
+.newsletter-content h6 { font-size: 1rem; }
+
+.newsletter-content p {
+    margin-bottom: 1rem;
+    text-align: justify;
+}
+
+.newsletter-content ul,
+.newsletter-content ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+}
+
+.newsletter-content ul li {
+    list-style-type: disc;
+    margin-bottom: 0.5rem;
+}
+
+.newsletter-content ol li {
+    list-style-type: decimal;
+    margin-bottom: 0.5rem;
+}
+
+.newsletter-content strong {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.newsletter-content em {
+    font-style: italic;
+}
+
+.newsletter-content a {
+    color: #3b82f6;
+    text-decoration: underline;
+}
+
+.newsletter-content a:hover {
+    color: #1d4ed8;
+}
+
+.newsletter-content blockquote {
+    border-left: 4px solid #e5e7eb;
+    padding-left: 1rem;
+    margin: 1rem 0;
+    font-style: italic;
+    color: #6b7280;
+}
+
+.newsletter-content code {
+    background-color: #f3f4f6;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+}
+
+.newsletter-content pre {
+    background-color: #f3f4f6;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+.newsletter-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+}
+
+.newsletter-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+.newsletter-content th,
+.newsletter-content td {
+    border: 1px solid #e5e7eb;
+    padding: 0.5rem;
+    text-align: left;
+}
+
+.newsletter-content th {
+    background-color: #f9fafb;
+    font-weight: 600;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Barra de previsualización -->
+<div class="fixed top-20 left-0 w-full bg-blue-600 text-white z-[60] py-2 px-4 flex justify-between items-center shadow-md">
+    <div class="flex items-center space-x-4">
+        <div class="flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+            </svg>
+            <span class="font-medium">Vista previa - Boletín</span>
+        </div>
+        
+        <div class="hidden md:flex items-center text-sm">
+            <span class="px-2 py-1 bg-blue-700 rounded-full">{{ boletin.get_categoria_display }}</span>
+            {% if boletin.estado == 'enviado' %}
+                <span class="ml-2 px-2 py-1 bg-green-500 rounded-full">Enviado</span>
+            {% elif boletin.estado == 'programado' %}
+                <span class="ml-2 px-2 py-1 bg-yellow-500 rounded-full">Programado</span>
+            {% else %}
+                <span class="ml-2 px-2 py-1 bg-gray-500 rounded-full">Borrador</span>
+            {% endif %}
+            {% if boletin.solo_suscriptores_premium %}
+                <span class="ml-2 px-2 py-1 bg-purple-500 rounded-full">Premium</span>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="flex items-center space-x-3">
+        <a href="{% url 'boletines:admin_editar' boletin.slug %}" class="py-1 px-3 bg-white text-blue-600 rounded-md text-sm font-medium hover:bg-blue-50 transition-colors">
+            <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+            </svg>
+            Editar
+        </a>
+        <a href="{% url 'boletines:admin_dashboard' %}" class="py-1 px-3 border border-white text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
+            Volver al dashboard
+        </a>
+    </div>
+</div>
+
+<!-- Contenedor principal con margen superior para compensar la barra fija y el navbar -->
+<div class="mt-32 bg-gray-50 min-h-screen">
+    <!-- Header del boletín -->
+    <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white py-12 md:py-16">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6">
+            <div class="text-center">
+                <div class="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium mb-4">
+                    📧 {{ boletin.get_categoria_display }}
+                </div>
+                <h1 class="text-3xl md:text-4xl font-bold mb-6 leading-tight">{{ boletin.titulo }}</h1>
+                <div class="flex items-center justify-center space-x-6 text-sm md:text-base">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-2 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <span>Creado: {{ boletin.fecha_creacion|date:"d/m/Y" }}</span>
+                    </div>
+                    {% if boletin.fecha_enviado %}
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-2 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                        <span>Enviado: {{ boletin.fecha_enviado|date:"d/m/Y H:i" }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            <!-- Contenido del boletín -->
+            <div class="lg:col-span-2">
+                <!-- Resumen -->
+                {% if boletin.resumen %}
+                <div class="mb-8 bg-white border-l-4 border-blue-500 p-6 rounded-lg shadow-sm">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Resumen</h3>
+                    <p class="text-gray-700 leading-relaxed">{{ boletin.resumen }}</p>
+                </div>
+                {% endif %}                  <!-- Contenido principal -->
+                <div class="bg-white rounded-lg shadow-sm p-8 mb-8">
+                    <div class="prose prose-lg max-w-none newsletter-content">
+                        {{ boletin.contenido|safe }}
+                    </div>
+                </div>
+
+                <!-- Blog relacionado -->
+                {% if boletin.blog_relacionado %}
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">📖 Artículo Relacionado</h3>
+                    <div class="flex items-start space-x-4">
+                        {% if boletin.blog_relacionado.imagen_destacada %}
+                        <div class="flex-shrink-0">
+                            <img src="{{ boletin.blog_relacionado.imagen_destacada.url }}" alt="{{ boletin.blog_relacionado.titulo }}" class="w-20 h-20 rounded-lg object-cover">
+                        </div>
+                        {% endif %}
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-900 mb-2">{{ boletin.blog_relacionado.titulo }}</h4>
+                            {% if boletin.blog_relacionado.resumen %}
+                            <p class="text-sm text-gray-600 mb-3">{{ boletin.blog_relacionado.resumen|truncatewords:20 }}</p>
+                            {% endif %}
+                            <a href="{{ boletin.blog_relacionado.get_absolute_url }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium" target="_blank">
+                                Leer artículo completo →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Curso relacionado -->
+                {% if boletin.curso_relacionado %}
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">🎓 Curso Relacionado</h3>
+                    <div class="flex items-start space-x-4">
+                        {% if boletin.curso_relacionado.imagen %}
+                        <div class="flex-shrink-0">
+                            <img src="{{ boletin.curso_relacionado.imagen.url }}" alt="{{ boletin.curso_relacionado.titulo }}" class="w-20 h-20 rounded-lg object-cover">
+                        </div>
+                        {% endif %}
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-900 mb-2">{{ boletin.curso_relacionado.titulo }}</h4>
+                            {% if boletin.curso_relacionado.descripcion_corta %}
+                            <p class="text-sm text-gray-600 mb-3">{{ boletin.curso_relacionado.descripcion_corta|truncatewords:20 }}</p>
+                            {% endif %}
+                            <a href="{{ boletin.curso_relacionado.get_absolute_url }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium" target="_blank">
+                                Ver curso →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Información del autor -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Autor</h3>
+                    <div class="flex items-center">                        <div class="flex-shrink-0 mr-4">
+                            <div class="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-lg font-bold">
+                                {% if boletin.creado_por.first_name %}
+                                    {{ boletin.creado_por.first_name|first|upper }}
+                                {% elif boletin.creado_por.username %}
+                                    {{ boletin.creado_por.username|first|upper }}
+                                {% else %}
+                                    U
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-lg font-semibold text-gray-900">{{ boletin.creado_por.get_full_name|default:boletin.creado_por.username }}</p>
+                            <p class="text-gray-500">Creador del boletín</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+                <!-- Estado del boletín -->
+                <div class="bg-white p-6 rounded-lg shadow-sm mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Estado del Boletín</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">Estado:</span>
+                            {% if boletin.estado == 'enviado' %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 12 12">
+                                        <path d="M3.707 5.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4a1 1 0 00-1.414-1.414L5 7.586 3.707 5.293z"/>
+                                    </svg>
+                                    Enviado
+                                </span>
+                            {% elif boletin.estado == 'programado' %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 12 12">
+                                        <path d="M6 0a6 6 0 100 12A6 6 0 006 0zM5 3a1 1 0 112 0v2.59l1.3 1.3a1 1 0 01-1.4 1.42L5.3 6.7a1 1 0 01-.3-.7V3z"/>
+                                    </svg>
+                                    Programado
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                    Borrador
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">Categoría:</span>
+                            <span class="text-gray-900 font-medium">{{ boletin.get_categoria_display }}</span>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">Prioridad:</span>
+                            <span class="text-gray-900 font-medium">{{ boletin.get_prioridad_display }}</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">Solo Premium:</span>
+                            {% if boletin.solo_suscriptores_premium %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                    Sí
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                    No
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        {% if boletin.fecha_programada %}
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">Programado para:</span>
+                            <span class="text-gray-900 font-medium">{{ boletin.fecha_programada|date:"d/m/Y H:i" }}</span>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">Última actualización:</span>
+                            <span class="text-gray-900 font-medium">{{ boletin.fecha_actualizacion|date:"d/m/Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estadísticas de envío -->
+                {% if boletin.estado == 'enviado' %}
+                <div class="bg-white p-6 rounded-lg shadow-sm mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Estadísticas de Envío</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">Total enviados:</span>
+                            <span class="text-gray-900 font-medium">{{ boletin.total_enviados|default:0 }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">Total abiertos:</span>
+                            <span class="text-gray-900 font-medium">{{ boletin.total_abiertos|default:0 }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">Total clicks:</span>
+                            <span class="text-gray-900 font-medium">{{ boletin.total_clicks|default:0 }}</span>
+                        </div>
+                        {% if boletin.total_enviados > 0 %}
+                        <div class="pt-3 border-t border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-700">Tasa de apertura:</span>
+                                <span class="text-green-600 font-medium">{{ boletin.total_abiertos|floatformat:1 }}%</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-700">Tasa de clicks:</span>
+                                <span class="text-blue-600 font-medium">{{ boletin.total_clicks|floatformat:1 }}%</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Acciones rápidas -->
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Acciones</h3>
+                    <div class="space-y-2">
+                        <a href="{% url 'boletines:admin_editar' boletin.slug %}" class="w-full flex items-center justify-center px-4 py-2 border border-blue-500 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                            Editar boletín
+                        </a>
+                        
+                        {% if boletin.puede_enviar %}
+                        <a href="{% url 'boletines:admin_enviar' boletin.slug %}" class="w-full flex items-center justify-center px-4 py-2 border border-green-500 text-green-600 rounded-lg hover:bg-green-50 transition-colors">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                            </svg>
+                            Enviar boletín
+                        </a>
+                        {% endif %}
+                        
+                        {% if boletin.estado == 'enviado' %}
+                        <a href="{% url 'boletines:admin_estadisticas' boletin.slug %}" class="w-full flex items-center justify-center px-4 py-2 border border-purple-500 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                            Ver estadísticas
+                        </a>
+                        {% endif %}
+                        
+                        <a href="{% url 'boletines:admin_dashboard' %}" class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                            </svg>
+                            Volver al dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Estilos para el contenido del boletín */
+    .newsletter-content h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        color: #1a202c;
+    }
+    .newsletter-content h2 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+        color: #1a202c;
+    }
+    .newsletter-content h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-top: 1.25rem;
+        margin-bottom: 0.75rem;
+        color: #1a202c;
+    }
+    .newsletter-content h4 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+        color: #1a202c;
+    }
+    .newsletter-content p {
+        margin-bottom: 1rem;
+        line-height: 1.7;
+        color: #374151;
+    }
+    .newsletter-content ul, .newsletter-content ol {
+        margin: 1rem 0;
+        padding-left: 2rem;
+    }
+    .newsletter-content li {
+        margin-bottom: 0.5rem;
+        line-height: 1.6;
+    }
+    .newsletter-content blockquote {
+        border-left: 4px solid #3b82f6;
+        padding: 1rem 1.5rem;
+        margin: 1.5rem 0;
+        background-color: #f8fafc;
+        color: #4b5563;
+        font-style: italic;
+        border-radius: 0.5rem;
+    }
+    .newsletter-content a {
+        color: #2563eb;
+        text-decoration: underline;
+        font-weight: 500;
+    }
+    .newsletter-content a:hover {
+        color: #1d4ed8;
+    }
+    .newsletter-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 0.5rem;
+        margin: 1.5rem 0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .newsletter-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.5rem 0;
+    }
+    .newsletter-content th, .newsletter-content td {
+        border: 1px solid #d1d5db;
+        padding: 0.75rem;
+        text-align: left;
+    }
+    .newsletter-content th {
+        background-color: #f9fafb;
+        font-weight: 600;
+    }
+    .newsletter-content strong {
+        font-weight: 600;
+        color: #111827;
+    }
+    .newsletter-content em {
+        font-style: italic;
+        color: #6b7280;
+    }
+</style>
+{% endblock %}

@@ -64,11 +64,21 @@ def dashboard(request):
             'total_available': active_membership.get_available_reward_courses().count(),
         }
       # Contar cursos del usuario
-    user_courses_count = request.user.user_courses.count()
-      # Contar items en el carrito
+    user_courses_count = request.user.user_courses.count()    # Contar items en el carrito
     from carrito.models import Cart, CartItem
     active_cart = Cart.objects.filter(user=request.user, is_active=True).first()
     cart_items_count = CartItem.objects.filter(cart=active_cart).count() if active_cart else 0
+    
+    # Obtener estadísticas de boletines (solo para staff)
+    newsletter_stats = {}
+    if request.user.is_staff:
+        from boletines.models import Boletin
+        newsletter_stats = {
+            'total': Boletin.objects.count(),
+            'enviados': Boletin.objects.filter(estado='enviado').count(),
+            'borrador': Boletin.objects.filter(estado='borrador').count(),
+            'programados': Boletin.objects.filter(estado='programado').count(),
+        }
     
     return render(request, 'usuarios/dashboard.html', {
         'courses': courses,
@@ -77,6 +87,7 @@ def dashboard(request):
         'reward_courses_info': reward_courses_info,
         'user_courses_count': user_courses_count,
         'cart_items_count': cart_items_count,
+        'newsletter_stats': newsletter_stats,
     })
 
 @login_required

@@ -102,9 +102,7 @@ class CustomUser(AbstractUser):
     )
     created_at = models.DateTimeField(_("created at"), auto_now_add=True)
     updated_at = models.DateTimeField(_("updated at"), auto_now=True)
-    preferences = models.JSONField(_("preferences"), default=dict, blank=True)
-
-    # Campos de seguridad
+    preferences = models.JSONField(_("preferences"), default=dict, blank=True)    # Campos de seguridad
     is_email_verified = models.BooleanField(_("email verified"), default=False)
     email_verification_token = models.CharField(max_length=100, blank=True, null=True)
     profile_picture = models.ImageField(
@@ -113,6 +111,13 @@ class CustomUser(AbstractUser):
     last_login_ip = models.GenericIPAddressField(blank=True, null=True)
     failed_login_attempts = models.PositiveIntegerField(default=0)
     account_locked_until = models.DateTimeField(blank=True, null=True)
+    
+    # Campo para suscripción al newsletter
+    suscrito_newsletter = models.BooleanField(
+        _("suscrito al newsletter"), 
+        default=False,
+        help_text="Indica si el usuario está suscrito al newsletter"
+    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []

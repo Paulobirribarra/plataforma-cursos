@@ -1,3 +1,37 @@
+# ===============================================
+# ⚠️  SCRIPT DEPRECATED - USAR poblar_datos_master.ps1
+# ===============================================
+# Este script está obsoleto. Usa el nuevo sistema maestro:
+# .\poblar_datos_master.ps1
+# 
+# El nuevo sistema incluye:
+# - Interfaz interactiva
+# - Mejor manejo de errores
+# - Comandos Django integrados
+# - Poblado selectivo
+# - Estadísticas en tiempo real
+# ===============================================
+
+Write-Host "⚠️  ADVERTENCIA: Este script está DEPRECATED" -ForegroundColor Yellow
+Write-Host "🔥 Usa el nuevo sistema maestro: .\poblar_datos_master.ps1" -ForegroundColor Green
+Write-Host ""
+
+$response = Read-Host "¿Deseas continuar con el script antiguo? (s/n)"
+if ($response.ToLower() -ne "s") {
+    Write-Host "👍 Redirigiendo al nuevo sistema..." -ForegroundColor Green
+    Start-Sleep 2
+    
+    if (Test-Path "poblar_datos_master.ps1") {
+        & ".\poblar_datos_master.ps1"
+    } else {
+        Write-Host "❌ No se encontró poblar_datos_master.ps1" -ForegroundColor Red
+    }
+    exit 0
+}
+
+Write-Host "⚠️  Continuando con script antiguo..." -ForegroundColor Yellow
+Write-Host ""
+
 # Script para poblar la base de datos con datos de ejemplo
 # Ejecuta los scripts de población en el orden correcto
 

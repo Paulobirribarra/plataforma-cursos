@@ -1,0 +1,419 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Enviar Boletín - Admin{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    🚀 Enviar Boletín
+                </h1>
+                <p class="text-gray-600 mt-2">Revisa y confirma el envío del boletín</p>
+            </div>
+            <a href="{% url 'boletines:admin_dashboard' %}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors">
+                ← Volver al Dashboard
+            </a>
+        </div>
+    </div>
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+    .boletin-summary {
+        color: #7f8c8d;
+        font-style: italic;
+        margin-bottom: 15px;
+    }
+    .boletin-content {
+        line-height: 1.6;
+        color: #34495e;
+    }
+    
+    .send-options {
+        background: white;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+    .send-options h3 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e74c3c;
+    }
+    
+    .stats-row {
+    
+    <!-- Preview del Boletín -->
+    <div class="bg-white rounded-xl shadow-xl p-6 mb-8 border-l-4 border-blue-500">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 pb-4 border-b border-gray-200">
+            <div class="flex flex-wrap gap-2 mb-4 sm:mb-0">
+                <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full 
+                           {% if boletin.categoria == 'noticias' %}bg-blue-100 text-blue-800
+                           {% elif boletin.categoria == 'cursos' %}bg-green-100 text-green-800
+                           {% elif boletin.categoria == 'promociones' %}bg-red-100 text-red-800
+                           {% elif boletin.categoria == 'eventos' %}bg-purple-100 text-purple-800
+                           {% else %}bg-gray-100 text-gray-800{% endif %}">
+                    {{ boletin.get_categoria_display }}
+                </span>
+                
+                {% if boletin.estado == 'enviado' %}
+                    <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">{{ boletin.get_estado_display }}</span>
+                {% elif boletin.estado == 'borrador' %}
+                    <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">{{ boletin.get_estado_display }}</span>
+                {% elif boletin.estado == 'programado' %}
+                    <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">{{ boletin.get_estado_display }}</span>
+                {% endif %}
+                
+                {% if boletin.prioridad == 'alta' or boletin.prioridad == 'urgente' %}
+                    <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">{{ boletin.get_prioridad_display }}</span>
+                {% endif %}
+            </div>
+            
+            <div class="text-sm text-gray-500">
+                Creado: {{ boletin.fecha_creacion|date:"d/m/Y H:i" }}
+            </div>
+        </div>
+        
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">{{ boletin.titulo }}</h2>
+        
+        {% if boletin.resumen %}
+        <p class="text-lg text-gray-700 mb-6 font-medium italic">{{ boletin.resumen }}</p>
+        {% endif %}
+        
+        <div class="text-gray-800 leading-relaxed">
+            {{ boletin.contenido|safe|truncatewords:50 }}
+            {% if boletin.contenido|wordcount > 50 %}
+                <span class="text-blue-600">... [contenido truncado]</span>
+            {% endif %}
+        </div>
+        
+        {% if boletin.imagen_destacada %}
+        <div class="mt-6">
+            <img src="{{ boletin.imagen_destacada.url }}" alt="{{ boletin.titulo }}" 
+                 class="max-w-xs rounded-lg shadow-md">
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Estadísticas de Suscriptores -->
+    <div class="bg-white rounded-xl shadow-xl p-6 mb-8 border border-gray-100">
+        <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+            👥 Estadísticas de Envío
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="bg-blue-50 p-4 rounded-lg text-center">
+                <span class="text-3xl font-bold text-blue-600 block">{{ total_suscriptores }}</span>
+                <span class="text-blue-700 text-sm">Total Suscriptores</span>
+            </div>
+            
+            <div class="bg-green-50 p-4 rounded-lg text-center">
+                <span class="text-3xl font-bold text-green-600 block">{{ suscriptores_activos }}</span>
+                <span class="text-green-700 text-sm">Activos</span>
+            </div>
+            
+            <div class="bg-yellow-50 p-4 rounded-lg text-center">
+                <span class="text-3xl font-bold text-yellow-600 block">{{ categoria_suscriptores }}</span>
+                <span class="text-yellow-700 text-sm">Categoría {{ boletin.get_categoria_display }}</span>
+            </div>
+            
+            <div class="bg-purple-50 p-4 rounded-lg text-center">
+                <span class="text-3xl font-bold text-purple-600 block">{{ estimado_envios }}</span>
+                <span class="text-purple-700 text-sm">Envíos Estimados</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario de Envío -->
+    <form method="post" id="envio-form" class="space-y-6">
+        {% csrf_token %}
+        
+        <div class="bg-white rounded-xl shadow-xl p-6 border border-gray-100">
+            <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                ⚙️ Opciones de Envío
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label for="tipo_envio" class="block text-sm font-semibold text-gray-700">
+                        Tipo de Envío
+                    </label>
+                    <select name="tipo_envio" id="tipo_envio" 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                        <option value="inmediato">📤 Envío Inmediato</option>
+                        <option value="programado">⏰ Envío Programado</option>
+                        <option value="prueba">🧪 Envío de Prueba</option>
+                    </select>
+                </div>
+                
+                <div class="space-y-2" id="fecha_programada_group" style="display: none;">
+                    <label for="fecha_programada" class="block text-sm font-semibold text-gray-700">
+                        Fecha y Hora Programada
+                    </label>
+                    <input type="datetime-local" name="fecha_programada" id="fecha_programada"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                </div>
+            </div>
+            
+            <div class="mt-6" id="email_prueba_group" style="display: none;">
+                <div class="space-y-2">
+                    <label for="email_prueba" class="block text-sm font-semibold text-gray-700">
+                        Email para Prueba
+                    </label>
+                    <input type="email" name="email_prueba" id="email_prueba"
+                           placeholder="test@ejemplo.com"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                </div>
+            </div>
+        </div>
+
+        <!-- Advertencias -->
+        {% if boletin.estado == 'enviado' %}
+        <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                </svg>
+                <div>
+                    <p class="text-red-800 font-semibold">Este boletín ya fue enviado</p>
+                    <p class="text-red-700 text-sm">Solo puedes realizar envíos de prueba.</p>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 text-yellow-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                </svg>
+                <div>
+                    <p class="text-yellow-800 font-semibold">Confirmación de Envío</p>
+                    <p class="text-yellow-700 text-sm">Esta acción enviará el boletín a {{ estimado_envios }} suscriptores y no se puede deshacer.</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Botones de Acción -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-end">
+            <a href="{% url 'boletines:admin_dashboard' %}" 
+               class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors">
+                ❌ Cancelar
+            </a>
+            
+            <a href="{% url 'boletines:admin_preview' slug=boletin.slug %}" target="_blank"
+               class="inline-flex items-center justify-center px-6 py-3 border border-blue-300 text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors">
+                👁️ Vista Previa
+            </a>
+            
+            <button type="submit" name="action" value="confirmar"
+                    class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white font-semibold rounded-lg hover:from-green-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                    onclick="return confirmarEnvio()">
+                🚀 Confirmar Envío
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Scripts -->
+<script>
+// Mostrar/ocultar campos según el tipo de envío
+document.getElementById('tipo_envio').addEventListener('change', function() {
+    const tipoEnvio = this.value;
+    const fechaProgramadaGroup = document.getElementById('fecha_programada_group');
+    const emailPruebaGroup = document.getElementById('email_prueba_group');
+    
+    // Ocultar todos los grupos
+    fechaProgramadaGroup.style.display = 'none';
+    emailPruebaGroup.style.display = 'none';
+    
+    // Mostrar el grupo correspondiente
+    if (tipoEnvio === 'programado') {
+        fechaProgramadaGroup.style.display = 'block';
+    } else if (tipoEnvio === 'prueba') {
+        emailPruebaGroup.style.display = 'block';
+    }
+});
+
+// Confirmar envío
+function confirmarEnvio() {
+    const tipoEnvio = document.getElementById('tipo_envio').value;
+    let mensaje = '';
+    
+    switch(tipoEnvio) {
+        case 'inmediato':
+            mensaje = '¿Estás seguro de que deseas enviar este boletín inmediatamente a {{ estimado_envios }} suscriptores?';
+            break;
+        case 'programado':
+            const fecha = document.getElementById('fecha_programada').value;
+            if (!fecha) {
+                alert('Por favor, selecciona una fecha y hora para el envío programado.');
+                return false;
+            }
+            mensaje = `¿Estás seguro de que deseas programar este boletín para ${fecha}?`;
+            break;
+        case 'prueba':
+            const email = document.getElementById('email_prueba').value;
+            if (!email) {
+                alert('Por favor, ingresa un email para el envío de prueba.');
+                return false;
+            }
+            mensaje = `¿Estás seguro de que deseas enviar una prueba a ${email}?`;
+            break;
+    }
+    
+    return confirm(mensaje);
+}
+
+// Validar fecha programada (no puede ser en el pasado)
+document.getElementById('fecha_programada').addEventListener('change', function() {
+    const fechaSeleccionada = new Date(this.value);
+    const ahora = new Date();
+    
+    if (fechaSeleccionada <= ahora) {
+        alert('La fecha programada debe ser en el futuro.');
+        this.value = '';
+    }
+});
+</script>
+{% endblock %}
+                <span class="categoria-badge">{{ boletin.get_categoria_display }}</span>
+                <span class="estado-badge estado-{{ boletin.estado }}">{{ boletin.get_estado_display }}</span>
+            </div>
+            <div>
+                <small>Creado: {{ boletin.fecha_creacion|date:"d/m/Y H:i" }}</small>
+            </div>
+        </div>
+        
+        <div class="boletin-title">{{ boletin.titulo }}</div>
+        
+        {% if boletin.resumen %}
+        <div class="boletin-summary">{{ boletin.resumen }}</div>
+        {% endif %}
+        
+        <div class="boletin-content">
+            {{ boletin.contenido_preview }}
+            <a href="{% url 'boletines:detalle' boletin.slug %}" target="_blank">Ver completo →</a>
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <span class="stat-number">{{ destinatarios_count }}</span>
+            <div class="stat-label">Destinatarios</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-number">{{ boletin.total_enviados }}</span>
+            <div class="stat-label">Ya Enviados</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-number">{{ boletin.total_abiertos }}</span>
+            <div class="stat-label">Abiertos</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-number">{{ boletin.total_clicks }}</span>
+            <div class="stat-label">Clicks</div>
+        </div>
+    </div>
+
+    <!-- Opciones de Envío -->
+    <div class="send-options">
+        <h3>⚙️ Configuración de Envío</h3>
+        
+        <form method="post" id="send-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.tipo_envio.id_for_label }}">{{ form.tipo_envio.label }}</label>
+                {{ form.tipo_envio }}
+            </div>
+            
+            <div class="form-group" id="fecha-programada-group" style="display: none;">
+                <label for="{{ form.fecha_programada.id_for_label }}">{{ form.fecha_programada.label }}</label>
+                {{ form.fecha_programada }}
+            </div>
+            
+            <div class="form-group">
+                <label>
+                    {{ form.enviar_prueba }} {{ form.enviar_prueba.label }}
+                </label>
+                <small class="help-text">Se enviará solo a tu email para revisar el formato</small>
+            </div>
+            
+            {% if boletin.estado == 'enviado' %}
+            <div class="warning-box">
+                <strong>⚠️ Boletín ya enviado</strong>
+                Este boletín ya fue enviado anteriormente. Solo puedes reenviar como prueba o a destinatarios que no lo recibieron.
+            </div>
+            {% endif %}
+            
+            {% if not boletin.puede_enviar %}
+            <div class="warning-box">
+                <strong>❌ No se puede enviar</strong>
+                Este boletín no está en estado válido para envío o está inactivo.
+            </div>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Botones de Acción -->
+    <div class="btn-group">
+        <a href="{% url 'boletines:admin_dashboard' %}" class="btn btn-secondary">
+            ← Volver al Dashboard
+        </a>
+        
+        <button type="button" class="btn btn-secondary" onclick="previewEmail()">
+            👁️ Vista Previa Email
+        </button>
+        
+        <button type="submit" form="send-form" class="btn btn-success" 
+                {% if not boletin.puede_enviar %}disabled{% endif %}>
+            📧 Enviar Boletín
+        </button>
+    </div>
+</div>
+
+<script>
+// Mostrar/ocultar campo de fecha programada
+document.getElementById('id_tipo_envio').addEventListener('change', function() {
+    const fechaGroup = document.getElementById('fecha-programada-group');
+    if (this.value === 'programado') {
+        fechaGroup.style.display = 'block';
+    } else {
+        fechaGroup.style.display = 'none';
+    }
+});
+
+// Vista previa del email
+function previewEmail() {
+    const url = "{% url 'boletines:preview_email' boletin.id %}";
+    const newWindow = window.open(url, '_blank', 'width=800,height=600,scrollbars=yes');
+    newWindow.focus();
+}
+
+// Confirmación antes de enviar
+document.getElementById('send-form').addEventListener('submit', function(e) {
+    const isPrueba = document.getElementById('id_enviar_prueba').checked;
+    
+    if (!isPrueba) {
+        const confirmMessage = `¿Estás seguro de enviar este boletín a ${destinatarios_count} destinatarios?`;
+        if (!confirm(confirmMessage)) {
+            e.preventDefault();
+            return false;
+        }
+    }
+    
+    // Deshabilitar botón para evitar doble envío
+    const submitBtn = document.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.textContent = '📤 Enviando...';
+});
+</script>
+{% endblock %}

@@ -23,10 +23,11 @@ urlpatterns = [
     # URL secreta para admin (cambiar por algo más seguro en producción)
     path("sistema-gestion-admin-2025/", admin.site.urls),
     path("pagos/", include("pagos.urls")),
-    path("membresias/", include("membresias.urls")),
-    path("carrito/", include("carrito.urls", namespace="carrito")),
+    path("membresias/", include("membresias.urls")),    path("carrito/", include("carrito.urls", namespace="carrito")),
     # Blog URLs
     path("blog/", include("blogs.urls", namespace="blog")),
+    # Boletines URLs
+    path("boletines/", include("boletines.urls", namespace="boletines")),
     # Redirección personalizada
     path(
         "accounts/confirm-email/",

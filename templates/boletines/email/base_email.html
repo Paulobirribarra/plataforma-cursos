@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ boletin.titulo }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .email-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        .categoria {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+        .titulo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+        .resumen {
+            font-size: 16px;
+            color: #6c757d;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        .imagen-destacada {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .contenido {
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+        .contenido h2 {
+            color: #2c3e50;
+            font-size: 22px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        .contenido h3 {
+            color: #34495e;
+            font-size: 18px;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+        .contenido p {
+            margin-bottom: 15px;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            transition: background-color 0.3s;
+        }
+        .cta-button:hover {
+            background-color: #0056b3;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            text-align: center;
+            font-size: 14px;
+            color: #6c757d;
+        }
+        .social-links {
+            margin: 20px 0;
+        }
+        .social-links a {
+            display: inline-block;
+            margin: 0 10px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .unsubscribe {
+            font-size: 12px;
+            color: #adb5bd;
+            margin-top: 15px;
+        }
+        .unsubscribe a {
+            color: #6c757d;
+            text-decoration: underline;
+        }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .email-container {
+                padding: 20px;
+            }
+            .titulo {
+                font-size: 24px;
+            }
+            .contenido {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🎓 Plataforma Cursos</div>
+            <div class="categoria">{{ boletin.get_categoria_display }}</div>
+        </div>
+
+        <!-- Contenido principal -->
+        <div class="main-content">
+            <h1 class="titulo">{{ boletin.titulo }}</h1>
+            
+            {% if boletin.resumen %}
+            <div class="resumen">{{ boletin.resumen }}</div>
+            {% endif %}
+            
+            {% if boletin.imagen_destacada %}
+            <img src="{{ request.scheme }}://{{ request.get_host }}{{ boletin.imagen_destacada.url }}" 
+                 alt="{{ boletin.titulo }}" class="imagen-destacada">
+            {% endif %}
+            
+            <div class="contenido">
+                {{ boletin.contenido|safe }}
+            </div>
+            
+            {% if boletin.blog_relacionado %}
+            <div style="text-align: center;">
+                <a href="{{ request.scheme }}://{{ request.get_host }}{{ boletin.blog_relacionado.get_absolute_url }}" 
+                   class="cta-button">
+                    📖 Leer artículo completo
+                </a>
+            </div>
+            {% endif %}
+            
+            {% if boletin.curso_relacionado %}
+            <div style="text-align: center;">
+                <a href="{{ request.scheme }}://{{ request.get_host }}{{ boletin.curso_relacionado.get_absolute_url }}" 
+                   class="cta-button">
+                    🎓 Ver curso
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="social-links">
+                <a href="#">📧 Email</a>
+                <a href="#">📘 Facebook</a>
+                <a href="#">📱 Twitter</a>
+                <a href="#">💼 LinkedIn</a>
+            </div>
+            
+            <p>
+                <strong>Plataforma de Cursos Online</strong><br>
+                Tu destino para el aprendizaje continuo
+            </p>
+            
+            <div class="unsubscribe">
+                <p>
+                    Recibiste este email porque estás suscrito a nuestros boletines.<br>
+                    <a href="{{ request.scheme }}://{{ request.get_host }}/boletines/unsubscribe/{{ usuario.id }}/{{ boletin.slug }}/">
+                        Darse de baja
+                    </a> | 
+                    <a href="{{ request.scheme }}://{{ request.get_host }}/boletines/{{ boletin.slug }}/">
+                        Ver en navegador
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pixel de tracking -->
+    <img src="{{ request.scheme }}://{{ request.get_host }}/boletines/track/open/{{ boletin.id }}/{{ usuario.id }}/" 
+         width="1" height="1" style="opacity: 0;" alt="">
+</body>
+</html>

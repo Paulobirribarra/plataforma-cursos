@@ -1,0 +1,353 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Crear Boletín - Admin{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js" integrity="sha512-6JR4bbn8rCKvrkdoTJd/VFyXAN4CE9XMtgykPWgKiHjou56YDJxWti3ACogqoCRRtHp3JLmoYBHdOznSRVfhpA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<style>
+/* Estilos para asegurar que TinyMCE se vea correctamente */
+.tox-tinymce {
+    border: 1px solid #d1d5db !important;
+    border-radius: 0.5rem !important;
+}
+.tox-editor-header {
+    border-radius: 0.5rem 0.5rem 0 0 !important;
+}
+/* Estilos para contenido del editor */
+.tox-edit-area__iframe {
+    background: white !important;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    📝 Crear Nuevo Boletín
+                </h1>
+                <p class="text-gray-600 mt-2">Crea un nuevo boletín para enviar a los suscriptores</p>
+            </div>
+            <a href="{% url 'boletines:admin_dashboard' %}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors">
+                ← Volver al Dashboard
+            </a>
+        </div>
+    </div>
+    <!-- Formulario -->
+    <form method="post" enctype="multipart/form-data" id="boletin-form" class="space-y-8">
+        {% csrf_token %}
+        
+        <!-- Información Básica -->
+        <div class="bg-white rounded-xl shadow-xl p-6 border border-gray-100">
+            <h3 class="text-xl font-bold text-gray-900 mb-6 pb-3 border-b border-gray-200 flex items-center">
+                📝 Información Básica
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label for="{{ form.titulo.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                        {{ form.titulo.label }}
+                    </label>
+                    {{ form.titulo|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" }}
+                    {% if form.titulo.help_text %}
+                        <p class="text-xs text-gray-500">{{ form.titulo.help_text }}</p>
+                    {% endif %}
+                    {% if form.titulo.errors %}
+                        <div class="text-red-600 text-sm">{{ form.titulo.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="space-y-2">
+                    <label for="{{ form.categoria.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                        {{ form.categoria.label }}
+                    </label>
+                    {{ form.categoria|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" }}
+                    {% if form.categoria.help_text %}
+                        <p class="text-xs text-gray-500">{{ form.categoria.help_text }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <div class="space-y-2">
+                    <label for="{{ form.resumen.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                        {{ form.resumen.label }}
+                    </label>
+                    {{ form.resumen|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" }}
+                    {% if form.resumen.help_text %}
+                        <p class="text-xs text-gray-500">{{ form.resumen.help_text }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenido -->
+        <div class="bg-white rounded-xl shadow-xl p-6 border border-gray-100">
+            <h3 class="text-xl font-bold text-gray-900 mb-6 pb-3 border-b border-gray-200 flex items-center">
+                📄 Contenido
+            </h3>
+            
+            <div class="space-y-6">
+                <div class="space-y-2">
+                    <label for="{{ form.contenido.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                        {{ form.contenido.label }}
+                    </label>
+                    {{ form.contenido|add_class:"w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" }}
+                    {% if form.contenido.help_text %}
+                        <p class="text-xs text-gray-500">{{ form.contenido.help_text }}</p>
+                    {% endif %}
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label for="{{ form.imagen_destacada.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                            {{ form.imagen_destacada.label }}
+                        </label>
+                        {{ form.imagen_destacada|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" }}
+                        {% if form.imagen_destacada.help_text %}
+                            <p class="text-xs text-gray-500">{{ form.imagen_destacada.help_text }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label for="{{ form.prioridad.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                            {{ form.prioridad.label }}
+                        </label>
+                        {{ form.prioridad|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Relaciones -->
+        <div class="bg-white rounded-xl shadow-xl p-6 border border-gray-100">
+            <h3 class="text-xl font-bold text-gray-900 mb-6 pb-3 border-b border-gray-200 flex items-center">
+                🔗 Relaciones
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label for="{{ form.blog_relacionado.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                        {{ form.blog_relacionado.label }}
+                    </label>
+                    {{ form.blog_relacionado|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" }}
+                    {% if form.blog_relacionado.help_text %}
+                        <p class="text-xs text-gray-500">{{ form.blog_relacionado.help_text }}</p>
+                    {% endif %}
+                </div>
+                
+                <div class="space-y-2">
+                    <label for="{{ form.curso_relacionado.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                        {{ form.curso_relacionado.label }}
+                    </label>
+                    {{ form.curso_relacionado|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" }}
+                    {% if form.curso_relacionado.help_text %}
+                        <p class="text-xs text-gray-500">{{ form.curso_relacionado.help_text }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <div class="space-y-2">
+                    <label for="{{ form.plantilla.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                        {{ form.plantilla.label }}
+                    </label>
+                    {{ form.plantilla|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" }}
+                    {% if form.plantilla.help_text %}
+                        <p class="text-xs text-gray-500">{{ form.plantilla.help_text }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Estado y Programación -->
+        <div class="bg-white rounded-xl shadow-xl p-6 border border-gray-100">
+            <h3 class="text-xl font-bold text-gray-900 mb-6 pb-3 border-b border-gray-200 flex items-center">
+                ⚙️ Estado y Programación
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label for="{{ form.estado.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                        {{ form.estado.label }}
+                    </label>
+                    {{ form.estado|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" }}
+                </div>
+          <!-- Configuración de Envío -->
+        <div class="bg-white rounded-xl shadow-xl p-6 border border-gray-100">
+            <h3 class="text-xl font-bold text-gray-900 mb-6 pb-3 border-b border-gray-200 flex items-center">
+                📤 Configuración de Envío
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label for="{{ form.fecha_programada.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                        {{ form.fecha_programada.label }}
+                    </label>
+                    {{ form.fecha_programada|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" }}
+                    {% if form.fecha_programada.help_text %}
+                        <p class="text-xs text-gray-500">{{ form.fecha_programada.help_text }}</p>
+                    {% endif %}
+                </div>
+                
+                <div class="space-y-2">
+                    <div class="flex items-center">
+                        {{ form.solo_suscriptores_premium|add_class:"mr-3 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" }}
+                        <label for="{{ form.solo_suscriptores_premium.id_for_label }}" class="text-sm font-semibold text-gray-700">
+                            {{ form.solo_suscriptores_premium.label }}
+                        </label>
+                    </div>
+                    {% if form.solo_suscriptores_premium.help_text %}
+                        <p class="text-xs text-gray-500 ml-7">{{ form.solo_suscriptores_premium.help_text }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+            </div>
+        </div>        <!-- Botones de Acción -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-end">
+            <a href="{% url 'boletines:admin_dashboard' %}" 
+               class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors">
+                ❌ Cancelar
+            </a>
+            
+            <button type="submit" name="action" value="guardar_borrador"
+                    class="inline-flex items-center justify-center px-6 py-3 border border-yellow-300 text-yellow-700 font-semibold rounded-lg hover:bg-yellow-50 transition-colors">
+                💾 Guardar como Borrador
+            </button>
+            
+            {% if not object or object.estado == 'borrador' %}
+            <button type="submit" name="action" value="guardar_y_programar"
+                    class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white font-semibold rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                📅 Guardar y Programar
+            </button>
+            {% endif %}
+            
+            <button type="submit" name="action" value="crear_y_enviar"
+                    class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                🚀 Crear y Enviar
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Scripts -->
+<script>
+// Inicializar TinyMCE
+tinymce.init({
+    selector: '#id_contenido',
+    height: 400,
+    plugins: [
+        'advlist', 'autolink', 'lists', 'link', 'charmap', 'preview',
+        'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+        'insertdatetime', 'table', 'help', 'wordcount', 'emoticons'
+    ],
+    toolbar: 'undo redo | blocks | bold italic underline forecolor backcolor | ' +
+             'alignleft aligncenter alignright alignjustify | ' +
+             'bullist numlist outdent indent | link | removeformat | help',
+    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px; line-height: 1.6; }',
+    language: 'es',
+    menubar: false,
+    branding: false,
+    statusbar: true,
+    resize: true,
+    convert_urls: false,
+    relative_urls: false,
+    setup: function(editor) {
+        editor.on('change', function() {
+            editor.save();
+        });
+        editor.on('KeyUp', function() {
+            editor.save();
+        });
+    },
+    // Configuración específica para garantizar HTML limpio
+    valid_elements: '*[*]',
+    extended_valid_elements: 'script[src|async|defer|type|charset]',
+    cleanup: true,
+    verify_html: false,
+    element_format: 'html',
+    entity_encoding: 'raw'
+});
+
+// Validación del formulario
+document.getElementById('boletin-form').addEventListener('submit', function(e) {
+    const titulo = document.getElementById('id_titulo').value.trim();
+    const contenido = tinymce.get('id_contenido').getContent();
+    
+    if (!titulo) {
+        e.preventDefault();
+        alert('Por favor, ingresa un título para el boletín.');
+        document.getElementById('id_titulo').focus();
+        return false;
+    }
+    
+    if (!contenido || contenido.trim() === '') {
+        e.preventDefault();
+        alert('Por favor, ingresa el contenido del boletín.');
+        tinymce.get('id_contenido').focus();
+        return false;
+    }
+    
+    return true;
+});
+
+// Contador de caracteres para resumen
+document.addEventListener('DOMContentLoaded', function() {
+    const resumenField = document.getElementById('id_resumen');
+    if (resumenField) {
+        function updateCounter() {
+            const maxLength = 300;
+            const currentLength = resumenField.value.length;
+            const remaining = maxLength - currentLength;
+            
+            let counterDiv = resumenField.parentElement.querySelector('.char-counter');
+            if (!counterDiv) {
+                counterDiv = document.createElement('div');
+                counterDiv.className = 'char-counter text-xs mt-1';
+                resumenField.parentElement.appendChild(counterDiv);
+            }
+            
+            counterDiv.textContent = `${currentLength}/${maxLength} caracteres`;
+            counterDiv.className = `char-counter text-xs mt-1 ${remaining < 50 ? 'text-red-500' : 'text-gray-500'}`;
+        }
+        
+        resumenField.addEventListener('input', updateCounter);
+        updateCounter(); // Inicializar contador
+    }
+});
+
+// Auto-save cada 2 minutos (solo para borradores)
+setInterval(function() {
+    const form = document.getElementById('boletin-form');
+    const formData = new FormData(form);
+    formData.set('action', 'auto_save');
+    
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    }).then(response => {
+        if (response.ok) {
+            console.log('Auto-guardado exitoso');
+            // Mostrar indicador visual opcional
+            const indicator = document.createElement('div');
+            indicator.textContent = '✓ Guardado automáticamente';
+            indicator.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+            document.body.appendChild(indicator);
+            setTimeout(() => indicator.remove(), 2000);
+        }
+    }).catch(error => {
+        console.log('Error en auto-guardado:', error);
+    });
+}, 120000); // 2 minutos
+</script>
+{% endblock %}

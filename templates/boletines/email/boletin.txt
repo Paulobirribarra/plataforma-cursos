@@ -1,0 +1,28 @@
+{% if es_prueba %}🧪 [PRUEBA] {% endif %}{{ boletin.titulo }}
+ASESORIAS FUTURO LTD - PLATAFORMA DE CURSOS
+{% if es_prueba %}============================================================={% else %}===================================================={% endif %}
+
+{{ boletin.contenido|striptags }}
+
+📋 INFORMACION DEL BOLETIN
+----------------------------------------
+• Creado por: {{ boletin.creado_por.get_full_name|default:boletin.creado_por.username }}
+• Fecha: {{ boletin.fecha_creacion|date:"d/m/Y H:i" }}
+• Estado: {{ boletin.get_estado_display }}
+• Categoria: {{ boletin.categoria }}
+
+{% if es_prueba %}
+⚠️ MODO DE PRUEBA
+Este es un email de prueba del sistema de boletines.
+Los usuarios reales no han recibido este mensaje.
+
+✅ Configuracion SMTP verificada exitosamente
+{% endif %}
+
+🌐 VISITAR PLATAFORMA
+{{ url_base }}
+
+----------------------------------------
+© 2024 Asesorias Futuro LTD
+Plataforma de Cursos Online
+Todos los derechos reservados.
