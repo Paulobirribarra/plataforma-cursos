@@ -121,15 +121,25 @@ def welcome_courses(request):
     if membership.plan.slug == 'premium':
         messages.info(request, _("Como usuario Premium, tienes acceso completo a todos los cursos."))
         return redirect("usuarios:dashboard")
-    
-    # Obtener cursos de recompensa disponibles
+      # Obtener cursos de recompensa disponibles
     available_courses = membership.get_available_reward_courses()
+      # Agregar información de disponibilidad a cada curso
+    courses_with_claim_info = []
+    can_claim_general = membership.can_claim_reward_course()
+    
+    for course in available_courses:
+        course_info = {
+            'course': course,
+            'can_claim': can_claim_general and course in membership.get_available_reward_courses()
+        }
+        courses_with_claim_info.append(course_info)
     
     context = {
         "membership": membership,
         "available_courses": available_courses,
+        "courses_with_claim_info": courses_with_claim_info,
         "title": _("Reclama tus Cursos de Bienvenida"),
-        "can_claim": membership.can_claim_reward_course(),
+        "can_claim": can_claim_general,
         "courses_remaining": membership.welcome_courses_remaining,
     }
     
@@ -152,12 +162,11 @@ def claim_reward_course(request, course_id):
             "success": False,
             "message": _("No tienes una membresía activa.")
         })
-    
-    # Intentar reclamar el curso
+      # Intentar reclamar el curso
     success, message = membership.claim_reward_course(course)
     
     if success:
-        # Crear registro de acceso al curso para el usuario
+        # Crear registro de acceso al curso para el usuario (solo si no existe)
         from cursos.models import UserCourse
         user_course, created = UserCourse.objects.get_or_create(
             user=request.user,

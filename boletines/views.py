@@ -359,38 +359,83 @@ class AdminEnviarView(TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['boletin'] = self.get_object()
+        boletin = self.get_object()
+        context['boletin'] = boletin
         context['form'] = BoletinEnviarForm()
-        context['destinatarios_count'] = context['boletin'].get_destinatarios_count()
+        context['destinatarios_count'] = boletin.get_destinatarios_count()
+        
+        # Información adicional para el template
+        context['es_reenvio'] = boletin.estado == 'enviado'
+        context['puede_enviar'] = True  # Siempre puede enviar (incluso reenvíos)
+        
         return context
+    
     def post(self, request, *args, **kwargs):
         boletin = self.get_object()
         form = BoletinEnviarForm(request.POST)
         
         if form.is_valid():
             tipo_envio = form.cleaned_data['tipo_envio']
+            es_reenvio = boletin.estado == 'enviado'
             
             if tipo_envio == 'prueba':
                 # Envío de prueba
-                self._enviar_prueba(boletin, form.cleaned_data['email_prueba'])
-                messages.success(request, f'Boletín de prueba enviado a {form.cleaned_data["email_prueba"]}')
+                if self._enviar_prueba(boletin, form.cleaned_data['email_prueba']):
+                    messages.success(
+                        request, 
+                        f'🧪 ¡Prueba enviada exitosamente! Email de prueba enviado a: {form.cleaned_data["email_prueba"]}. Revisa tu bandeja de entrada.'
+                    )
+                else:
+                    messages.error(request, '❌ Error al enviar el boletín de prueba. Revisa la configuración de email.')
                 
             elif tipo_envio == 'inmediato':
-                # Envío inmediato
+                # Envío inmediato o reenvío
                 resultado = self._enviar_boletin(boletin)
                 if resultado['exito']:
-                    messages.success(request, f'Boletín enviado a {resultado["enviados"]} destinatarios')
+                    if es_reenvio:
+                        messages.success(
+                            request, 
+                            f'🔄 ¡Boletín reenviado exitosamente! Enviado a {resultado["enviados"]} destinatarios. Reenvío completado.'
+                        )
+                    else:
+                        messages.success(
+                            request, 
+                            f'✅ ¡Boletín enviado exitosamente! Enviado a {resultado["enviados"]} destinatarios. Envío completado.'
+                        )
+                    
+                    # Si hay errores, mostrarlos también
+                    if resultado['errores'] > 0:
+                        messages.warning(request, f'⚠️ Se produjeron {resultado["errores"]} errores durante el envío')
                 else:
-                    messages.error(request, f'Error al enviar: {resultado["error"]}')
+                    messages.error(request, f'❌ Error al enviar: {resultado["error"]}')
                     
             elif tipo_envio == 'programado':
                 # Programar envío
-                boletin.fecha_programada = form.cleaned_data['fecha_programada']
+                fecha_programada = form.cleaned_data['fecha_programada']
+                boletin.fecha_programada = fecha_programada
                 boletin.estado = 'programado'
                 boletin.save()
-                messages.success(request, f'Boletín programado para {boletin.fecha_programada}')
+                
+                # Mensaje más detallado para envío programado
+                fecha_formato = fecha_programada.strftime("%d/%m/%Y a las %H:%M")
+                messages.success(
+                    request, 
+                    f'⏰ ¡Boletín programado exitosamente! Se enviará el {fecha_formato} a {boletin.get_destinatarios_count()} destinatarios.'
+                )
             
-            return redirect('boletines:admin_dashboard')
+            # Redirigir según el origen de la solicitud
+            referer = request.META.get('HTTP_REFERER', '')
+            if 'editar' in referer:
+                # Si viene de la página de editar, regresar ahí
+                return redirect('boletines:admin_editar', slug=boletin.slug)
+            else:
+                # Si viene de otra página, ir al dashboard
+                return redirect('boletines:admin_dashboard')
+        else:
+            # Si hay errores en el formulario, mostrarlos
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f'❌ Error en {field}: {error}')
         
         context = self.get_context_data()
         context['form'] = form
@@ -399,9 +444,6 @@ class AdminEnviarView(TemplateView):
     def _enviar_prueba(self, boletin, email):
         """Enviar email de prueba"""
         try:
-            from django.core.mail import EmailMultiAlternatives
-            from django.template.loader import render_to_string
-            
             # Renderizar contenido
             context = {
                 'boletin': boletin,
@@ -423,11 +465,9 @@ class AdminEnviarView(TemplateView):
             msg.attach_alternative(html_content, "text/html")
             msg.send()
             return True
-            
         except Exception as e:
             messages.error(self.request, f'Error al enviar prueba: {str(e)}')
             return False
-
     def _enviar_boletin(self, boletin):
         """Enviar boletín a todos los destinatarios"""
         try:
@@ -435,8 +475,8 @@ class AdminEnviarView(TemplateView):
             if boletin.solo_suscriptores_premium:
                 usuarios = CustomUser.objects.filter(
                     suscrito_newsletter=True,
-                    membresia__isnull=False,
-                    membresia__activa=True
+                    memberships__isnull=False,
+                    memberships__status='active'
                 )
             else:
                 usuarios = CustomUser.objects.filter(suscrito_newsletter=True)
@@ -469,7 +509,6 @@ class AdminEnviarView(TemplateView):
             boletin.fecha_enviado = timezone.now()
             boletin.total_enviados = enviados
             boletin.save()
-            
             return {
                 'exito': True,
                 'enviados': enviados,
@@ -485,9 +524,6 @@ class AdminEnviarView(TemplateView):
     def _enviar_email_individual(self, boletin, usuario):
         """Enviar email individual"""
         try:
-            from django.core.mail import EmailMultiAlternatives
-            from django.template.loader import render_to_string
-            
             context = {
                 'boletin': boletin,
                 'usuario': usuario,

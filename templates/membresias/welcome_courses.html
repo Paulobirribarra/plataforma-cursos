@@ -46,9 +46,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            {% if courses_remaining > 0 %}
+            </div>            {% if courses_remaining > 0 %}
                 <!-- Instrucciones -->
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
                     <h3 class="text-lg font-semibold text-blue-700 flex items-center mb-3">
@@ -68,13 +66,11 @@
                             Puedes saltar este paso y elegir tus cursos más tarde desde tu dashboard
                         </li>
                     </ul>
-                </div>
-
-                <!-- Cursos disponibles -->
+                </div>                <!-- Cursos disponibles -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {% for course in available_courses %}
-                        <div class="mb-4">
-                            <div class="bg-white rounded-xl shadow-md h-full course-card border border-gray-200 overflow-hidden">
+                    {% for course_info in courses_with_claim_info %}
+                        {% with course=course_info.course can_claim_course=course_info.can_claim %}                        <div class="mb-4">
+                            <div class="bg-white rounded-xl shadow-md course-card border border-gray-200 overflow-hidden">
                                 {% if course.image %}
                                     <img src="{{ course.image.url }}" class="w-full h-48 object-cover" alt="{{ course.title }}">
                                 {% else %}
@@ -83,25 +79,24 @@
                                     </div>
                                 {% endif %}
                                 
-                                <div class="p-5 flex flex-col h-full">
+                                <div class="p-5">
                                     <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ course.title }}</h3>
-                                    <p class="text-gray-600 text-sm mb-4 flex-grow">
+                                    <p class="text-gray-600 text-sm mb-4">
                                         {{ course.description|truncatewords:15 }}
                                     </p>
                                     
-                                    <div class="mt-auto pt-2">
-                                        <div class="flex justify-between items-center mb-4">
+                                    <div class="pt-2"><div class="flex justify-between items-center mb-4">
                                             <span class="text-gray-600 text-xs">
                                                 <i class="fas fa-clock mr-1"></i>
-                                                {{ course.duration_hours }}h
+                                                {% if course.duration_minutes %}{{ course.duration_minutes|floatformat:"0" }} min{% else %}N/A{% endif %}
                                             </span>
                                             <span class="text-gray-600 text-xs">
-                                                <i class="fas fa-signal mr-1"></i>
-                                                {{ course.get_difficulty_display }}
+                                                <i class="fas fa-star mr-1"></i>
+                                                {% if course.rating %}{{ course.rating|floatformat:"1" }}⭐{% else %}Nuevo{% endif %}
                                             </span>
                                         </div>
                                         
-                                        {% if can_claim %}
+                                        {% if can_claim_course %}
                                             <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-all duration-300 flex items-center justify-center claim-course-btn"
                                                     data-course-id="{{ course.id }}"
                                                     data-course-title="{{ course.title }}">
@@ -118,6 +113,7 @@
                                 </div>
                             </div>
                         </div>
+                        {% endwith %}
                     {% empty %}
                         <div class="col-12">
                             <div class="bg-yellow-50 border border-yellow-300 text-yellow-800 rounded-lg p-5 text-center">
@@ -241,12 +237,17 @@ document.addEventListener('DOMContentLoaded', function() {
         if (selectedCourseId) {
             claimCourse(selectedCourseId);
         }
-    });
-
-    function claimCourse(courseId) {
-        // Mostrar loading
+    });    function claimCourse(courseId) {
+        // Mostrar loading y deshabilitar botón
         confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Reclamando...';
         confirmBtn.disabled = true;
+        
+        // Deshabilitar también el botón específico del curso para evitar doble clic
+        const courseButton = document.querySelector(`[data-course-id="${courseId}"]`);
+        if (courseButton) {
+            courseButton.disabled = true;
+            courseButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Procesando...';
+        }
 
         // Hacer petición AJAX
         fetch(`{% url 'membresias:claim_reward_course' 0 %}`.replace('0', courseId), {
@@ -277,12 +278,17 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
             console.error('Error:', error);
             alert('Ocurrió un error inesperado. Por favor, intenta nuevamente.');
-        })
-        .finally(() => {
-            // Restaurar botón y cerrar modal
+        })        .finally(() => {
+            // Restaurar botón de confirmación y cerrar modal
             confirmBtn.innerHTML = '<i class="fas fa-gift mr-2"></i>Confirmar Reclamación';
             confirmBtn.disabled = false;
             hideModal();
+            
+            // Restaurar botón del curso si aún existe
+            if (courseButton) {
+                courseButton.disabled = false;
+                courseButton.innerHTML = '<i class="fas fa-gift mr-2"></i>Reclamar Curso';
+            }
         });
     }
 });

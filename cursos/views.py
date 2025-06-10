@@ -66,6 +66,12 @@ def course_detail(request, pk):
     course = get_object_or_404(Course, pk=pk, is_available=True)
     user_course = UserCourse.objects.filter(user=request.user, course=course).first()
 
+    # Verificar si el curso fue reclamado como recompensa
+    is_claimed_reward = False
+    active_membership = request.user.get_active_membership()
+    if active_membership:
+        is_claimed_reward = active_membership.welcome_courses_claimed.filter(id=course.id).exists()
+
     final_price = Decimal("0.00") if course.is_free else course.base_price
 
     if not course.is_free:
@@ -104,6 +110,7 @@ def course_detail(request, pk):
             "final_price": final_price,
             "resources_with_youtube": resources_with_youtube,
             "user_course": user_course,
+            "is_claimed_reward": is_claimed_reward,
             "can_access_resources": can_access,
             "denial_reason": denial_reason,
         },
@@ -152,9 +159,30 @@ def access_resource(request, course_id, resource_id):
 
 
 def course_list(request):
+    # Obtener todos los cursos disponibles inicialmente
     free_courses = Course.objects.filter(is_available=True, is_free=True)
     general_courses = Course.objects.filter(is_available=True, is_free=False)
     plans = MembershipPlan.objects.filter(is_active=True)
+    
+    # Si el usuario está autenticado, filtrar cursos que ya posee
+    if request.user.is_authenticated:
+        # Obtener IDs de cursos que el usuario ya tiene (comprados)
+        user_course_ids = request.user.user_courses.values_list('course_id', flat=True)
+        
+        # Obtener IDs de cursos reclamados como recompensa
+        claimed_course_ids = []
+        active_membership = request.user.get_active_membership()
+        if active_membership:
+            claimed_course_ids = active_membership.welcome_courses_claimed.values_list('id', flat=True)
+        
+        # Combinar ambos tipos de cursos que ya posee (eliminar duplicados usando set)
+        owned_course_ids = list(set(list(user_course_ids) + list(claimed_course_ids)))
+        
+        # Filtrar cursos que ya posee del listado
+        if owned_course_ids:
+            free_courses = free_courses.exclude(id__in=owned_course_ids)
+            general_courses = general_courses.exclude(id__in=owned_course_ids)
+    
     return render(
         request,
         "cursos/courses_list.html",

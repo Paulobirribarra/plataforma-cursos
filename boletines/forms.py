@@ -18,20 +18,24 @@ class BoletinForm(forms.ModelForm):
         widgets = {
             'titulo': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Título del boletín'
+                'placeholder': 'Título del boletín (requerido)',
+                'required': True
             }),
             'resumen': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 3,
-                'placeholder': 'Resumen corto que aparecerá en el preview del email'
+                'placeholder': 'Resumen corto que aparecerá en el preview del email (requerido)',
+                'required': True
             }),
             'contenido': forms.Textarea(attrs={
                 'class': 'form-control editor-content',
                 'rows': 12,
-                'placeholder': 'Contenido principal del boletín'
+                'placeholder': 'Contenido principal del boletín (requerido)',
+                'required': True
             }),
             'categoria': forms.Select(attrs={
-                'class': 'form-select'
+                'class': 'form-select',
+                'required': True
             }),
             'prioridad': forms.Select(attrs={
                 'class': 'form-select'
@@ -55,10 +59,10 @@ class BoletinForm(forms.ModelForm):
             })
         }
         labels = {
-            'titulo': 'Título',
-            'resumen': 'Resumen',
-            'contenido': 'Contenido',
-            'categoria': 'Categoría',
+            'titulo': 'Título *',
+            'resumen': 'Resumen *',
+            'contenido': 'Contenido *',
+            'categoria': 'Categoría *',
             'prioridad': 'Prioridad',
             'imagen_destacada': 'Imagen destacada',
             'blog_relacionado': 'Blog relacionado',
@@ -67,9 +71,10 @@ class BoletinForm(forms.ModelForm):
             'solo_suscriptores_premium': 'Solo suscriptores premium'
         }
         help_texts = {
-            'titulo': 'Máximo 200 caracteres',
-            'resumen': 'Máximo 300 caracteres. Aparecerá en el preview del email',
-            'contenido': 'Puedes usar HTML básico para formato',
+            'titulo': 'Máximo 200 caracteres. Campo obligatorio',
+            'resumen': 'Mínimo 20 caracteres, máximo 300. Aparecerá en el preview del email. Campo obligatorio',
+            'contenido': 'Campo obligatorio. Puedes usar HTML básico para formato',
+            'categoria': 'Campo obligatorio. Selecciona la categoría que mejor describa el boletín',
             'fecha_programada': 'Deja vacío para envío manual',
             'solo_suscriptores_premium': 'Enviar solo a usuarios con membresía activa'
         }
@@ -91,23 +96,42 @@ class BoletinForm(forms.ModelForm):
             raise forms.ValidationError(
                 'La fecha programada debe ser futura'
             )
-        return fecha
-    
+        return fecha    
     def clean_titulo(self):
         titulo = self.cleaned_data.get('titulo')
-        if titulo and len(titulo.strip()) < 5:
+        if not titulo or len(titulo.strip()) < 5:
             raise forms.ValidationError(
-                'El título debe tener al menos 5 caracteres'
+                'El título es obligatorio y debe tener al menos 5 caracteres'
             )
-        return titulo.strip() if titulo else titulo
+        return titulo.strip()
     
     def clean_resumen(self):
         resumen = self.cleaned_data.get('resumen')
-        if resumen and len(resumen.strip()) < 20:
+        if not resumen or len(resumen.strip()) < 20:
             raise forms.ValidationError(
-                'El resumen debe tener al menos 20 caracteres'
+                'El resumen es obligatorio y debe tener al menos 20 caracteres'
             )
-        return resumen.strip() if resumen else resumen
+        if len(resumen.strip()) > 300:
+            raise forms.ValidationError(
+                'El resumen no puede exceder los 300 caracteres'
+            )
+        return resumen.strip()
+    
+    def clean_contenido(self):
+        contenido = self.cleaned_data.get('contenido')
+        if not contenido or len(contenido.strip()) < 50:
+            raise forms.ValidationError(
+                'El contenido es obligatorio y debe tener al menos 50 caracteres'
+            )
+        return contenido.strip()
+    
+    def clean_categoria(self):
+        categoria = self.cleaned_data.get('categoria')
+        if not categoria:
+            raise forms.ValidationError(
+                'La categoría es obligatoria'
+            )
+        return categoria
 
 
 class BoletinRapidoForm(forms.ModelForm):

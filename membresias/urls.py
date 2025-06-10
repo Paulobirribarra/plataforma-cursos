@@ -14,8 +14,7 @@ urlpatterns = [
         "cancelar/<int:membership_id>/",
         views.cancel_membership,
         name="cancel_membership",
-    ),
-    # URLs para cursos de recompensa
+    ),    # URLs para cursos de recompensa
     path("cursos-bienvenida/", views.welcome_courses, name="welcome_courses"),
     path("reclamar-curso/<int:course_id>/", views.claim_reward_course, name="claim_reward_course"),
     path("saltar-bienvenida/", views.skip_welcome_courses, name="skip_welcome_courses"),

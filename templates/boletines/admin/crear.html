@@ -19,6 +19,42 @@
 .tox-edit-area__iframe {
     background: white !important;
 }
+
+/* Estilos para campos requeridos */
+.campo-requerido {
+    position: relative;
+}
+.campo-requerido label::after {
+    content: " *";
+    color: #ef4444;
+    font-weight: bold;
+}
+.campo-requerido input:invalid,
+.campo-requerido textarea:invalid,
+.campo-requerido select:invalid {
+    border-color: #fca5a5;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+.campo-requerido input:valid,
+.campo-requerido textarea:valid,
+.campo-requerido select:valid {
+    border-color: #86efac;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+.error-message {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+.help-text {
+    color: #6b7280;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
 </style>
 {% endblock %}
 
@@ -38,50 +74,76 @@
                 ← Volver al Dashboard
             </a>
         </div>
-    </div>
-    <!-- Formulario -->
+    </div>    <!-- Formulario -->
     <form method="post" enctype="multipart/form-data" id="boletin-form" class="space-y-8">
         {% csrf_token %}
+        
+        <!-- Errores del formulario -->
+        {% if form.errors %}
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div class="flex items-center mb-2">
+                <svg class="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <h3 class="text-sm font-medium text-red-800">Por favor corrige los siguientes errores:</h3>
+            </div>
+            <div class="text-sm text-red-700 space-y-1">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <p>• <strong>{{ field.label }}:</strong> {{ error }}</p>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <p>• {{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
         
         <!-- Información Básica -->
         <div class="bg-white rounded-xl shadow-xl p-6 border border-gray-100">
             <h3 class="text-xl font-bold text-gray-900 mb-6 pb-3 border-b border-gray-200 flex items-center">
                 📝 Información Básica
             </h3>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="space-y-2">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="campo-requerido space-y-2">
                     <label for="{{ form.titulo.id_for_label }}" class="block text-sm font-semibold text-gray-700">
                         {{ form.titulo.label }}
                     </label>
                     {{ form.titulo|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" }}
                     {% if form.titulo.help_text %}
-                        <p class="text-xs text-gray-500">{{ form.titulo.help_text }}</p>
+                        <p class="help-text">{{ form.titulo.help_text }}</p>
                     {% endif %}
                     {% if form.titulo.errors %}
-                        <div class="text-red-600 text-sm">{{ form.titulo.errors }}</div>
+                        <div class="error-message">{{ form.titulo.errors }}</div>
                     {% endif %}
                 </div>
                 
-                <div class="space-y-2">
+                <div class="campo-requerido space-y-2">
                     <label for="{{ form.categoria.id_for_label }}" class="block text-sm font-semibold text-gray-700">
                         {{ form.categoria.label }}
                     </label>
                     {{ form.categoria|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" }}
                     {% if form.categoria.help_text %}
-                        <p class="text-xs text-gray-500">{{ form.categoria.help_text }}</p>
+                        <p class="help-text">{{ form.categoria.help_text }}</p>
+                    {% endif %}
+                    {% if form.categoria.errors %}
+                        <div class="error-message">{{ form.categoria.errors }}</div>
                     {% endif %}
                 </div>
             </div>
             
             <div class="mt-6">
-                <div class="space-y-2">
+                <div class="campo-requerido space-y-2">
                     <label for="{{ form.resumen.id_for_label }}" class="block text-sm font-semibold text-gray-700">
                         {{ form.resumen.label }}
                     </label>
                     {{ form.resumen|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" }}
                     {% if form.resumen.help_text %}
-                        <p class="text-xs text-gray-500">{{ form.resumen.help_text }}</p>
+                        <p class="help-text">{{ form.resumen.help_text }}</p>
+                    {% endif %}
+                    {% if form.resumen.errors %}
+                        <div class="error-message">{{ form.resumen.errors }}</div>
                     {% endif %}
                 </div>
             </div>
@@ -92,12 +154,19 @@
             <h3 class="text-xl font-bold text-gray-900 mb-6 pb-3 border-b border-gray-200 flex items-center">
                 📄 Contenido
             </h3>
-            
-            <div class="space-y-6">
-                <div class="space-y-2">
+              <div class="space-y-6">
+                <div class="campo-requerido space-y-2">
                     <label for="{{ form.contenido.id_for_label }}" class="block text-sm font-semibold text-gray-700">
                         {{ form.contenido.label }}
                     </label>
+                    {{ form.contenido|add_class:"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" }}
+                    {% if form.contenido.help_text %}
+                        <p class="help-text">{{ form.contenido.help_text }}</p>
+                    {% endif %}
+                    {% if form.contenido.errors %}
+                        <div class="error-message">{{ form.contenido.errors }}</div>
+                    {% endif %}
+                </div>
                     {{ form.contenido|add_class:"w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" }}
                     {% if form.contenido.help_text %}
                         <p class="text-xs text-gray-500">{{ form.contenido.help_text }}</p>

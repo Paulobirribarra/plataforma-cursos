@@ -127,8 +127,8 @@ class Membership(models.Model):
         if not self.consultations_remaining:
             self.consultations_remaining = self.plan.consultations
         
-        # Configurar cursos de bienvenida según el plan
-        if not hasattr(self, '_skip_welcome_setup'):
+        # Configurar cursos de bienvenida según el plan SOLO para nuevas membresías
+        if not hasattr(self, '_skip_welcome_setup') and not self.pk:  # Solo para nuevos registros
             if self.plan.slug == 'basico':
                 self.welcome_courses_remaining = 1
             elif self.plan.slug == 'intermedio':
@@ -248,7 +248,6 @@ class Membership(models.Model):
     def can_claim_reward_course(self):
         """Verifica si puede reclamar un curso de recompensa."""
         return self.welcome_courses_remaining > 0 and self.status == 'active'
-    
     def claim_reward_course(self, course):
         """Reclama un curso de recompensa."""
         if not self.can_claim_reward_course():
@@ -256,6 +255,10 @@ class Membership(models.Model):
         
         if not course.is_membership_reward:
             return False, "Este curso no es una recompensa"
+        
+        # NUEVA VALIDACIÓN: Verificar si ya fue reclamado
+        if self.welcome_courses_claimed.filter(id=course.id).exists():
+            return False, "Ya has reclamado este curso anteriormente"
         
         if course not in self.get_available_reward_courses():
             return False, "Este curso no está disponible para tu plan"
