@@ -44,52 +44,47 @@ class Command(BasePopulateCommand):
         tipos_consulta = [
             {
                 "name": "Asesoría Grupal",
+                "slug": "asesoria-grupal",
                 "description": "Sesión de asesoría en grupo con otros miembros de la comunidad",
                 "duration_minutes": 60,
-                "max_participants": 20,
                 "is_individual": False,
                 "membership_plans": [plan_basico, plan_intermedio, plan_premium],
-                "price_non_member": 15000,
                 "is_active": True,
             },
             {
                 "name": "Consulta Individual",
+                "slug": "consulta-individual",
                 "description": "Sesión personalizada 1:1 con un experto financiero",
                 "duration_minutes": 45,
-                "max_participants": 1,
                 "is_individual": True,
                 "membership_plans": [plan_premium],  # Solo premium
-                "price_non_member": 45000,
                 "is_active": True,
             },
             {
                 "name": "Revisión de Portafolio",
+                "slug": "revision-portafolio",
                 "description": "Análisis detallado de tu portafolio de inversiones",
                 "duration_minutes": 90,
-                "max_participants": 1,
                 "is_individual": True,
                 "membership_plans": [plan_premium],  # Solo premium
-                "price_non_member": 75000,
                 "is_active": True,
             },
             {
                 "name": "Sesión de Trading",
+                "slug": "sesion-trading",
                 "description": "Sesión grupal para análisis de mercado y estrategias de trading",
                 "duration_minutes": 75,
-                "max_participants": 15,
                 "is_individual": False,
                 "membership_plans": [plan_intermedio, plan_premium],
-                "price_non_member": 25000,
                 "is_active": True,
             },
             {
                 "name": "Webinar Exclusivo",
+                "slug": "webinar-exclusivo",
                 "description": "Webinar mensual exclusivo para miembros premium",
                 "duration_minutes": 120,
-                "max_participants": 100,
                 "is_individual": False,
                 "membership_plans": [plan_premium],
-                "price_non_member": 35000,
                 "is_active": True,
             },
         ]
@@ -100,13 +95,13 @@ class Command(BasePopulateCommand):
             if options['force']:
                 tipo, created = self.update_or_create_safe(
                     ConsultationType,
-                    name=tipo_data['name'],
+                    slug=tipo_data['slug'],
                     defaults=tipo_data
                 )
             else:
                 tipo, created = self.get_or_create_safe(
                     ConsultationType,
-                    name=tipo_data['name'],
+                    slug=tipo_data['slug'],
                     defaults=tipo_data
                 )
             

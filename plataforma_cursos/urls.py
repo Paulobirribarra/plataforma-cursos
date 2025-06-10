@@ -16,6 +16,10 @@ urlpatterns = [
     path("nosotros/", views.nosotros, name="nosotros"),  # Página Quiénes Somos
     path("contacto/", views.contacto, name="contacto"),  # Página de Contacto
     path("accounts/", include("allauth.urls")),  # URLs de django-allauth
+    # Redirección para solucionar problema de URL singular/plural de allauth
+    path("account/login/", RedirectView.as_view(url="/accounts/login/", permanent=True)),
+    path("account/logout/", RedirectView.as_view(url="/accounts/logout/", permanent=True)),
+    path("account/signup/", RedirectView.as_view(url="/accounts/signup/", permanent=True)),
     path(
         "cursos/", include("cursos.urls", namespace="cursos")
     ),  # Prefijo para las URLs de cursos

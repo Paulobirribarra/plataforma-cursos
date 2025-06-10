@@ -1,1 +1,0 @@
-# Comandos de gestión para la aplicación principal
