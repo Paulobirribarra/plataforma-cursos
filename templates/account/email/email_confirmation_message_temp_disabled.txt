@@ -1,0 +1,31 @@
+=====================================
+    CONFIRMA TU CORREO ELECTRÓNICO
+=====================================
+
+🎓 Asesorías Futuro LTD
+
+¡Hola!
+
+Gracias por registrarte en Asesorías Futuro LTD. Para completar tu registro y acceder a todos nuestros cursos y servicios, necesitamos verificar tu dirección de correo electrónico.
+
+CONFIRMAR MI CORREO ELECTRÓNICO:
+{{ activate_url }}
+
+¿Por qué necesitas verificar tu correo?
+--------------------------------------
+La verificación nos ayuda a mantener tu cuenta segura y asegurar que puedas recibir importantes actualizaciones sobre tus cursos y certificaciones.
+
+Si no te registraste en nuestra plataforma, puedes ignorar este correo de forma segura.
+
+=====================================
+
+Asesorías Futuro LTD
+Plataforma de Cursos Online
+Tu destino para el aprendizaje continuo
+
+📧 Email | 📘 Facebook | 📱 Twitter | 💼 LinkedIn
+
+© 2024 Asesorías Futuro LTD. Todos los derechos reservados.
+Este enlace de verificación expirará en 24 horas.
+
+=====================================

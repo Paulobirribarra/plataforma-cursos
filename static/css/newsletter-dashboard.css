@@ -1,0 +1,199 @@
+/* Newsletter Dashboard Styles */
+
+/* Toggle Switch Improvements */
+.newsletter-toggle input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 44px;
+    height: 24px;
+    background-color: #e5e7eb;
+    border-radius: 50px;
+    position: relative;
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.3s ease;
+}
+
+.newsletter-toggle input[type="checkbox"]:checked {
+    background-color: #3b82f6;
+}
+
+.newsletter-toggle input[type="checkbox"]:before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.newsletter-toggle input[type="checkbox"]:checked:before {
+    transform: translateX(20px);
+}
+
+.newsletter-toggle input[type="checkbox"]:focus {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+/* Newsletter Card Animations */
+.newsletter-card {
+    transition: all 0.3s ease;
+}
+
+.newsletter-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Status Indicator Animations */
+.status-indicator {
+    transition: all 0.3s ease;
+}
+
+.status-indicator.active {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.status-indicator.inactive {
+    background-color: #f3f4f6;
+    color: #6b7280;
+}
+
+/* Notification Styles */
+.newsletter-notification {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1000;
+    min-width: 300px;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+}
+
+.newsletter-notification.show {
+    transform: translateX(0);
+}
+
+.newsletter-notification.success {
+    background-color: #dcfce7;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+}
+
+.newsletter-notification.error {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+}
+
+/* Dashboard specific styles */
+.dashboard-newsletter-widget {
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-newsletter-widget .header-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.dashboard-newsletter-widget .stats-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background-color: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    margin-top: 1rem;
+}
+
+.dashboard-newsletter-widget .stats-badge.subscribed {
+    background-color: rgba(34, 197, 94, 0.1);
+    border-color: rgba(34, 197, 94, 0.2);
+    color: #166534;
+}
+
+.dashboard-newsletter-widget .stats-badge.unsubscribed {
+    background-color: rgba(156, 163, 175, 0.1);
+    border-color: rgba(156, 163, 175, 0.2);
+    color: #6b7280;
+}
+
+/* Button hover effects */
+.newsletter-btn {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.newsletter-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.newsletter-btn:active {
+    transform: translateY(0);
+}
+
+/* Loading state for toggle */
+.newsletter-toggle.loading input[type="checkbox"] {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.newsletter-toggle.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid #e5e7eb;
+    border-top: 2px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Responsive improvements */
+@media (max-width: 640px) {
+    .newsletter-notification {
+        min-width: calc(100vw - 2rem);
+        left: 1rem;
+        right: 1rem;
+    }
+    
+    .dashboard-newsletter-widget .stats-badge {
+        font-size: 0.75rem;
+        padding: 0.375rem 0.75rem;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .newsletter-toggle input[type="checkbox"] {
+        background-color: #374151;
+    }
+    
+    .newsletter-toggle input[type="checkbox"]:checked {
+        background-color: #3b82f6;
+    }
+    
+    .newsletter-card {
+        background-color: #1f2937;
+        border-color: #374151;
+    }
+}

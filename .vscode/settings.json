@@ -1,0 +1,39 @@
+{
+  "python.pythonPath": ".venv/Scripts/python.exe",
+  "python.defaultInterpreterPath": ".venv/Scripts/python.exe",
+  "editor.formatOnSave": false,
+  "[html]": {
+    "editor.formatOnSave": false,
+    "editor.defaultFormatter": null
+  },
+  "[django-html]": {
+    "editor.formatOnSave": false,
+    "editor.defaultFormatter": null
+  },
+  "[jinja-html]": {
+    "editor.formatOnSave": false,
+    "editor.defaultFormatter": null
+  },
+  "prettier.disableLanguages": ["django-html", "jinja-html"],
+  "django.snippets.htmlLanguageServer": false,
+  "django.completion.insertImports": false,
+  "prettier.requireConfig": true,
+  "html.format.enable": false,
+  "files.associations": {
+    "*.html": "django-html"
+  },
+  "emmet.includeLanguages": {
+    "django-html": "html"
+  },  "python.analysis.extraPaths": [
+    ".venv/Lib/site-packages"
+  ],
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": true,
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  "files.hotExit": "off",
+  "workbench.startupEditor": "none",
+  "window.restoreWindows": "none",
+  "files.restoreUndoStack": false
+}

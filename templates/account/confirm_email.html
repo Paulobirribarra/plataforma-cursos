@@ -1,18 +1,150 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}{% trans "Confirmar Correo Electrónico" %}{% endblock %}
+{% block title %}{% trans "Confirmar Correo Electrónico" %} - Asesorías Futuro LTD{% endblock %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto bg-white shadow-md rounded-xl p-6 md:p-10">
-    <h1 class="text-2xl md:text-3xl font-semibold text-gray-800 mb-6 text-center">
-        {% trans "Confirmar Correo Electrónico" %}
-    </h1>
-    <p class="text-gray-700 text-center">
-        {% trans "Por favor, verifica tu correo electrónico para completar el registro. Revisa tu bandeja de entrada o spam." %}
-    </p>
-    <p class="text-center mt-4">
-        <a href="{% url 'account_email' %}" class="text-blue-600 hover:underline">{% trans "Gestionar correos" %}</a>
-    </p>
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-100 py-16">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+      
+      <!-- Header con Gradiente -->
+      <div class="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 px-8 py-12 text-center text-white">
+        <div class="w-24 h-24 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-sm">
+          <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+          </svg>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          ¡Revisa tu Correo Electrónico!
+        </h1>
+        <p class="text-xl text-blue-100 max-w-2xl mx-auto">
+          Te hemos enviado un enlace de verificación para completar tu registro
+        </p>
+      </div>
+
+      <!-- Contenido Principal -->
+      <div class="px-8 py-12">
+        <div class="max-w-2xl mx-auto text-center">
+          
+          <!-- Instrucciones -->
+          <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 mb-8 border border-blue-100">
+            <div class="flex items-center justify-center mb-6">
+              <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                </svg>
+              </div>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Verificación Enviada</h2>
+            <p class="text-lg text-gray-700 mb-4">
+              Hemos enviado un correo electrónico con un enlace de verificación a tu dirección de email.
+            </p>
+            <p class="text-gray-600">
+              Haz clic en el enlace del correo para completar tu registro y acceder a todos nuestros cursos.
+            </p>
+          </div>
+
+          <!-- Pasos a Seguir -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div class="text-center p-6">
+              <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="text-blue-600 font-bold text-lg">1</span>
+              </div>
+              <h3 class="font-semibold text-gray-900 mb-2">Revisa tu Email</h3>
+              <p class="text-sm text-gray-600">Busca el correo en tu bandeja de entrada</p>
+            </div>
+            
+            <div class="text-center p-6">
+              <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="text-purple-600 font-bold text-lg">2</span>
+              </div>
+              <h3 class="font-semibold text-gray-900 mb-2">Haz Clic en el Enlace</h3>
+              <p class="text-sm text-gray-600">Confirma tu dirección de correo electrónico</p>
+            </div>
+            
+            <div class="text-center p-6">
+              <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="text-green-600 font-bold text-lg">3</span>
+              </div>
+              <h3 class="font-semibold text-gray-900 mb-2">¡Disfruta Aprendiendo!</h3>
+              <p class="text-sm text-gray-600">Accede a todos nuestros cursos</p>
+            </div>
+          </div>
+
+          <!-- Acciones -->
+          <div class="space-y-6">
+            
+            <!-- Gestionar Emails -->
+            <a href="{% url 'account_email' %}" 
+               class="w-full md:w-auto bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-lg px-12 py-4 rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl inline-flex items-center justify-center">
+              <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              Gestionar mis Correos
+            </a>
+
+            <!-- Información de Ayuda -->
+            <div class="bg-yellow-50 border border-yellow-200 rounded-2xl p-6">
+              <div class="flex items-start">
+                <div class="flex-shrink-0 w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center mr-4">
+                  <svg class="w-4 h-4 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+                <div class="text-left">
+                  <h4 class="font-medium text-yellow-900 mb-1">¿No encuentras el correo?</h4>
+                  <ul class="text-sm text-yellow-800 space-y-1">
+                    <li>• Revisa tu carpeta de spam o correo no deseado</li>
+                    <li>• Verifica que escribiste correctamente tu dirección de email</li>
+                    <li>• Los correos pueden tardar unos minutos en llegar</li>
+                    <li>• Puedes solicitar un nuevo enlace desde "Gestionar mis Correos"</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Enlaces de Ayuda -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+              <a href="{% url 'contacto' %}" 
+                 class="text-blue-600 hover:text-blue-800 font-medium transition-colors flex items-center justify-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                ¿Necesitas Ayuda?
+              </a>
+              <a href="{% url 'home' %}" 
+                 class="text-gray-600 hover:text-gray-800 font-medium transition-colors flex items-center justify-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                Volver al Inicio
+              </a>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
+
+<style>
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: .5;
+    }
+  }
+
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+</style>
 {% endblock %}

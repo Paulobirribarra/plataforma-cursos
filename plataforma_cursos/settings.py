@@ -149,6 +149,14 @@ CONTACT_EMAIL = config('CONTACT_EMAIL', default='contact@yoursite.com')  # Email
 DEFAULT_CHARSET = 'utf-8'
 FILE_CHARSET = 'utf-8'
 
+# Configuración para priorizar emails HTML
+EMAIL_USE_LOCALTIME = True
+EMAIL_SUBJECT_PREFIX = ''
+
+# Configuración de allauth para formato de email
+ACCOUNT_EMAIL_SUBJECT_PREFIX = ''
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https' if DEBUG == False else 'http'
+
 # Configuración de correo (para pruebas en consola - DESACTIVADO)
 # EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 

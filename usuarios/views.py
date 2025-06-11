@@ -4,15 +4,62 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from django.contrib.auth import get_user_model
 from cursos.models import Course
 from django.core.exceptions import ValidationError
 from decimal import Decimal, InvalidOperation
 import datetime
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, NewsletterPreferencesForm, UserProfileForm
 from allauth.account.models import EmailAddress
 from allauth.account.views import SignupView
 
 logger = logging.getLogger(__name__)
+
+@require_http_methods(["POST"])
+def check_email_available(request):
+    """
+    Vista AJAX para verificar si un email está disponible para registro
+    """
+    import json
+    try:
+        data = json.loads(request.body)
+        email = data.get('email', '').strip().lower()
+    except (json.JSONDecodeError, KeyError):
+        return JsonResponse({
+            'available': False,
+            'message': 'Error en la solicitud'
+        })
+    
+    if not email:
+        return JsonResponse({
+            'available': True,
+            'message': ''
+        })
+    
+    # Verificar formato de email básico
+    if '@' not in email or '.' not in email.split('@')[1]:
+        return JsonResponse({
+            'available': False,
+            'message': 'Por favor, ingresa un email válido'
+        })
+    
+    User = get_user_model()
+    
+    # Verificar si el email ya existe
+    email_exists = User.objects.filter(email__iexact=email).exists()
+    
+    if email_exists:
+        return JsonResponse({
+            'available': False,
+            'message': 'Este email ya está registrado. <a href="/accounts/login/" class="text-blue-600 hover:underline">¿Ya tienes cuenta?</a>'
+        })
+    else:
+        return JsonResponse({
+            'available': True,
+            'message': '✓ Email disponible'
+        })
 
 class CustomSignupView(SignupView):
     form_class = CustomUserCreationForm
@@ -166,3 +213,87 @@ def my_courses(request):
     }
     
     return render(request, 'usuarios/my_courses.html', context)
+
+@login_required
+def newsletter_preferences(request):
+    """Vista para gestionar las preferencias de newsletter del usuario"""
+    if request.method == 'POST':
+        form = NewsletterPreferencesForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            action = 'suscrito' if form.cleaned_data['suscrito_newsletter'] else 'desuscrito'
+            messages.success(request, f'Te has {action} al newsletter exitosamente.')
+            
+            # Log para tracking
+            logger.info(f"Usuario {request.user.email} se ha {action} del newsletter")
+            
+            return redirect('usuarios:newsletter_preferences')
+    else:
+        form = NewsletterPreferencesForm(instance=request.user)
+    
+    context = {
+        'form': form,
+        'user': request.user,
+        'newsletter_stats': _get_newsletter_stats(request.user)
+    }
+    return render(request, 'usuarios/newsletter_preferences.html', context)
+
+@login_required
+def toggle_newsletter_ajax(request):
+    """Vista AJAX para alternar suscripción al newsletter"""
+    if request.method == 'POST':
+        user = request.user
+        user.suscrito_newsletter = not user.suscrito_newsletter
+        user.save(update_fields=['suscrito_newsletter'])
+        
+        action = 'suscrito' if user.suscrito_newsletter else 'desuscrito'
+        logger.info(f"Usuario {user.email} cambió suscripción newsletter via AJAX: {action}")
+        
+        return JsonResponse({
+            'success': True,
+            'suscrito': user.suscrito_newsletter,
+            'message': f'Te has {action} al newsletter exitosamente.'
+        })
+    
+    return JsonResponse({'success': False, 'message': 'Método no permitido'})
+
+@login_required
+def profile_preferences(request):
+    """Vista para gestionar el perfil completo del usuario"""
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Tu perfil ha sido actualizado exitosamente.')
+            logger.info(f"Usuario {request.user.email} actualizó su perfil")
+            return redirect('usuarios:profile_preferences')
+    else:
+        form = UserProfileForm(instance=request.user)
+    
+    context = {
+        'form': form,
+        'user': request.user,
+        'newsletter_stats': _get_newsletter_stats(request.user)
+    }
+    return render(request, 'usuarios/profile_preferences.html', context)
+
+def _get_newsletter_stats(user):
+    """Función auxiliar para obtener estadísticas de newsletter del usuario"""
+    try:
+        from boletines.models import Boletin
+        # Obtener últimos boletines enviados
+        ultimos_boletines = Boletin.objects.filter(
+            estado='enviado'
+        ).order_by('-fecha_envio')[:5]
+        
+        return {
+            'total_boletines_enviados': Boletin.objects.filter(estado='enviado').count(),
+            'ultimos_boletines': ultimos_boletines,
+            'fecha_suscripcion': user.date_joined,
+        }
+    except ImportError:
+        return {
+            'total_boletines_enviados': 0,
+            'ultimos_boletines': [],
+            'fecha_suscripcion': user.date_joined,
+        }

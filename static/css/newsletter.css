@@ -1,0 +1,189 @@
+/**
+ * Newsletter Dashboard CSS
+ * Estilos específicos para la funcionalidad del newsletter en el dashboard
+ */
+
+/* Toggle Switch Styles */
+.newsletter-toggle {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+}
+
+.newsletter-toggle input[type="checkbox"] {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.newsletter-toggle .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #cbd5e0; /* Gray-300 */
+    border-radius: 26px;
+    transition: 0.3s;
+}
+
+.newsletter-toggle .slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.3s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.newsletter-toggle input:checked + .slider {
+    background-color: #4f46e5; /* Indigo-600 */
+}
+
+.newsletter-toggle input:checked + .slider:before {
+    transform: translateX(24px);
+}
+
+/* Estado hover */
+.newsletter-toggle .slider:hover {
+    box-shadow: 0 0 0 8px rgba(79, 70, 229, 0.1);
+}
+
+/* Estado de carga */
+.newsletter-toggle.loading .slider {
+    background-color: #f59e0b; /* Amber-500 */
+    animation: newsletter-pulse 1.5s ease-in-out infinite;
+}
+
+.newsletter-toggle.loading .slider:before {
+    animation: newsletter-spin 1s linear infinite;
+}
+
+/* Estado disabled */
+.newsletter-toggle input:disabled + .slider {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.newsletter-toggle input:disabled + .slider:hover {
+    box-shadow: none;
+}
+
+/* Animaciones */
+@keyframes newsletter-pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@keyframes newsletter-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Newsletter Card Styles */
+.newsletter-card {
+    transition: all 0.3s ease-in-out;
+}
+
+.newsletter-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.newsletter-status-container {
+    transition: all 0.3s ease-in-out;
+}
+
+.newsletter-status-icon {
+    transition: all 0.3s ease-in-out;
+}
+
+.newsletter-btn {
+    transition: all 0.3s ease-in-out;
+}
+
+.newsletter-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Newsletter Notifications */
+.newsletter-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    max-width: 400px;
+    padding: 16px;
+    border-radius: 12px;
+    color: white;
+    font-weight: 500;
+    transform: translateX(100%);
+    transition: all 0.3s ease-in-out;
+    z-index: 9999;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.newsletter-notification.show {
+    transform: translateX(0);
+}
+
+.newsletter-notification.success {
+    background-color: #059669; /* Green-600 */
+}
+
+.newsletter-notification.error {
+    background-color: #dc2626; /* Red-600 */
+}
+
+.newsletter-notification.warning {
+    background-color: #d97706; /* Amber-600 */
+}
+
+.newsletter-notification.info {
+    background-color: #2563eb; /* Blue-600 */
+}
+
+/* Focus states for accessibility */
+.newsletter-toggle input[type="checkbox"]:focus + .slider {
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+    .newsletter-notification {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+    
+    .newsletter-toggle {
+        width: 44px;
+        height: 24px;
+    }
+    
+    .newsletter-toggle .slider:before {
+        width: 20px;
+        height: 20px;
+        left: 2px;
+        bottom: 2px;
+    }
+    
+    .newsletter-toggle input:checked + .slider:before {
+        transform: translateX(20px);
+    }
+}

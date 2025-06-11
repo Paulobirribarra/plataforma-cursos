@@ -5,11 +5,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />    <title>{% block title %}Asesorias Futuro LTD{% endblock %}</title>
     <link rel="icon" href="{% static 'imagenes/favicon.ico' %}" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
+    <script src="https://cdn.tailwindcss.com"></script>    <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
-    />
+    />    <!-- Newsletter Dashboard Styles -->
+    <link rel="stylesheet" href="{% static 'css/newsletter.css' %}" />
     <!-- Alpine.js para interactividad -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
@@ -476,9 +476,7 @@
           </p>
         </div>
       </div>
-    </footer>
-
-    <a
+    </footer>    <a
       href="https://wa.me/56956602092"
       target="_blank"
       class="fixed bottom-5 right-5 transition-transform hover:scale-110"
@@ -489,5 +487,8 @@
         class="h-12 w-12"
       />
     </a>
+
+    <!-- Bloque para JavaScript adicional -->
+    {% block extra_js %}{% endblock %}
   </body>
 </html>

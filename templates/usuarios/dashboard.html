@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
 {% load i18n %}
 {% load cart_extras %}
+{% load static %}
+{% csrf_token %}
 {% block title %}Dashboard | {{ user.email }}{% endblock %}
+
 
 {% block content %}
 <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -592,6 +595,84 @@
                   <p class="text-lg text-gray-900">{{ user.date_joined|date:"d/m/Y" }}</p>
                 </div>
               </div>
+            </div>          </div>          <!-- Newsletter Preferences -->
+          <div class="newsletter-card bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+            <div class="header-gradient bg-gradient-to-r from-indigo-500 to-blue-500 px-6 py-6">
+              <h3 class="text-xl font-bold text-white flex items-center">
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+                Newsletter
+              </h3>
+            </div>
+            <div class="p-6">
+              <div class="text-center mb-4">
+                <div class="newsletter-status-container w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 {% if user.suscrito_newsletter %}bg-green-100{% else %}bg-gray-100{% endif %}">
+                  <svg class="newsletter-status-icon w-8 h-8 {% if user.suscrito_newsletter %}text-green-600{% else %}text-gray-400{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {% if user.suscrito_newsletter %}
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                    {% else %}
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    {% endif %}
+                  </svg>
+                </div>
+                <div class="space-y-2">
+                  <p class="newsletter-status-text font-semibold text-gray-900">
+                    {% if user.suscrito_newsletter %}
+                      <span class="text-green-600">✓ Suscrito</span>
+                    {% else %}
+                      <span class="text-gray-500">No suscrito</span>
+                    {% endif %}
+                  </p>
+                  <p class="newsletter-desc-text text-sm text-gray-600">
+                    {% if user.suscrito_newsletter %}
+                      Recibes nuestras novedades
+                    {% else %}
+                      Únete a nuestro newsletter
+                    {% endif %}
+                  </p>
+                </div>
+              </div>              <!-- Toggle Switch -->
+              <div class="newsletter-toggle-container flex items-center justify-center mb-4" data-toggle-url="{% url 'usuarios:toggle_newsletter_ajax' %}">
+                <div class="flex items-center">
+                  <span class="text-sm text-gray-600 mr-3">Notificaciones</span>
+                  <div class="newsletter-toggle">
+                    <input type="checkbox" 
+                           id="newsletter-toggle" 
+                           {% if user.suscrito_newsletter %}checked{% endif %}>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="newsletter-actions space-y-2">
+                <a href="{% url 'usuarios:newsletter_preferences' %}"
+                   class="newsletter-btn w-full bg-blue-600 text-white px-4 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all duration-300 inline-flex items-center justify-center">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  </svg>
+                  Gestionar Preferencias
+                </a>
+                
+                <a href="{% url 'usuarios:profile_preferences' %}"
+                   class="newsletter-btn w-full bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-all duration-300 inline-flex items-center justify-center">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                  </svg>
+                  Configurar Perfil
+                </a>
+              </div>
+
+              <!-- Quick Stats -->
+              {% if user.suscrito_newsletter %}
+              <div class="newsletter-stats mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-green-700 font-medium">Último boletín:</span>
+                  <span class="text-green-600">{{ user.date_joined|timesince }} atrás</span>
+                </div>
+              </div>
+              {% endif %}
             </div>
           </div>
 
@@ -767,98 +848,10 @@
               </a>
             </div>
           </div>
-        </div>
-      </div>
+        </div>      </div>
     </div>
   </div>
 </div>
-
-<style>
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .dashboard-card {
-    animation: fadeInUp 0.6s ease-out;
-  }
-
-  .hover\:scale-105:hover {
-    transform: scale(1.05);
-  }
-</style>
-
-<script>
-function hideBenefitNotification() {
-  const notification = document.querySelector('[data-reward-notification]');
-  if (notification) {
-    notification.style.transition = 'all 0.5s ease-out';
-    notification.style.opacity = '0';
-    notification.style.transform = 'translateY(-20px)';
-    
-    setTimeout(() => {
-      notification.style.display = 'none';
-    }, 500);
-    
-    // Guardar en localStorage para no mostrar por un tiempo
-    localStorage.setItem('rewardCoursesHidden', Date.now().toString());
-  }
-}
-
-// Verificar si el usuario ocultó la notificación recientemente (últimas 24 horas)
-document.addEventListener('DOMContentLoaded', function() {
-  const hiddenTime = localStorage.getItem('rewardCoursesHidden');
-  if (hiddenTime) {
-    const hoursSinceHidden = (Date.now() - parseInt(hiddenTime)) / (1000 * 60 * 60);
-    if (hoursSinceHidden < 24) {
-      const notification = document.querySelector('[data-reward-notification]');
-      if (notification) {
-        notification.style.display = 'none';
-      }
-    }  }
-});
-
-// Modal para buscar pagos por ID
-function showPaymentSearchModal() {
-  const modal = document.getElementById('paymentSearchModal');
-  if (modal) {
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    document.getElementById('paymentIdInput').focus();
-  }
-}
-
-function hidePaymentSearchModal() {
-  const modal = document.getElementById('paymentSearchModal');
-  if (modal) {
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-    document.getElementById('paymentIdInput').value = '';
-  }
-}
-
-function searchPayment() {
-  const paymentId = document.getElementById('paymentIdInput').value.trim();
-  if (paymentId) {
-    window.location.href = `/pagos/payment-status/${paymentId}/`;
-  } else {
-    alert('Por favor, ingresa un ID de pago válido');
-  }
-}
-
-// Cerrar modal con ESC
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') {
-    hidePaymentSearchModal();
-  }
-});
-</script>
 
 <!-- Modal para buscar pagos -->
 <div id="paymentSearchModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
@@ -903,8 +896,12 @@ document.addEventListener('keydown', function(e) {
           Cancelar
         </button>
       </div>
-    </div>
-  </div>
+    </div>  </div>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/dashboard.js' %}"></script>
+<script src="{% static 'js/newsletter-dashboard.js' %}"></script>
 {% endblock %}
