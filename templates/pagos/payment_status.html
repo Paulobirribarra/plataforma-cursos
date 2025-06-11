@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load cart_extras %}
+
+{% block title %}Estado del Pago{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-12 px-4">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-gray-900 mb-2">Estado del Pago</h1>
+      <p class="text-xl text-gray-600">Información detallada de tu transacción</p>
+    </div>
+
+    <!-- Tarjeta principal -->
+    <div class="bg-white rounded-2xl shadow-xl p-8 mb-6">
+      <!-- Estado visual -->
+      <div class="text-center mb-8">
+        {% if payment.status == 'completed' %}
+          <div class="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4">
+            <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-green-600">Pago Completado</h2>
+        {% elif payment.status == 'pending' %}
+          <div class="mx-auto w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+            <svg class="w-10 h-10 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-yellow-600">Pago Pendiente</h2>
+        {% elif payment.status == 'rejected' %}
+          <div class="mx-auto w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-4">
+            <svg class="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-red-600">Pago Rechazado</h2>
+        {% elif payment.status == 'cancelled' %}
+          <div class="mx-auto w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+            <svg class="w-10 h-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-600">Pago Cancelado</h2>
+        {% elif payment.status == 'timeout' %}
+          <div class="mx-auto w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mb-4">
+            <svg class="w-10 h-10 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-orange-600">Tiempo Agotado</h2>
+        {% else %}
+          <div class="mx-auto w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-4">
+            <svg class="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-red-600">Error en el Pago</h2>
+        {% endif %}
+      </div>
+
+      <!-- Información del pago -->
+      <div class="grid md:grid-cols-2 gap-8">
+        <!-- Detalles básicos -->
+        <div>
+          <h3 class="text-lg font-semibold text-gray-800 mb-4">Detalles del Pago</h3>
+          <div class="bg-gray-50 rounded-lg p-4 space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">ID de Pago:</span>
+              <span class="font-mono text-sm">{{ payment.id }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Monto:</span>
+              <span class="font-semibold text-lg">${{ payment.amount|format_clp }} CLP</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Estado:</span>
+              <span class="px-3 py-1 rounded-full text-sm font-medium
+                {% if payment.status == 'completed' %}bg-green-100 text-green-800
+                {% elif payment.status == 'pending' %}bg-yellow-100 text-yellow-800
+                {% elif payment.status == 'rejected' %}bg-red-100 text-red-800
+                {% elif payment.status == 'cancelled' %}bg-gray-100 text-gray-800
+                {% elif payment.status == 'timeout' %}bg-orange-100 text-orange-800
+                {% else %}bg-red-100 text-red-800{% endif %}">
+                {{ payment.get_status_display }}
+              </span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Fecha:</span>
+              <span class="text-sm">{{ payment.created_at|date:"d/m/Y H:i" }}</span>
+            </div>
+            {% if payment.description %}
+            <div class="col-span-2">
+              <span class="text-gray-600">Descripción:</span>
+              <p class="text-sm mt-1">{{ payment.description }}</p>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Información de Transbank -->
+        <div>
+          <h3 class="text-lg font-semibold text-gray-800 mb-4">Información de Transbank</h3>
+          <div class="bg-gray-50 rounded-lg p-4 space-y-3">
+            {% if payment.buy_order %}
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Orden de Compra:</span>
+              <span class="font-mono text-sm">{{ payment.buy_order }}</span>
+            </div>
+            {% endif %}
+            {% if payment.session_id %}
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">ID de Sesión:</span>
+              <span class="font-mono text-sm">{{ payment.session_id }}</span>
+            </div>
+            {% endif %}
+            {% if payment.transaction_id %}
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Token:</span>
+              <span class="font-mono text-xs">{{ payment.transaction_id|truncatechars:20 }}...</span>
+            </div>
+            {% endif %}
+            {% if payment.transbank_status %}
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Estado Transbank:</span>
+              <span class="text-sm">{{ payment.get_transbank_status_display }}</span>
+            </div>
+            {% endif %}
+            {% if payment.response_code %}
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Código de Respuesta:</span>
+              <span class="text-sm">{{ payment.response_code }}</span>
+            </div>
+            {% endif %}
+            {% if payment.authorization_code %}
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Código de Autorización:</span>
+              <span class="font-mono text-sm">{{ payment.authorization_code }}</span>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      {% if payment.error_message %}
+      <!-- Mensaje de error -->
+      <div class="mt-8">
+        <h3 class="text-lg font-semibold text-red-800 mb-4">Información del Error</h3>
+        <div class="bg-red-50 rounded-lg p-4">
+          <p class="text-red-700">{{ payment.error_message }}</p>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Línea de tiempo -->
+      <div class="mt-8">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Historial</h3>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <div class="flex items-center space-x-3">
+            <div class="w-3 h-3 bg-blue-600 rounded-full"></div>
+            <div>
+              <p class="text-sm font-medium">Pago creado</p>
+              <p class="text-xs text-gray-500">{{ payment.created_at|date:"d/m/Y H:i:s" }}</p>
+            </div>
+          </div>
+          {% if payment.updated_at != payment.created_at %}
+          <div class="ml-6 border-l border-gray-300 pl-6 mt-4">
+            <div class="flex items-center space-x-3">
+              <div class="w-3 h-3 
+                {% if payment.status == 'completed' %}bg-green-600
+                {% elif payment.status == 'rejected' or payment.status == 'failed' %}bg-red-600
+                {% elif payment.status == 'cancelled' %}bg-gray-600
+                {% else %}bg-yellow-600{% endif %} rounded-full"></div>
+              <div>
+                <p class="text-sm font-medium">Estado actualizado a: {{ payment.get_status_display }}</p>
+                <p class="text-xs text-gray-500">{{ payment.updated_at|date:"d/m/Y H:i:s" }}</p>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="mt-8 flex flex-col sm:flex-row gap-4">
+        {% if payment.status in 'pending,failed,rejected,cancelled,timeout,error' %}
+        <a href="{% url 'carrito:cart_detail' %}" 
+           class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg text-center font-semibold hover:bg-blue-700 transition-colors">
+          <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+          </svg>
+          Intentar nuevamente
+        </a>
+        {% endif %}
+        
+        <a href="{% url 'usuarios:dashboard' %}" 
+           class="flex-1 bg-gray-600 text-white px-6 py-3 rounded-lg text-center font-semibold hover:bg-gray-700 transition-colors">
+          <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+          </svg>
+          Ir al Dashboard
+        </a>
+      </div>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="text-center text-gray-600">
+      <p class="text-sm mb-2">
+        ¿Necesitas ayuda con este pago? 
+        <a href="#" class="text-blue-600 hover:underline">Contáctanos</a>
+      </p>
+      <p class="text-xs text-gray-500">
+        Guarda este ID de pago: {{ payment.id }} para futuras consultas
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

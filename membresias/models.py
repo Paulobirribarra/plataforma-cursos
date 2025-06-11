@@ -127,8 +127,8 @@ class Membership(models.Model):
         if not self.consultations_remaining:
             self.consultations_remaining = self.plan.consultations
         
-        # Configurar cursos de bienvenida según el plan SOLO para nuevas membresías
-        if not hasattr(self, '_skip_welcome_setup') and not self.pk:  # Solo para nuevos registros
+        # Configurar cursos de bienvenida según el plan
+        if not hasattr(self, '_skip_welcome_setup'):
             if self.plan.slug == 'basico':
                 self.welcome_courses_remaining = 1
             elif self.plan.slug == 'intermedio':
@@ -229,8 +229,7 @@ class Membership(models.Model):
                 "course_id": course.id,
                 "course_title": course.title,
                 "courses_remaining": self.courses_remaining,
-            },
-        )
+            },        )
         return True
 
     def get_available_reward_courses(self):
@@ -247,39 +246,79 @@ class Membership(models.Model):
     
     def can_claim_reward_course(self):
         """Verifica si puede reclamar un curso de recompensa."""
-        return self.welcome_courses_remaining > 0 and self.status == 'active'
+        if self.status != 'active':
+            return False
+        
+        # Verificar que tenga cursos disponibles
+        if self.welcome_courses_remaining <= 0:
+            return False
+        
+        # Verificar que no haya excedido el límite del plan
+        max_welcome_courses = self.get_max_welcome_courses_for_plan()
+        current_claimed = self.welcome_courses_claimed.count()
+        
+        return current_claimed < max_welcome_courses
+    
+    def get_max_welcome_courses_for_plan(self):
+        """Retorna el número máximo de cursos de bienvenida para el plan actual."""
+        if self.plan.slug == 'basico':
+            return 1
+        elif self.plan.slug == 'intermedio':
+            return 2
+        elif self.plan.slug == 'premium':
+            return 0  # Premium tiene acceso completo, no necesita cursos de bienvenida
+        else:
+            return 0  # Por defecto, sin cursos de bienvenida
+    
     def claim_reward_course(self, course):
-        """Reclama un curso de recompensa."""
-        if not self.can_claim_reward_course():
-            return False, "No tienes cursos de recompensa disponibles"
+        """Reclama un curso de recompensa con validaciones completas y transacción atómica."""
+        from django.db import transaction
         
-        if not course.is_membership_reward:
-            return False, "Este curso no es una recompensa"
-        
-        # NUEVA VALIDACIÓN: Verificar si ya fue reclamado
-        if self.welcome_courses_claimed.filter(id=course.id).exists():
-            return False, "Ya has reclamado este curso anteriormente"
-        
-        if course not in self.get_available_reward_courses():
-            return False, "Este curso no está disponible para tu plan"
-        
-        # Reclamar el curso
-        self.welcome_courses_claimed.add(course)
-        self.welcome_courses_remaining -= 1
-        self.save()
-        
-        # Registrar en el historial
-        MembershipHistory.objects.create(
-            membership=self,
-            action="reward_claimed",
-            details={
-                "course_id": course.id,
-                "course_title": course.title,
-                "remaining_rewards": self.welcome_courses_remaining,
-            },
-        )
-        
-        return True, "Curso de recompensa reclamado exitosamente"
+        # Usar transacción atómica para evitar problemas de concurrencia
+        with transaction.atomic():
+            # Recargar el objeto desde la base de datos para evitar datos obsoletos
+            fresh_membership = Membership.objects.select_for_update().get(id=self.id)
+            
+            # Validaciones completas
+            if not fresh_membership.can_claim_reward_course():
+                return False, "No tienes cursos de recompensa disponibles"
+            
+            if not course.is_membership_reward:
+                return False, "Este curso no es una recompensa"
+            
+            # Verificar si ya fue reclamado (doble verificación)
+            if fresh_membership.welcome_courses_claimed.filter(id=course.id).exists():
+                return False, "Ya has reclamado este curso anteriormente"
+            
+            # Verificar que está disponible para el plan
+            if not course.reward_for_plans.filter(id=fresh_membership.plan.id).exists():
+                return False, "Este curso no está disponible para tu plan"
+            
+            # Verificar que aún tiene cursos disponibles
+            if fresh_membership.welcome_courses_remaining <= 0:
+                return False, "Ya has reclamado todos tus cursos de recompensa"
+            
+            # Reclamar el curso atómicamente
+            fresh_membership.welcome_courses_claimed.add(course)
+            fresh_membership.welcome_courses_remaining -= 1
+            fresh_membership.save(update_fields=['welcome_courses_remaining'])
+            
+            # Registrar en el historial
+            MembershipHistory.objects.create(
+                membership=fresh_membership,
+                action="reward_claimed",
+                details={
+                    "course_id": course.id,
+                    "course_title": course.title,
+                    "remaining_rewards": fresh_membership.welcome_courses_remaining,
+                },
+            )
+            
+            # Actualizar el objeto actual con los nuevos valores
+            self.welcome_courses_remaining = fresh_membership.welcome_courses_remaining
+            self.refresh_from_db()
+            
+            return True, "Curso de recompensa reclamado exitosamente"
 
 
 class MembershipHistory(models.Model):

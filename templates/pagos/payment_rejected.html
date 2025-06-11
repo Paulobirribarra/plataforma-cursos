@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load cart_extras %}
+
+{% block title %}Pago Rechazado{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center px-4">
+  <div class="max-w-2xl mx-auto">
+    <!-- Icono de error -->
+    <div class="text-center mb-8">
+      <div class="mx-auto w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mb-4">
+        <svg class="w-12 h-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </div>
+      <h1 class="text-4xl font-bold text-gray-900 mb-2">Pago Rechazado</h1>
+      <p class="text-xl text-gray-600">Tu tarjeta fue rechazada por el banco emisor</p>
+    </div>
+
+    <!-- Tarjeta principal -->
+    <div class="bg-white rounded-2xl shadow-xl p-8 mb-6">
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">¿Qué pasó?</h2>
+        <div class="bg-red-50 rounded-lg p-4 mb-6">
+          <p class="text-red-800 font-medium">
+            El banco emisor de tu tarjeta ha rechazado la transacción
+          </p>
+        </div>
+      </div>
+
+      <!-- Información del pago -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Detalles del intento de pago:</h3>
+        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <span class="text-gray-600">Número de transacción:</span>
+              <span class="font-mono text-gray-900">#{{ payment.id }}</span>
+            </div>
+            <div>
+              <span class="text-gray-600">Estado:</span>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                Rechazado
+              </span>
+            </div>
+            <div>
+              <span class="text-gray-600">Monto:</span>
+              <span class="font-semibold text-gray-900">${{ payment.amount|format_clp }}</span>
+            </div>
+            <div>
+              <span class="text-gray-600">Fecha:</span>
+              <span class="text-gray-900">{{ payment.created_at|date:"d/m/Y H:i" }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Posibles causas -->
+      <div class="bg-yellow-50 rounded-lg p-6 mb-6">
+        <h3 class="text-lg font-semibold text-yellow-900 mb-3">Posibles causas del rechazo:</h3>
+        <ul class="space-y-2 text-yellow-800">
+          <li class="flex items-center">
+            <svg class="w-5 h-5 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path>
+            </svg>
+            Fondos insuficientes en la cuenta
+          </li>
+          <li class="flex items-center">
+            <svg class="w-5 h-5 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path>
+            </svg>
+            Límite de compra diario excedido
+          </li>
+          <li class="flex items-center">
+            <svg class="w-5 h-5 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path>
+            </svg>
+            Tarjeta bloqueada o vencida
+          </li>
+          <li class="flex items-center">
+            <svg class="w-5 h-5 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path>
+            </svg>
+            Datos de la tarjeta incorrectos
+          </li>
+        </ul>
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="flex flex-col sm:flex-row gap-4">
+        <a href="{% url 'carrito:cart_detail' %}" 
+           class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg text-center font-semibold hover:bg-blue-700 transition-colors">
+          <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+          </svg>
+          Intentar con otra tarjeta
+        </a>
+        
+        <a href="{% url 'usuarios:dashboard' %}" 
+           class="flex-1 bg-gray-600 text-white px-6 py-3 rounded-lg text-center font-semibold hover:bg-gray-700 transition-colors">
+          <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+          </svg>
+          Ir al Dashboard
+        </a>
+      </div>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="text-center text-gray-600">
+      <p class="text-sm mb-2">
+        ¿Necesitas ayuda? 
+        <a href="#" class="text-blue-600 hover:underline">Contáctanos</a>
+      </p>
+      <p class="text-xs text-gray-500">
+        Tu carrito se mantiene guardado para que puedas intentar el pago nuevamente
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

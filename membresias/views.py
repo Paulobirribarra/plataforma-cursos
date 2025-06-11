@@ -121,25 +121,50 @@ def welcome_courses(request):
     if membership.plan.slug == 'premium':
         messages.info(request, _("Como usuario Premium, tienes acceso completo a todos los cursos."))
         return redirect("usuarios:dashboard")
-      # Obtener cursos de recompensa disponibles
+    
+    # Obtener cursos de recompensa disponibles y reclamados
     available_courses = membership.get_available_reward_courses()
-      # Agregar información de disponibilidad a cada curso
-    courses_with_claim_info = []
+    claimed_courses = membership.welcome_courses_claimed.all()
     can_claim_general = membership.can_claim_reward_course()
     
-    for course in available_courses:
-        course_info = {
-            'course': course,
-            'can_claim': can_claim_general and course in membership.get_available_reward_courses()
-        }
-        courses_with_claim_info.append(course_info)
+    # Preparar información para el template
+    courses_with_claim_info = []
+    
+    if can_claim_general:
+        # Mostrar cursos disponibles para reclamar
+        for course in available_courses:
+            course_info = {
+                'course': course,
+                'can_claim': True
+            }
+            courses_with_claim_info.append(course_info)
+        
+        courses_to_display = available_courses
+        show_claimed_only = False
+        page_title = _("Reclama tus Cursos de Bienvenida")
+    else:
+        # Ya no puede reclamar más, mostrar solo los reclamados con mensaje de éxito
+        for course in claimed_courses:
+            course_info = {
+                'course': course,
+                'can_claim': False,
+                'is_claimed': True
+            }
+            courses_with_claim_info.append(course_info)
+        
+        courses_to_display = claimed_courses
+        show_claimed_only = True
+        page_title = _("¡Felicitaciones! Has Reclamado tus Cursos")
     
     context = {
         "membership": membership,
         "available_courses": available_courses,
+        "courses_to_display": courses_to_display,
         "courses_with_claim_info": courses_with_claim_info,
-        "title": _("Reclama tus Cursos de Bienvenida"),
-        "can_claim": can_claim_general,
+        "claimed_courses": claimed_courses,
+        "show_claimed_only": show_claimed_only,
+        "can_claim_general": can_claim_general,
+        "title": page_title,
         "courses_remaining": membership.welcome_courses_remaining,
     }
     
@@ -150,45 +175,108 @@ def welcome_courses(request):
 @require_POST
 def claim_reward_course(request, course_id):
     """Vista para reclamar un curso de recompensa."""
-    course = get_object_or_404(Course, id=course_id)
+    from django.db import transaction
     
-    # Obtener la membresía activa del usuario
-    membership = Membership.objects.filter(
-        user=request.user, status="active"
-    ).first()
-    
-    if not membership:
-        return JsonResponse({
-            "success": False,
-            "message": _("No tienes una membresía activa.")
-        })
-      # Intentar reclamar el curso
-    success, message = membership.claim_reward_course(course)
-    
-    if success:
-        # Crear registro de acceso al curso para el usuario (solo si no existe)
-        from cursos.models import UserCourse
-        user_course, created = UserCourse.objects.get_or_create(
-            user=request.user,
-            course=course,
-            defaults={
-                'access_start': timezone.now(),
-                'progress': 0.0,
-                'completed': False
-            }
-        )
+    with transaction.atomic():
+        course = get_object_or_404(Course, id=course_id)
         
-        return JsonResponse({
-            "success": True,
-            "message": message,
-            "courses_remaining": membership.welcome_courses_remaining,
-            "redirect_url": "/usuarios/dashboard/" if membership.welcome_courses_remaining == 0 else None
-        })
-    else:
-        return JsonResponse({
-            "success": False,
-            "message": message
-        })
+        # Obtener la membresía activa del usuario con lock
+        membership = Membership.objects.select_for_update().filter(
+            user=request.user, status="active"
+        ).first()
+        
+        if not membership:
+            return JsonResponse({
+                "success": False,
+                "message": _("No tienes una membresía activa.")
+            })
+        
+        # VALIDACIÓN CRÍTICA: Verificar si ya tiene un UserCourse para este curso
+        from cursos.models import UserCourse
+        if UserCourse.objects.filter(user=request.user, course=course).exists():
+            return JsonResponse({
+                "success": False,
+                "message": _("Ya tienes acceso a este curso.")
+            })
+        
+        # VALIDACIONES ADICIONALES ANTES DE RECLAMAR
+        # 1. Verificar que aún puede reclamar cursos
+        if membership.welcome_courses_remaining <= 0:
+            return JsonResponse({
+                "success": False,
+                "message": _("Ya has reclamado todos tus cursos de recompensa disponibles.")
+            })
+        
+        # 2. Verificar que el curso no fue reclamado anteriormente
+        if membership.welcome_courses_claimed.filter(id=course.id).exists():
+            return JsonResponse({
+                "success": False,
+                "message": _("Ya has reclamado este curso anteriormente.")
+            })
+        
+        # 3. Verificar que el curso está disponible para su plan
+        available_courses = membership.get_available_reward_courses()
+        if course not in available_courses:
+            return JsonResponse({
+                "success": False,
+                "message": _("Este curso no está disponible para tu plan.")
+            })
+        
+        # 4. Verificar que es un curso de recompensa
+        if not course.is_membership_reward:
+            return JsonResponse({
+                "success": False,
+                "message": _("Este curso no es una recompensa.")
+            })
+        
+        # 5. Verificar que el plan del usuario puede reclamar este curso
+        if not course.reward_for_plans.filter(id=membership.plan.id).exists():
+            return JsonResponse({
+                "success": False,
+                "message": _("Tu plan no puede reclamar este curso.")
+            })
+        
+        # Intentar reclamar el curso (con todas las validaciones internas)
+        success, message = membership.claim_reward_course(course)
+        
+        if success:
+            # Crear registro de acceso al curso para el usuario SOLO si no existe
+            user_course, created = UserCourse.objects.get_or_create(
+                user=request.user,
+                course=course,
+                defaults={
+                    'access_start': timezone.now(),
+                    'progress': 0.0,
+                    'completed': False
+                }
+            )
+            
+            if not created:
+                # Si ya existía el UserCourse, esto es un error - debemos revertir el reclamo
+                # Esto no debería pasar, pero es una medida de seguridad
+                membership.welcome_courses_claimed.remove(course)
+                membership.welcome_courses_remaining += 1
+                membership.save()
+                
+                return JsonResponse({
+                    "success": False,
+                    "message": _("Error: Ya tienes acceso a este curso.")
+                })
+            
+            # Recargar membership para obtener los datos actualizados
+            membership.refresh_from_db()
+            
+            return JsonResponse({
+                "success": True,
+                "message": message,
+                "courses_remaining": membership.welcome_courses_remaining,
+                "redirect_url": "/usuarios/dashboard/" if membership.welcome_courses_remaining == 0 else None
+            })
+        else:
+            return JsonResponse({
+                "success": False,
+                "message": message
+            })
 
 
 @login_required
@@ -205,3 +293,64 @@ def skip_welcome_courses(request):
         ).format(membership.welcome_courses_remaining))
     
     return redirect("usuarios:dashboard")
+
+
+@login_required
+def welcome_courses_debug(request):
+    """Vista de debug para probar botones sin problemas de CSS."""
+    # Obtener la membresía activa del usuario
+    membership = Membership.objects.filter(
+        user=request.user, status="active"
+    ).first()
+    
+    if not membership:
+        messages.error(request, _("No tienes una membresía activa."))
+        return redirect("membresias:plan_list")
+    
+    # Para plan Premium, redirigir directamente al dashboard (no necesita reclamar)
+    if membership.plan.slug == 'premium':
+        messages.info(request, _("Como usuario Premium, tienes acceso completo a todos los cursos."))
+        return redirect("usuarios:dashboard")
+        # Obtener cursos de recompensa disponibles
+    available_courses = membership.get_available_reward_courses()
+    claimed_courses = membership.welcome_courses_claimed.all()
+    
+    # Agregar información de disponibilidad a cada curso
+    courses_with_claim_info = []
+    can_claim_general = membership.can_claim_reward_course()
+    
+    # Si el usuario puede reclamar, mostrar cursos disponibles
+    # Si ya no puede reclamar, mostrar solo los reclamados
+    if can_claim_general:
+        for course in available_courses:
+            course_info = {
+                'course': course,
+                'can_claim': True
+            }
+            courses_with_claim_info.append(course_info)
+        
+        courses_to_display = available_courses
+        show_claimed_only = False
+    else:
+        # Ya no puede reclamar más, mostrar solo los reclamados
+        for course in claimed_courses:
+            course_info = {
+                'course': course,
+                'can_claim': False,
+                'is_claimed': True
+            }
+            courses_with_claim_info.append(course_info)
+        
+        courses_to_display = claimed_courses
+        show_claimed_only = True
+    
+    context = {
+        "membership": membership,
+        "available_courses": available_courses,
+        "courses_with_claim_info": courses_with_claim_info,
+        "title": _("DEBUG: Reclama tus Cursos de Bienvenida"),
+        "can_claim": can_claim_general,
+        "courses_remaining": membership.welcome_courses_remaining,
+    }
+    
+    return render(request, "membresias/welcome_courses_debug.html", context)

@@ -39,8 +39,7 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",    "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     # Middleware de seguridad para admin
@@ -157,6 +156,16 @@ CSRF_COOKIE_SECURE = (
     False  # En desarrollo, debería ser False (True solo en producción con HTTPS)
 )
 SESSION_COOKIE_SECURE = False  # Igual que CSRF_COOKIE_SECURE
+
+# Configuración para ngrok y dominios externos
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'https://*.ngrok-free.app',  # Para ngrok
+    'https://*.ngrok.io',        # Para versiones anteriores de ngrok
+    'https://*.ngrok.app',       # Para versiones más recientes de ngrok
+    'https://6ba4-179-57-9-30.ngrok-free.app',  # URL específica actual de ngrok
+]
 
 # Logging para depuración
 LOGGING = {

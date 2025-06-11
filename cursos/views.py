@@ -164,16 +164,22 @@ def course_list(request):
     general_courses = Course.objects.filter(is_available=True, is_free=False)
     plans = MembershipPlan.objects.filter(is_active=True)
     
+    # Obtener membresía activa del usuario si está autenticado
+    active_membership = None
+    
     # Si el usuario está autenticado, filtrar cursos que ya posee
     if request.user.is_authenticated:
+        active_membership = request.user.get_active_membership()
+        
         # Obtener IDs de cursos que el usuario ya tiene (comprados)
         user_course_ids = request.user.user_courses.values_list('course_id', flat=True)
         
         # Obtener IDs de cursos reclamados como recompensa
         claimed_course_ids = []
-        active_membership = request.user.get_active_membership()
         if active_membership:
             claimed_course_ids = active_membership.welcome_courses_claimed.values_list('id', flat=True)
+            # Filtrar el plan que ya tiene activo para que no se muestre
+            plans = plans.exclude(id=active_membership.plan.id)
         
         # Combinar ambos tipos de cursos que ya posee (eliminar duplicados usando set)
         owned_course_ids = list(set(list(user_course_ids) + list(claimed_course_ids)))
@@ -190,6 +196,7 @@ def course_list(request):
             "free_courses": free_courses,
             "general_courses": general_courses,
             "plans": plans,
+            "active_membership": active_membership,  # Pasar la membresía activa al template
         },
     )
 

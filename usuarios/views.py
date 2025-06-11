@@ -68,8 +68,7 @@ def dashboard(request):
     from carrito.models import Cart, CartItem
     active_cart = Cart.objects.filter(user=request.user, is_active=True).first()
     cart_items_count = CartItem.objects.filter(cart=active_cart).count() if active_cart else 0
-    
-    # Obtener estadísticas de boletines (solo para staff)
+      # Obtener estadísticas de boletines (solo para staff)
     newsletter_stats = {}
     if request.user.is_staff:
         from boletines.models import Boletin
@@ -80,6 +79,12 @@ def dashboard(request):
             'programados': Boletin.objects.filter(estado='programado').count(),
         }
     
+    # Obtener pagos recientes del usuario
+    from pagos.models import Payment
+    recent_payments = Payment.objects.filter(
+        user=request.user
+    ).order_by('-created_at')[:5]  # Últimos 5 pagos
+    
     return render(request, 'usuarios/dashboard.html', {
         'courses': courses,
         'email_verified': email_verified,
@@ -88,6 +93,7 @@ def dashboard(request):
         'user_courses_count': user_courses_count,
         'cart_items_count': cart_items_count,
         'newsletter_stats': newsletter_stats,
+        'recent_payments': recent_payments,
     })
 
 @login_required

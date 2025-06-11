@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load cart_extras %}
+
+{% block title %}Error en el Pago{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-red-50 to-pink-50 flex items-center justify-center px-4">
+  <div class="max-w-2xl mx-auto">
+    <!-- Icono de error -->
+    <div class="text-center mb-8">
+      <div class="mx-auto w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mb-4">
+        <svg class="w-12 h-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+        </svg>
+      </div>
+      <h1 class="text-4xl font-bold text-gray-900 mb-2">Error en el Pago</h1>
+      <p class="text-xl text-gray-600">
+        {% if error_type == 'failed' %}
+          Ocurrió un error durante el procesamiento
+        {% elif error_type == 'transaction_error' %}
+          Error al confirmar la transacción
+        {% elif error_type == 'unknown' %}
+          Respuesta inesperada del sistema de pagos
+        {% else %}
+          Error inesperado en el proceso de pago
+        {% endif %}
+      </p>
+    </div>
+
+    <!-- Tarjeta principal -->
+    <div class="bg-white rounded-2xl shadow-xl p-8 mb-6">
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">¿Qué pasó?</h2>
+        <div class="bg-red-50 rounded-lg p-4 mb-6">
+          <p class="text-red-800 font-medium">
+            {% if error_type == 'failed' %}
+              La transacción falló durante el procesamiento en el servidor de pagos
+            {% elif error_type == 'transaction_error' %}
+              No se pudo confirmar el estado de la transacción
+            {% elif error_type == 'unknown' %}
+              Se recibió una respuesta inesperada del sistema de pagos
+            {% else %}
+              Ocurrió un error técnico durante el proceso de pago
+            {% endif %}
+          </p>
+        </div>
+      </div>
+
+      <!-- Información del pago -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Detalles del intento de pago:</h3>
+        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <span class="text-gray-600">Número de transacción:</span>
+              <span class="font-mono text-gray-900">#{{ payment.id }}</span>
+            </div>
+            <div>
+              <span class="text-gray-600">Estado:</span>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                {% if error_type == 'failed' %}
+                  Fallido
+                {% elif error_type == 'transaction_error' %}
+                  Error de Confirmación
+                {% elif error_type == 'unknown' %}
+                  Estado Desconocido
+                {% else %}
+                  Error
+                {% endif %}
+              </span>
+            </div>
+            <div>
+              <span class="text-gray-600">Monto:</span>
+              <span class="font-semibold text-gray-900">${{ payment.amount|format_clp }}</span>
+            </div>
+            <div>
+              <span class="text-gray-600">Fecha:</span>
+              <span class="text-gray-900">{{ payment.created_at|date:"d/m/Y H:i" }}</span>
+            </div>
+          </div>
+
+          {% if error_message %}
+          <div class="mt-4 p-3 bg-gray-100 rounded-lg">
+            <p class="text-sm text-gray-700">
+              <strong>Detalle del error:</strong> {{ error_message }}
+            </p>
+          </div>
+          {% endif %}
+
+          {% if response %}
+          <div class="mt-4 p-3 bg-gray-100 rounded-lg">
+            <p class="text-sm text-gray-700">
+              <strong>Información técnica:</strong>
+            </p>
+            <pre class="text-xs text-gray-600 mt-2 overflow-x-auto">{{ response|truncatechars:200 }}</pre>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Información tranquilizadora -->
+      <div class="bg-blue-50 rounded-lg p-6 mb-6">
+        <h3 class="text-lg font-semibold text-blue-900 mb-3">Información importante</h3>
+        <ul class="space-y-2 text-blue-800">
+          <li class="flex items-center">
+            <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path>
+            </svg>
+            {% if error_type == 'transaction_error' %}
+              Es posible que el pago se haya procesado correctamente
+            {% else %}
+              No se realizó ningún cargo a tu tarjeta
+            {% endif %}
+          </li>
+          <li class="flex items-center">
+            <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path>
+            </svg>
+            Tu carrito se mantiene guardado
+          </li>
+          <li class="flex items-center">
+            <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path>
+            </svg>
+            Nuestro equipo ha sido notificado del problema
+          </li>
+        </ul>
+      </div>
+
+      <!-- Acciones recomendadas -->
+      <div class="bg-yellow-50 rounded-lg p-6 mb-6">
+        <h3 class="text-lg font-semibold text-yellow-900 mb-3">¿Qué hacer ahora?</h3>
+        <ol class="list-decimal list-inside space-y-2 text-yellow-800">
+          {% if error_type == 'transaction_error' %}
+          <li>Revisa tu email y estado de cuenta bancario</li>
+          <li>Si no aparece el cargo, puedes intentar el pago nuevamente</li>
+          <li>Si aparece el cargo, contacta con soporte para verificar tu compra</li>
+          {% else %}
+          <li>Espera unos minutos e intenta nuevamente</li>
+          <li>Verifica tu conexión a internet</li>
+          <li>Si el problema persiste, contacta con soporte</li>
+          {% endif %}
+        </ol>
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="flex flex-col sm:flex-row gap-4">
+        <a href="{% url 'carrito:cart_detail' %}" 
+           class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg text-center font-semibold hover:bg-blue-700 transition-colors">
+          <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+          Intentar nuevamente
+        </a>
+        
+        <a href="#" 
+           class="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg text-center font-semibold hover:bg-green-700 transition-colors">
+          <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+          </svg>
+          Contactar Soporte
+        </a>
+        
+        <a href="{% url 'usuarios:dashboard' %}" 
+           class="flex-1 bg-gray-600 text-white px-6 py-3 rounded-lg text-center font-semibold hover:bg-gray-700 transition-colors">
+          <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+          </svg>
+          Ir al Dashboard
+        </a>
+      </div>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="text-center text-gray-600">
+      <p class="text-sm mb-2">
+        ID de referencia: <span class="font-mono text-gray-800">#{{ payment.id }}</span>
+      </p>
+      <p class="text-xs text-gray-500">
+        Incluye este ID al contactar con soporte
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}
