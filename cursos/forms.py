@@ -24,19 +24,24 @@ class CourseForm(forms.ModelForm):
         fields = [
             'title', 'description', 'category', 'base_price', 'is_free',
             'is_available', 'is_visible', 'duration_minutes', 'tags',
-            'special_discount_percentage'
+            'special_discount_percentage', 'membership_required', 'is_membership_reward',
+            'available_membership_plans', 'reward_for_plans'
         ]
         widgets = {
             'is_free': forms.CheckboxInput(),
             'is_available': forms.CheckboxInput(),
             'is_visible': forms.CheckboxInput(),
+            'membership_required': forms.CheckboxInput(attrs={'class': 'sr-only'}),
+            'is_membership_reward': forms.CheckboxInput(attrs={'class': 'sr-only'}),
             'description': forms.Textarea(attrs={'rows': 4, 'class': 'mt-1 block w-full border-gray-400 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500'}),
-            'tags': forms.SelectMultiple(attrs={'class': 'mt-1 block w-full border-gray-400 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 bg-white text-gray-800'}),
+            'tags': forms.CheckboxSelectMultiple(attrs={'class': 'tags-checkbox-container'}),
             'title': forms.TextInput(attrs={'class': 'mt-1 block w-full border-gray-400 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500'}),
             'category': forms.Select(attrs={'class': 'mt-1 block w-full border-gray-400 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 bg-white text-gray-800'}),
             'base_price': forms.NumberInput(attrs={'class': 'mt-1 block w-full border-gray-400 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500', 'step': '1', 'min': '0'}),
             'duration_minutes': forms.NumberInput(attrs={'min': 0, 'class': 'mt-1 block w-full border-gray-400 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500', 'step': '1'}),
             'special_discount_percentage': forms.NumberInput(attrs={'class': 'mt-1 block w-full border-gray-400 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500', 'step': '0.01'}),
+            'available_membership_plans': forms.CheckboxSelectMultiple(attrs={'class': 'space-y-2'}),
+            'reward_for_plans': forms.CheckboxSelectMultiple(attrs={'class': 'space-y-2'}),
         }
 
     def clean(self):
