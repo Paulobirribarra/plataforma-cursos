@@ -34,3 +34,4 @@ media/
 *.backup
 *.cache
 .temp/
+*logs/

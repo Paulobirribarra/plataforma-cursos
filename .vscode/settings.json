@@ -1,7 +1,32 @@
 {
+  // Configuración Python/Django
   "python.pythonPath": ".venv/Scripts/python.exe",
   "python.defaultInterpreterPath": ".venv/Scripts/python.exe",
+  "python.analysis.extraPaths": [
+    ".venv/Lib/site-packages"
+  ],
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": true,
+  // Configuración general del editor
   "editor.formatOnSave": false,
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  "files.hotExit": "off",
+  "workbench.startupEditor": "none",
+  "window.restoreWindows": "none",
+  "files.restoreUndoStack": false,
+  // Configuración de archivos Django
+  "files.associations": {
+    "*.html": "django-html"
+  },
+  "emmet.includeLanguages": {
+    "django-html": "html"
+  },
+  "django.snippets.htmlLanguageServer": false,
+  "django.completion.insertImports": false,
+  // Configuración de formateo HTML/Django (sin Prettier)
+  "html.format.enable": false,
   "[html]": {
     "editor.formatOnSave": false,
     "editor.defaultFormatter": null
@@ -14,26 +39,18 @@
     "editor.formatOnSave": false,
     "editor.defaultFormatter": null
   },
-  "prettier.disableLanguages": ["django-html", "jinja-html"],
-  "django.snippets.htmlLanguageServer": false,
-  "django.completion.insertImports": false,
+  // =========================================================================
+  // CONFIGURACIÓN DE PRETTIER PARA DESARROLLO (ARCHIVOS EXTERNOS)
+  // ⚠️ ELIMINAR ARCHIVOS .prettierrc.json y .prettierignore ANTES DE PRODUCCIÓN
+  // =========================================================================
   "prettier.requireConfig": true,
-  "html.format.enable": false,
-  "files.associations": {
-    "*.html": "django-html"
-  },
-  "emmet.includeLanguages": {
-    "django-html": "html"
-  },  "python.analysis.extraPaths": [
-    ".venv/Lib/site-packages"
+  "prettier.disableLanguages": [
+    "django-html",
+    "jinja-html"
   ],
-  "python.linting.enabled": true,
-  "python.linting.pylintEnabled": false,
-  "python.linting.flake8Enabled": true,
-  "files.autoSave": "afterDelay",
-  "files.autoSaveDelay": 1000,
-  "files.hotExit": "off",
-  "workbench.startupEditor": "none",
-  "window.restoreWindows": "none",
-  "files.restoreUndoStack": false
+  // Notas: 
+  // - La configuración específica de Prettier está en .prettierrc.json
+  // - Los archivos a ignorar están en .prettierignore
+  // - Para eliminar antes de producción, usar el script clean_development_files.ps1
+  // =========================================================================
 }

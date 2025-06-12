@@ -39,12 +39,16 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
-    # Middleware de seguridad para admin
+    # Middleware de seguridad integral
     "plataforma_cursos.middleware.admin_security.AdminSecurityMiddleware",
     "plataforma_cursos.middleware.admin_security.AdminSessionSecurityMiddleware",
+    "plataforma_cursos.middleware.production_security.ProductionSecurityMiddleware",
+    "plataforma_cursos.middleware.production_security.AdminAccessAuditMiddleware",
+    "plataforma_cursos.middleware.production_security.SessionSecurityMiddleware",
 ]
 
 ROOT_URLCONF = "plataforma_cursos.urls"
@@ -70,11 +74,11 @@ WSGI_APPLICATION = "plataforma_cursos.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "plataforma_cursos",
-        "USER": "postgres",
-        "PASSWORD": config("DATABASE_PASSWORD"),
-        "HOST": "localhost",
-        "PORT": "5432",
+        "NAME": config("DB_NAME"),
+        "USER": config("DB_USER"),
+        "PASSWORD": config("DB_PASSWORD"),
+        "HOST": config("DB_HOST"),
+        "PORT": config("DB_PORT"),
     }
 }
 
@@ -127,6 +131,11 @@ ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "username", "password1*", "password2*"]
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
+
+# Configuración de formularios personalizados para allauth
+ACCOUNT_FORMS = {
+    'signup': 'usuarios.forms.CustomUserCreationForm',
+}
 ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_SIGNUP_REDIRECT_URL = "/usuarios/dashboard/"
 LOGIN_REDIRECT_URL = "/usuarios/dashboard/"
@@ -175,19 +184,50 @@ CSRF_TRUSTED_ORIGINS = [
     'https://6ba4-179-57-9-30.ngrok-free.app',  # URL específica actual de ngrok
 ]
 
-# Logging para depuración
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-        },
-    },
-    "loggers": {
-        "": {
-            "handlers": ["console"],
-            "level": "INFO",
-        },
-    },
-}
+# Configuración básica de logging
+# La configuración completa se maneja en logging_config.py
+
+# =============================================================================
+# CONFIGURACIÓN DE SEGURIDAD INTEGRAL Y LOGGING
+# =============================================================================
+
+# Configuración de rate limiting
+ENABLE_RATE_LIMITING = config('ENABLE_RATE_LIMITING', default=True, cast=bool)
+
+# URL secreta para el panel de administración
+ADMIN_URL_SECRET = config('ADMIN_URL_SECRET', default='secret-admin-panel')
+
+# Configuración de seguridad para producción
+if not DEBUG:
+    # Headers de seguridad
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 año
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_FRAME_DENY = True
+    
+    # Configuración de cookies seguras
+    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    CSRF_COOKIE_SECURE = True
+    CSRF_COOKIE_HTTPONLY = True
+    CSRF_COOKIE_SAMESITE = 'Lax'
+    
+    # Forzar HTTPS
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Configuración de sesiones administrativas
+ADMIN_SESSION_TIMEOUT = 1800  # 30 minutos para admins
+
+# Configurar logging inteligente según el ambiente
+if not DEBUG:
+    # Configuración de producción - Optimizada para bajo tráfico
+    from plataforma_cursos.logging_config import setup_production_logging
+    LOGGING = setup_production_logging(low_traffic=True)
+else:
+    # Configuración de desarrollo - Optimizada y simplificada
+    from plataforma_cursos.logging_config import setup_development_logging
+    LOGGING = setup_development_logging()

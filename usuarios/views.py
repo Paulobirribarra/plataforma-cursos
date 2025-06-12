@@ -281,10 +281,10 @@ def _get_newsletter_stats(user):
     """Función auxiliar para obtener estadísticas de newsletter del usuario"""
     try:
         from boletines.models import Boletin
-        # Obtener últimos boletines enviados
+        # Obtener últimos boletines enviados - CORREGIDO: usar fecha_enviado
         ultimos_boletines = Boletin.objects.filter(
             estado='enviado'
-        ).order_by('-fecha_envio')[:5]
+        ).order_by('-fecha_enviado')[:5]
         
         return {
             'total_boletines_enviados': Boletin.objects.filter(estado='enviado').count(),

@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
+from usuarios.decorators import content_manager_required, ContentManagerRequiredMixin
 from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 )
@@ -189,23 +190,8 @@ class SuscribirBoletinView(View):
                 'success': False,
                 'error': 'Error al procesar la suscripción'
             })
-    
     def get(self, request):
         """Manejar suscripción vía GET (formulario tradicional)"""
-        if not request.user.is_authenticated:
-            messages.error(request, 'Debes estar autenticado para suscribirte')
-            return redirect('account_login')
-        
-        user = request.user
-        user.suscrito_newsletter = not user.suscrito_newsletter
-        user.save(update_fields=['suscrito_newsletter'])
-        
-        if user.suscrito_newsletter:
-            messages.success(request, 'Te has suscrito al newsletter exitosamente')
-        else:
-            messages.info(request, 'Te has desuscrito del newsletter')
-        
-        return redirect('usuarios:dashboard')
         try:
             if not request.user.is_authenticated:
                 messages.error(request, 'Debes iniciar sesión para suscribirte al newsletter')
@@ -234,7 +220,7 @@ class SuscribirBoletinView(View):
 # VISTAS DE ADMINISTRACIÓN
 # =============================================================================
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(content_manager_required, name='dispatch')
 class AdminDashboardView(TemplateView):
     """Dashboard principal de administración de boletines"""
     template_name = 'boletines/admin/dashboard.html'
